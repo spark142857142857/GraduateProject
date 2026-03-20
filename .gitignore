@@ -1,0 +1,28 @@
+# API 키 및 환경변수
+.env
+
+# Python 캐시
+__pycache__/
+*.pyc
+*.pyo
+
+# 수집 데이터 (용량 큰 파일)
+data/price/
+data/financials/
+data/reports/
+data/announcements/
+docs_cache/
+
+# 실험 결과
+results/
+
+# 데이터 파일
+*.csv
+*.png
+
+# Claude Code 내부 설정
+.claude/
+
+# IDE
+.vscode/
+.idea/

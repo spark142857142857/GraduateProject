@@ -1,0 +1,9 @@
+requests
+beautifulsoup4
+pandas
+finance-datareader
+matplotlib
+numpy
+google-genai
+groq
+python-dotenv
