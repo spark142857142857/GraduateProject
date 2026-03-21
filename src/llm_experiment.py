@@ -172,7 +172,7 @@ def run():
             print(f"[{COND}] {name}: 완료됨 ({len(fin_df)}건), 스킵")
             continue
 
-        price_df = get_price(ticker)
+        price_df = get_price(ticker, start="2022-12-01")
         if price_df.empty:
             print(f"[{COND}] {name}: 주가 없음, 스킵")
             continue
@@ -252,7 +252,7 @@ def run():
     for _, row in result_df.iterrows():
         tk = row["ticker"]
         if tk not in price_cache:
-            price_cache[tk] = get_price(tk)
+            price_cache[tk] = get_price(tk, start="2022-12-01")
         pdf = price_cache[tk]
         ret20_list.append(calc_return(pdf, row["signal_date"], HOLD_LONG))
 
