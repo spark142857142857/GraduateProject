@@ -1,0 +1,122 @@
+"""
+프롬프트 컨텍스트 빌더
+
+각 함수: (ticker: str, date: str) → str
+  - 해당 date 기준 LLM 프롬프트에 삽입할 섹션 텍스트 반환
+  - 데이터 없거나 해당 없으면 빈 문자열 반환
+"""
+
+import os
+import sys
+
+import pandas as pd
+from datetime import timedelta
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from utils import DATA_DIR
+
+FINANCIALS_DIR    = os.path.join(DATA_DIR, "financials")
+REPORTS_DIR       = os.path.join(DATA_DIR, "reports")
+ANNOUNCEMENTS_DIR = os.path.join(DATA_DIR, "announcements")
+
+WINDOW_DAYS = 30
+
+
+# ── 포맷 헬퍼 ─────────────────────────────────────────────
+
+def _fmt(value, decimals: int = 2, na_str: str = "N/A") -> str:
+    if pd.isna(value):
+        return na_str
+    return f"{value:.{decimals}f}"
+
+
+def _fmt_price(value) -> str:
+    if pd.isna(value):
+        return "N/A"
+    return f"{int(value):,}"
+
+
+# ── 빌더 함수 ─────────────────────────────────────────────
+
+def build_financials(ticker: str, date: str) -> str:
+    """
+    data/financials/{ticker}.csv에서 date 행 로드 후 프롬프트 텍스트 반환.
+    NaN → "N/A" 또는 "해당없음(적자)" 처리.
+    """
+    path = os.path.join(FINANCIALS_DIR, f"{ticker}.csv")
+    if not os.path.exists(path):
+        return ""
+
+    df = pd.read_csv(path, dtype={"ticker": str}, parse_dates=["date"])
+    row_df = df[df["date"].dt.strftime("%Y-%m-%d") == date]
+    if row_df.empty:
+        return ""
+    row = row_df.iloc[0]
+
+    market_cap = row.get("market_cap")
+    market_cap_str = _fmt(market_cap / 1e12, 1) if not pd.isna(market_cap) else "N/A"
+
+    return "\n".join([
+        "[재무지표]",
+        f"PER: {_fmt(row.get('per'), 1, na_str='해당없음(적자)')}",
+        f"PBR: {_fmt(row.get('pbr'), 2)}",
+        f"ROE: {_fmt(row.get('roe'), 1)}%",
+        f"시가총액: {market_cap_str}조원",
+        "",
+        "[기술지표]",
+        f"52주 최고가: {_fmt_price(row.get('high_52w'))}원",
+        f"52주 최저가: {_fmt_price(row.get('low_52w'))}원",
+        f"52주 내 현재 위치: {_fmt(row.get('price_position_52w'), 1)}%",
+        f"최근 1개월 수익률: {_fmt(row.get('momentum_1m'), 2)}%",
+        f"거래량 변화율: {_fmt(row.get('volume_change'), 2)}%",
+    ])
+
+
+def build_reports(ticker: str, date: str) -> str:
+    """
+    data/reports/{ticker}.csv에서 date 기준 직전 30일 리포트 최대 5건 반환.
+    없으면 빈 문자열 반환.
+    """
+    path = os.path.join(REPORTS_DIR, f"{ticker}.csv")
+    if not os.path.exists(path):
+        return ""
+
+    df = pd.read_csv(path, parse_dates=["date"])
+    end_dt   = pd.to_datetime(date) - timedelta(days=1)
+    start_dt = end_dt - timedelta(days=WINDOW_DAYS - 1)
+
+    sub = df[(df["date"] >= start_dt) & (df["date"] <= end_dt)]
+    sub = sub.sort_values("date", ascending=False).head(5)
+
+    if sub.empty:
+        return ""
+
+    lines = ["[애널리스트 리포트 (최근 30일, 최대 5건)]"]
+    for _, r in sub.iterrows():
+        tp = r.get("target_price")
+        tp_str = f"목표주가 {int(tp):,}원" if not pd.isna(tp) else "목표주가 없음"
+        lines.append(f"- {r['date'].strftime('%Y-%m-%d')} | {r['title']} ({tp_str})")
+
+    return "\n".join(lines)
+
+
+def build_announcements(ticker: str, date: str) -> str:
+    """
+    data/announcements/{ticker}.csv에서 base_date == date 인 공시 최대 5건 반환.
+    없으면 빈 문자열 반환.
+    """
+    path = os.path.join(ANNOUNCEMENTS_DIR, f"{ticker}.csv")
+    if not os.path.exists(path):
+        return ""
+
+    df = pd.read_csv(path, dtype={"ticker": str})
+    sub = df[df["base_date"] == date].head(5)
+
+    if sub.empty:
+        return ""
+
+    lines = ["[DART 주요 공시 (최근 30일, 최대 5건)]"]
+    for _, r in sub.iterrows():
+        lines.append(f"- {r['rcept_dt']} | {r['report_nm']}")
+
+    return "\n".join(lines)

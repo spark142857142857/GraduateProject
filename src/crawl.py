@@ -69,7 +69,7 @@ def fetch_detail(nid: str, ticker: str) -> tuple[int | None, str | None]:
         return None, None
 
 
-def fetch_reports(ticker: str, max_pages: int = 15) -> list[dict]:
+def fetch_reports(ticker: str, max_pages: int = 100) -> list[dict]:
     """종목별 리포트 목록 수집"""
     list_url = (
         f"{BASE_URL}company_list.naver"
