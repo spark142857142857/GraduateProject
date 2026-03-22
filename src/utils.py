@@ -8,7 +8,7 @@ import FinanceDataReader as fdr
 from datetime import datetime
 
 # ── 분석 설정 ─────────────────────────────────────────────
-START_DATE = "2025-01-01"
+START_DATE = "2023-01-01"
 END_DATE   = datetime.today().strftime("%Y-%m-%d")
 
 TICKERS = {
