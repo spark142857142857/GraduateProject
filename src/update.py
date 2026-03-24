@@ -7,8 +7,7 @@
 갱신 순서:
   1. 가격 데이터 갱신      (data/price/)       — 전 종목 최신 가격 추가
   2. 재무지표 갱신          (data/financials/)  — 이번 달 첫 거래일 행 추가
-  3. 공시 갱신              (data/announcements/) — 이번 달 base_date 공시 추가
-  4. 애널리스트 리포트 갱신 (data/reports/)     — 신규 리포트 append
+  3. 애널리스트 리포트 갱신 (data/reports/)     — 신규 리포트 append
 
 이미 이번 달 데이터가 존재하는 항목은 스킵한다.
 
@@ -37,13 +36,6 @@ from collect_financials import (
     calc_52w,
     calc_momentum_volume,
     FINANCIALS_DIR,
-)
-
-# collect_announcements 핵심 함수 재사용
-from collect_announcements import (
-    load_corp_codes,
-    collect_for_base_date,
-    ANNOUNCEMENTS_DIR,
 )
 
 # crawl 핵심 함수 재사용
@@ -222,65 +214,7 @@ def update_financials(base_date: pd.Timestamp) -> int:
 
 
 # ── 3단계: 공시 갱신 ──────────────────────────────────────
-def update_announcements(base_date: pd.Timestamp) -> int:
-    """이번 달 base_date 기준 직전 30일 공시를 수집하여 append.
-    갱신된 종목 수 반환.
-    """
-    base_date_str = base_date.strftime("%Y-%m-%d")
-    os.makedirs(ANNOUNCEMENTS_DIR, exist_ok=True)
-
-    corp_code_map = load_corp_codes()
-    updated = 0
-
-    for name, ticker in TICKERS.items():
-        out_path = os.path.join(ANNOUNCEMENTS_DIR, f"{ticker}.csv")
-
-        # 이미 이번 달 base_date 공시 존재 여부 확인
-        if os.path.exists(out_path):
-            df_existing = pd.read_csv(out_path, dtype={"ticker": str})
-            if base_date_str in df_existing["base_date"].values:
-                print(f"  [{ticker}] {name}: {base_date_str} 공시 이미 존재 — 스킵")
-                continue
-        else:
-            df_existing = pd.DataFrame()
-
-        corp_code = corp_code_map.get(ticker)
-        if not corp_code:
-            print(f"  [{ticker}] {name}: corp_code 없음 — 스킵")
-            continue
-
-        records = collect_for_base_date(corp_code, base_date_str)
-        if not records:
-            print(f"  [{ticker}] {name}: {base_date_str} 해당 공시 없음")
-            continue
-
-        rows = [
-            {
-                "base_date": base_date_str,
-                "ticker":    ticker,
-                "name":      name,
-                "report_nm": rec["report_nm"],
-                "rcept_dt":  rec["rcept_dt"],
-            }
-            for rec in records
-        ]
-        df_new = pd.DataFrame(
-            rows, columns=["base_date", "ticker", "name", "report_nm", "rcept_dt"]
-        )
-
-        if not df_existing.empty:
-            df_out = pd.concat([df_existing, df_new], ignore_index=True)
-        else:
-            df_out = df_new
-
-        df_out.to_csv(out_path, index=False, encoding="utf-8-sig")
-        print(f"  [{ticker}] {name}: {len(rows)}건 추가 → {out_path}")
-        updated += 1
-
-    return updated
-
-
-# ── 4단계: 애널리스트 리포트 갱신 ────────────────────────
+# ── 3단계: 애널리스트 리포트 갱신 ────────────────────────
 def update_reports() -> int:
     """기존 CSV의 마지막 날짜 이후 신규 리포트만 크롤링하여 append.
     추가된 총 건수 반환.
@@ -365,13 +299,8 @@ def main():
     fin_count = update_financials(base_date)
     print()
 
-    # 3단계: 공시
-    print("── 3단계: 공시 갱신 ──────────────────────────────────")
-    ann_count = update_announcements(base_date)
-    print()
-
-    # 4단계: 리포트
-    print("── 4단계: 애널리스트 리포트 갱신 ────────────────────")
+    # 3단계: 리포트
+    print("── 3단계: 애널리스트 리포트 갱신 ────────────────────")
     report_new = update_reports()
     print()
 
@@ -381,7 +310,6 @@ def main():
     print(f"{label} 기준 업데이트 완료")
     print(f"  가격:   {price_count}종목 갱신")
     print(f"  재무:   {fin_count}종목 갱신")
-    print(f"  공시:   {ann_count}종목 갱신")
     print(f"  리포트: 신규 {report_new}건 추가")
     print(f"{sep}\n")
 

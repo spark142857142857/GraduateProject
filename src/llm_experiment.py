@@ -31,7 +31,7 @@ from utils import (
     get_price, calc_return,
     get_experiment_dir, get_latest_experiment_dir,
 )
-from context_builders import build_financials, build_reports, build_announcements
+from context_builders import build_financials, build_reports, build_dart_fundamentals
 from experiments import EXPERIMENTS
 
 load_dotenv()
@@ -42,9 +42,9 @@ HOLD_LONG = 20
 REQ_DELAY = 0.5
 
 BUILDER_MAP = {
-    "financials":    build_financials,
-    "reports":       build_reports,
-    "announcements": build_announcements,
+    "financials":         build_financials,
+    "reports":            build_reports,
+    "dart_fundamentals":  build_dart_fundamentals,
 }
 
 CKPT_COLS = ["ticker", "name", "signal_date", "price", "signal", "confidence", "reasons"]
