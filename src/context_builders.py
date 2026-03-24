@@ -17,7 +17,7 @@ from utils import DATA_DIR
 
 FINANCIALS_DIR    = os.path.join(DATA_DIR, "financials")
 REPORTS_DIR       = os.path.join(DATA_DIR, "reports")
-ANNOUNCEMENTS_DIR = os.path.join(DATA_DIR, "announcements")
+DART_FUND_DIR     = os.path.join(DATA_DIR, "dart_fundamentals")
 
 WINDOW_DAYS = 30
 
@@ -100,23 +100,58 @@ def build_reports(ticker: str, date: str) -> str:
     return "\n".join(lines)
 
 
-def build_announcements(ticker: str, date: str) -> str:
+
+def build_dart_fundamentals(ticker: str, date: str) -> str:
     """
-    data/announcements/{ticker}.csv에서 base_date == date 인 공시 최대 5건 반환.
-    없으면 빈 문자열 반환.
+    data/dart_fundamentals/{ticker}.csv에서 date 행 로드 후 프롬프트 텍스트 반환.
+    금액은 조원 단위로 변환 (DART 원본값 백만원 ÷ 1,000,000).
+    없는 항목은 "N/A" 처리.
     """
-    path = os.path.join(ANNOUNCEMENTS_DIR, f"{ticker}.csv")
+    path = os.path.join(DART_FUND_DIR, f"{ticker}.csv")
     if not os.path.exists(path):
         return ""
 
     df = pd.read_csv(path, dtype={"ticker": str})
-    sub = df[df["base_date"] == date].head(5)
-
-    if sub.empty:
+    row_df = df[df["date"] == date]
+    if row_df.empty:
         return ""
+    row = row_df.iloc[0]
 
-    lines = ["[DART 주요 공시 (최근 30일, 최대 5건)]"]
-    for _, r in sub.iterrows():
-        lines.append(f"- {r['rcept_dt']} | {r['report_nm']}")
+    def to_trillion(val) -> str:
+        """원(KRW) 단위 값을 조원 문자열로 변환."""
+        if pd.isna(val):
+            return "N/A"
+        t = val / 1_000_000_000_000   # 원 → 조원
+        sign = "+" if t > 0 else ""
+        return f"{sign}{t:.1f}조원"
 
-    return "\n".join(lines)
+    def fmt_yoy(val) -> str:
+        """전년比 변화율 포맷. NaN이면 빈 문자열."""
+        if pd.isna(val):
+            return ""
+        return f" (전년比 {val:+.1f}%)"
+
+    revenue    = row.get("revenue")
+    oper_inc   = row.get("operating_income")
+    net_inc    = row.get("net_income")
+    oper_mgn   = row.get("operating_margin")
+    debt_ratio = row.get("debt_ratio")
+    oper_cf    = row.get("operating_cashflow")
+    div_yield  = row.get("dividend_yield")
+    rev_yoy    = row.get("revenue_yoy")
+    op_yoy     = row.get("operating_income_yoy")
+
+    return "\n".join([
+        "[분기 실적]",
+        f"매출: {to_trillion(revenue)}{fmt_yoy(rev_yoy)}",
+        f"영업이익: {to_trillion(oper_inc)}{fmt_yoy(op_yoy)}",
+        f"영업이익률: {_fmt(oper_mgn, 1)}%",
+        f"순이익: {to_trillion(net_inc)}",
+        "",
+        "[재무 안정성]",
+        f"부채비율: {_fmt(debt_ratio, 1)}%",
+        f"영업현금흐름: {to_trillion(oper_cf)}",
+        "",
+        "[주주환원]",
+        f"배당수익률: {_fmt(div_yield, 1)}%",
+    ])
