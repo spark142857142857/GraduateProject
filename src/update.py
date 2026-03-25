@@ -322,13 +322,11 @@ def get_today_context(ticker: str) -> dict:
     today_str = datetime.today().strftime("%Y-%m-%d")
 
     # ── 현재가 및 가격 이력 ─────────────────────────────
-    price_df = get_price(ticker)
-    if price_df is None or price_df.empty:
-        raise ValueError(f"[{ticker}] 주가 데이터 없음")
-    current_price = float(price_df["Close"].iloc[-1])
-
     full_price = fdr.DataReader(ticker, "2021-01-01", today_str)
     full_price.index = pd.to_datetime(full_price.index).tz_localize(None)
+    if full_price.empty:
+        raise ValueError(f"[{ticker}] 주가 데이터 없음")
+    current_price = float(full_price["Close"].iloc[-1])
     today_ts = full_price.index[-1]
 
     # ── DART 재무 (PER/PBR/ROE용 EPS·자본) ──────────────

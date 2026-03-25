@@ -4,9 +4,11 @@ LLM 기반 주식 투자 신호 시스템 — Streamlit 앱
 실행: streamlit run app.py
 """
 
+import glob
 import json
 import os
 import sys
+from datetime import datetime
 
 import pandas as pd
 import streamlit as st
@@ -21,6 +23,57 @@ st.set_page_config(
     page_icon="📈",
     layout="wide",
 )
+
+
+# ── DART 캐시 점검 (앱 시작 시 1회) ───────────────────────
+@st.cache_resource
+def _check_dart_cache() -> str:
+    """DART corp_codes pkl 캐시 유효성 점검.
+
+    오늘 날짜 캐시가 없거나 읽기 실패 시 구 캐시를 삭제하고
+    OpenDartReader 초기화로 재생성.
+
+    Returns:
+        "" : 정상
+        str: 오류 메시지 (재생성 실패 시)
+    """
+    docs_cache = os.path.join(os.path.dirname(__file__), "docs_cache")
+    today_fn = os.path.join(
+        docs_cache,
+        f"opendartreader_corp_codes_{datetime.today().strftime('%Y%m%d')}.pkl",
+    )
+
+    # 오늘 날짜 캐시가 있으면 읽기 테스트
+    if os.path.exists(today_fn):
+        try:
+            pd.read_pickle(today_fn)
+            return ""  # 정상
+        except Exception:
+            pass  # 호환 불가 → 아래에서 삭제 후 재생성
+
+    # 구 캐시(오늘 것 포함) 전체 삭제
+    for old in glob.glob(os.path.join(docs_cache, "opendartreader_corp_codes_*.pkl")):
+        try:
+            os.remove(old)
+        except OSError:
+            pass
+
+    # OpenDartReader 재초기화 → 캐시 자동 재생성
+    try:
+        import OpenDartReader as _odr
+        dart_key = os.environ.get("DARTS_API_KEY", "")
+        if not dart_key:
+            return "DARTS_API_KEY 환경변수가 설정되지 않았습니다."
+        _odr(api_key=dart_key)
+        return ""
+    except Exception as e:
+        return f"DART 캐시 재생성 실패: {e}"
+
+
+_dart_warn = _check_dart_cache()
+if _dart_warn:
+    st.warning(f"DART 초기화 경고: {_dart_warn}")
+
 
 # ── 상수 ──────────────────────────────────────────────────
 COND_LABELS = {
