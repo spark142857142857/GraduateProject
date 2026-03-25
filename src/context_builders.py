@@ -101,6 +101,73 @@ def build_reports(ticker: str, date: str) -> str:
 
 
 
+# ── dict 기반 빌더 (forward_test 전용) ────────────────────
+# get_today_context() 반환 dict를 받아 동일 포맷의 섹션 텍스트 생성.
+# CSV 파일을 읽지 않으므로 data/financials/ 를 오염시키지 않는다.
+
+def build_financials_from_dict(ctx: dict) -> str:
+    """ctx['per'/'pbr'/...] → [재무지표] 섹션 텍스트."""
+    mc = ctx.get("market_cap")
+    mc_str = _fmt(mc / 1e12, 1) if (mc is not None and not pd.isna(mc)) else "N/A"
+    return "\n".join([
+        "[재무지표]",
+        f"PER: {_fmt(ctx.get('per'), 1, na_str='해당없음(적자)')}",
+        f"PBR: {_fmt(ctx.get('pbr'), 2)}",
+        f"ROE: {_fmt(ctx.get('roe'), 1)}%",
+        f"시가총액: {mc_str}조원",
+        "",
+        "[기술지표]",
+        f"52주 최고가: {_fmt_price(ctx.get('high_52w'))}원",
+        f"52주 최저가: {_fmt_price(ctx.get('low_52w'))}원",
+        f"52주 내 현재 위치: {_fmt(ctx.get('price_position_52w'), 1)}%",
+        f"최근 1개월 수익률: {_fmt(ctx.get('momentum_1m'), 2)}%",
+        f"거래량 변화율: {_fmt(ctx.get('volume_change'), 2)}%",
+    ])
+
+
+def build_reports_from_dict(ctx: dict) -> str:
+    """ctx['recent_reports'] → [애널리스트 리포트] 섹션 텍스트."""
+    reports = ctx.get("recent_reports", [])
+    if not reports:
+        return ""
+    lines = ["[애널리스트 리포트 (최근 30일, 최대 5건)]"]
+    for r in reports:
+        tp     = r.get("target_price")
+        tp_str = f"목표주가 {int(tp):,}원" if tp else "목표주가 없음"
+        lines.append(f"- {r.get('date', '')} | {r['title']} ({tp_str})")
+    return "\n".join(lines)
+
+
+def build_dart_fundamentals_from_dict(ctx: dict) -> str:
+    """ctx['revenue'/'operating_income'/...] → [분기 실적] 섹션 텍스트."""
+    def to_trillion(val) -> str:
+        if val is None or pd.isna(val):
+            return "N/A"
+        t    = val / 1_000_000_000_000
+        sign = "+" if t > 0 else ""
+        return f"{sign}{t:.1f}조원"
+
+    def fmt_yoy(val) -> str:
+        if val is None or pd.isna(val):
+            return ""
+        return f" (전년比 {float(val):+.1f}%)"
+
+    return "\n".join([
+        "[분기 실적]",
+        f"매출: {to_trillion(ctx.get('revenue'))}{fmt_yoy(ctx.get('revenue_yoy'))}",
+        f"영업이익: {to_trillion(ctx.get('operating_income'))}{fmt_yoy(ctx.get('operating_income_yoy'))}",
+        f"영업이익률: {_fmt(ctx.get('operating_margin'), 1)}%",
+        f"순이익: {to_trillion(ctx.get('net_income'))}",
+        "",
+        "[재무 안정성]",
+        f"부채비율: {_fmt(ctx.get('debt_ratio'), 1)}%",
+        f"영업현금흐름: {to_trillion(ctx.get('operating_cashflow'))}",
+        "",
+        "[주주환원]",
+        f"배당수익률: {_fmt(ctx.get('dividend_yield'), 1)}%",
+    ])
+
+
 def build_dart_fundamentals(ticker: str, date: str) -> str:
     """
     data/dart_fundamentals/{ticker}.csv에서 date 행 로드 후 프롬프트 텍스트 반환.

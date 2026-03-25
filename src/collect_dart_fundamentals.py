@@ -26,6 +26,7 @@ import sys
 import time
 import warnings
 import requests
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -48,6 +49,13 @@ REQ_DELAY     = 0.3   # DART API 요청 간 딜레이 (초)
 
 os.makedirs(DART_FUND_DIR, exist_ok=True)
 dart = odr(api_key=DART_API_KEY)
+
+
+def _current_ym() -> str:
+    """오늘 날짜 기준 'YYYY-MM' 반환."""
+    today = datetime.today()
+    return f"{today.year}-{today.month:02d}"
+
 
 # ── 계정과목명 후보 (우선순위 순) ─────────────────────────
 # DART 보고서마다 계정명이 상이해 fallback 목록 사용
@@ -136,29 +144,45 @@ def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
 # ── 종목 처리 ──────────────────────────────────────────────
 
 def process_ticker(name: str, ticker: str) -> pd.DataFrame | None:
-    out_path = os.path.join(DART_FUND_DIR, f"{ticker}.csv")
-    if os.path.exists(out_path):
-        tqdm.write(f"  [{ticker}] 이미 존재 → 스킵")
-        return None
+    """종목별 DART 실적 수집. 기존 CSV가 있으면 누락 월만 추가(append-only).
 
-    monthly_dates = get_monthly_first_days(ticker)
+    동적 END_YM(_current_ym())을 사용하므로 매월 실행 시 자동 확장.
+    """
+    out_path = os.path.join(DART_FUND_DIR, f"{ticker}.csv")
+
+    # 기존 날짜 셋 로드 (있으면 누락 월만 처리)
+    existing_dates: set[str] = set()
+    df_existing = pd.DataFrame()
+    if os.path.exists(out_path):
+        df_existing = pd.read_csv(out_path, dtype={"ticker": str})
+        existing_dates = set(df_existing["date"].astype(str).tolist())
+
+    # 오늘 기준 월까지 동적 생성
+    monthly_dates = get_monthly_first_days(ticker, end_ym=_current_ym())
     if not monthly_dates:
         tqdm.write(f"  [{ticker}] 월별 거래일 없음")
         return None
 
+    # 누락된 월만 필터링
+    missing = [d for d in monthly_dates if d.strftime("%Y-%m-%d") not in existing_dates]
+    if not missing:
+        tqdm.write(f"  [{ticker}] 이미 최신 ({len(df_existing)}행) → 스킵")
+        return None
+
+    tqdm.write(f"  [{ticker}] {len(missing)}개월 신규 추가 예정")
+
     rows = []
-    for date in tqdm(monthly_dates, desc=f"  {name}({ticker})", leave=False):
+    for date in tqdm(missing, desc=f"  {name}({ticker})", leave=False):
         fy   = applicable_fiscal_year(date)
         data = get_dart_annual(ticker, fy)
 
-        revenue   = data["revenue"]
-        oper_inc  = data["operating_income"]
-        net_inc   = data["net_income"]
+        revenue    = data["revenue"]
+        oper_inc   = data["operating_income"]
+        net_inc    = data["net_income"]
         total_liab = data["total_liabilities"]
-        total_eq  = data["total_equity"]
-        oper_cf   = data["operating_cashflow"]
+        total_eq   = data["total_equity"]
+        oper_cf    = data["operating_cashflow"]
 
-        # 파생 지표 계산
         oper_margin = (
             round(oper_inc / revenue * 100, 2)
             if not (np.isnan(oper_inc) or np.isnan(revenue) or revenue == 0)
@@ -180,7 +204,7 @@ def process_ticker(name: str, ticker: str) -> pd.DataFrame | None:
             "operating_margin":     oper_margin,
             "debt_ratio":           debt_ratio,
             "operating_cashflow":   oper_cf,
-            "dividend_yield":       np.nan,        # 추후 구현
+            "dividend_yield":       np.nan,
             "revenue_yoy":          _yoy(revenue,  data["revenue_prev"]),
             "operating_income_yoy": _yoy(oper_inc, data["operating_income_prev"]),
         })
@@ -188,10 +212,15 @@ def process_ticker(name: str, ticker: str) -> pd.DataFrame | None:
     if not rows:
         return None
 
-    result = pd.DataFrame(rows)
-    result.to_csv(out_path, index=False, encoding="utf-8-sig")
-    tqdm.write(f"  [{ticker}] {len(result)}행 저장 → {out_path}")
-    return result
+    df_new = pd.DataFrame(rows)
+    df_out = (
+        pd.concat([df_existing, df_new], ignore_index=True)
+        if not df_existing.empty else df_new
+    )
+    df_out = df_out.sort_values("date").reset_index(drop=True)
+    df_out.to_csv(out_path, index=False, encoding="utf-8-sig")
+    tqdm.write(f"  [{ticker}] +{len(rows)}행 추가 → 총 {len(df_out)}행")
+    return df_new
 
 
 # ── 배당수익률 수집 ──────────────────────────────────────
