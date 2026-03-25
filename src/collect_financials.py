@@ -51,16 +51,18 @@ dart = odr(api_key=DART_API_KEY)
 
 
 # ── 월별 첫 거래일 목록 생성 ──────────────────────────────
-def get_monthly_first_days(ticker: str) -> list[pd.Timestamp]:
-    """2023-01 ~ 2025-12 각 월의 첫 거래일 반환."""
+def get_monthly_first_days(ticker: str, end_ym: str | None = None) -> list[pd.Timestamp]:
+    """START_YM ~ end_ym(기본: END_YM) 각 월의 첫 거래일 반환."""
+    _end = end_ym or END_YM
     try:
-        price_df = fdr.DataReader(ticker, "2022-12-01", "2026-01-31")
+        # end_ym이 오늘 이후일 수 있으므로 충분히 넉넉한 end date 사용
+        price_df = fdr.DataReader(ticker, "2022-12-01", "2027-12-31")
     except Exception:
         return []
 
     price_df.index = pd.to_datetime(price_df.index).tz_localize(None)
 
-    months = pd.period_range(START_YM, END_YM, freq="M")
+    months = pd.period_range(START_YM, _end, freq="M")
     first_days = []
     for m in months:
         month_start = m.to_timestamp()
