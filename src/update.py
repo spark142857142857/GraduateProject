@@ -210,7 +210,11 @@ def _update_reports_one(ticker: str, name: str) -> int:
         print(f"  [{ticker}] {name}: 최신 리포트 이미 존재 - 스킵")
         return 0
 
-    records = fetch_reports(ticker)
+    try:
+        records = fetch_reports(ticker)
+    except Exception as e:
+        print(f"  [{ticker}] {name}: 리포트 수집 오류 (네트워크?) - {e}")
+        return 0
     new_records = [r for r in records if r.get("date") and r["date"] > last_date]
 
     if not new_records:
@@ -316,8 +320,6 @@ def get_today_context(ticker: str) -> dict:
     Returns:
         Context dict (context_builders.build_*_from_dict 에 전달)
     """
-    from datetime import timedelta as _td
-
     name      = next((n for n, t in TICKERS.items() if t == ticker), ticker)
     today_str = datetime.today().strftime("%Y-%m-%d")
 
@@ -335,17 +337,9 @@ def get_today_context(ticker: str) -> dict:
     eps       = dart_data["eps"]
     equity    = dart_data["equity"]
 
-    # ── 발행주식수 (KRX listing 단일 종목 추출) ──────────
-    listing = fdr.StockListing("KRX")
-    match   = listing[listing["Code"] == ticker]
-    shares  = np.nan
-    if not match.empty:
-        try:
-            shares = int(
-                str(match.iloc[0]["Stocks"]).replace(",", "").split(".")[0]
-            )
-        except (ValueError, TypeError):
-            pass
+    # ── 발행주식수 (KRX 전체 목록 로드 - 단일 종목용으로는 과도하나
+    #    발행주식수를 제공하는 다른 무료 API가 없어 불가피. ~2-3초 소요) ──
+    shares = _load_shares_map().get(ticker, np.nan)
 
     # ── PER / PBR / ROE / 시가총액 ──────────────────────
     per    = round(current_price / eps, 2) if (not np.isnan(eps) and eps > 0) else np.nan

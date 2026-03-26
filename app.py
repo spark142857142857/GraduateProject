@@ -277,7 +277,7 @@ if selected_cond == "cond4":
     col_a.metric(
         "매출 성장률 (YoY)",
         fmt_val(rev_growth, suffix="%"),
-        delta=f"{rev_growth:+.1f}%" if rev_growth is not None else None,
+        delta=f"{rev_growth:+.1f}%" if (rev_growth is not None and not pd.isna(rev_growth)) else None,
     )
     col_b.metric("영업이익률",  fmt_val(op_margin, suffix="%"))
     col_c2.metric("부채비율",   fmt_val(debt, suffix="%"))

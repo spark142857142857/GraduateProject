@@ -101,6 +101,24 @@ def build_reports(ticker: str, date: str) -> str:
 
 
 
+# ── DART 금액 포맷 헬퍼 (모듈 레벨, CSV·dict 빌더 공용) ──
+
+def _to_trillion(val) -> str:
+    """원(KRW) 단위 값을 조원 문자열로 변환. None/NaN → 'N/A'."""
+    if val is None or pd.isna(val):
+        return "N/A"
+    t = val / 1_000_000_000_000
+    sign = "+" if t > 0 else ""
+    return f"{sign}{t:.1f}조원"
+
+
+def _fmt_yoy(val) -> str:
+    """전년比 변화율 포맷. None/NaN → 빈 문자열."""
+    if val is None or pd.isna(val):
+        return ""
+    return f" (전년比 {float(val):+.1f}%)"
+
+
 # ── dict 기반 빌더 (forward_test 전용) ────────────────────
 # get_today_context() 반환 dict를 받아 동일 포맷의 섹션 텍스트 생성.
 # CSV 파일을 읽지 않으므로 data/financials/ 를 오염시키지 않는다.
@@ -140,28 +158,16 @@ def build_reports_from_dict(ctx: dict) -> str:
 
 def build_dart_fundamentals_from_dict(ctx: dict) -> str:
     """ctx['revenue'/'operating_income'/...] → [분기 실적] 섹션 텍스트."""
-    def to_trillion(val) -> str:
-        if val is None or pd.isna(val):
-            return "N/A"
-        t    = val / 1_000_000_000_000
-        sign = "+" if t > 0 else ""
-        return f"{sign}{t:.1f}조원"
-
-    def fmt_yoy(val) -> str:
-        if val is None or pd.isna(val):
-            return ""
-        return f" (전년比 {float(val):+.1f}%)"
-
     return "\n".join([
         "[분기 실적]",
-        f"매출: {to_trillion(ctx.get('revenue'))}{fmt_yoy(ctx.get('revenue_yoy'))}",
-        f"영업이익: {to_trillion(ctx.get('operating_income'))}{fmt_yoy(ctx.get('operating_income_yoy'))}",
+        f"매출: {_to_trillion(ctx.get('revenue'))}{_fmt_yoy(ctx.get('revenue_yoy'))}",
+        f"영업이익: {_to_trillion(ctx.get('operating_income'))}{_fmt_yoy(ctx.get('operating_income_yoy'))}",
         f"영업이익률: {_fmt(ctx.get('operating_margin'), 1)}%",
-        f"순이익: {to_trillion(ctx.get('net_income'))}",
+        f"순이익: {_to_trillion(ctx.get('net_income'))}",
         "",
         "[재무 안정성]",
         f"부채비율: {_fmt(ctx.get('debt_ratio'), 1)}%",
-        f"영업현금흐름: {to_trillion(ctx.get('operating_cashflow'))}",
+        f"영업현금흐름: {_to_trillion(ctx.get('operating_cashflow'))}",
         "",
         "[주주환원]",
         f"배당수익률: {_fmt(ctx.get('dividend_yield'), 1)}%",
@@ -184,20 +190,6 @@ def build_dart_fundamentals(ticker: str, date: str) -> str:
         return ""
     row = row_df.iloc[0]
 
-    def to_trillion(val) -> str:
-        """원(KRW) 단위 값을 조원 문자열로 변환."""
-        if pd.isna(val):
-            return "N/A"
-        t = val / 1_000_000_000_000   # 원 → 조원
-        sign = "+" if t > 0 else ""
-        return f"{sign}{t:.1f}조원"
-
-    def fmt_yoy(val) -> str:
-        """전년比 변화율 포맷. NaN이면 빈 문자열."""
-        if pd.isna(val):
-            return ""
-        return f" (전년比 {val:+.1f}%)"
-
     revenue    = row.get("revenue")
     oper_inc   = row.get("operating_income")
     net_inc    = row.get("net_income")
@@ -210,14 +202,14 @@ def build_dart_fundamentals(ticker: str, date: str) -> str:
 
     return "\n".join([
         "[분기 실적]",
-        f"매출: {to_trillion(revenue)}{fmt_yoy(rev_yoy)}",
-        f"영업이익: {to_trillion(oper_inc)}{fmt_yoy(op_yoy)}",
+        f"매출: {_to_trillion(revenue)}{_fmt_yoy(rev_yoy)}",
+        f"영업이익: {_to_trillion(oper_inc)}{_fmt_yoy(op_yoy)}",
         f"영업이익률: {_fmt(oper_mgn, 1)}%",
-        f"순이익: {to_trillion(net_inc)}",
+        f"순이익: {_to_trillion(net_inc)}",
         "",
         "[재무 안정성]",
         f"부채비율: {_fmt(debt_ratio, 1)}%",
-        f"영업현금흐름: {to_trillion(oper_cf)}",
+        f"영업현금흐름: {_to_trillion(oper_cf)}",
         "",
         "[주주환원]",
         f"배당수익률: {_fmt(div_yield, 1)}%",

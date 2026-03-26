@@ -26,16 +26,18 @@ from utils import EXPERIMENT_DIR, RESULTS_DIR, get_latest_baseline_dir
 ANALYSIS_DIR = os.path.join(RESULTS_DIR, "analysis")
 
 # --cond 옵션에서 사용할 순서 기준 목록
-COND_ORDER = ["cond1", "cond2", "cond3", "cond3_reports_only"]
+COND_ORDER = ["cond1", "cond2", "cond3", "cond4", "reports_only", "dart_only"]
 
 # 전략별 표시 레이블
 COND_LABELS = {
-    "Consensus":          "컨센서스",
-    "GoldenCross":        "골든크로스",
-    "cond1":              "cond1(종목명)",
-    "cond2":              "cond2(재무)",
-    "cond3":              "cond3(재무+리포트)",
-    "cond3_reports_only": "cond3(리포트)",
+    "Consensus":    "컨센서스",
+    "GoldenCross":  "골든크로스",
+    "cond1":        "cond1 (종목명)",
+    "cond2":        "cond2 (재무지표)",
+    "cond3":        "cond3 (재무+리포트)",
+    "cond4":        "cond4 (재무+리포트+DART)",
+    "reports_only": "리포트 단독",
+    "dart_only":    "DART 단독",
 }
 
 SECTORS = {

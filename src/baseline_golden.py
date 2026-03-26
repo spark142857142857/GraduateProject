@@ -50,7 +50,7 @@ def run():
             if ret is None:
                 continue
 
-            future = price_df.loc[price_df.index >= sig_date]
+            future = price_df.loc[price_df.index > sig_date]
             cur_price = future["Close"].iloc[0]
 
             all_results.append({
