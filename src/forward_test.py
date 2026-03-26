@@ -17,6 +17,7 @@ Forward Test — 오늘 날짜 기준 단일 종목 LLM 신호 생성
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from datetime import datetime
@@ -101,9 +102,20 @@ def run_forward(ticker: str, cond: str = "cond4") -> dict:
             signal, confidence, reasons = call_llm(client, prompt)
             break
         except Exception as e:
-            wait = 2 ** (attempt + 1)
-            print(f"  LLM 오류 [{attempt + 1}/3]: {e} -> {wait}s 대기")
-            time.sleep(wait)
+            err_str = str(e)
+            is_rate_limit = any(k in err_str for k in
+                ("429", "TooManyRequests", "ResourceExhausted", "rate limit"))
+            if is_rate_limit:
+                retry_after = 30
+                m = re.search(r"retry.after['\"]?\s*[:\s]+(\d+)", err_str, re.IGNORECASE)
+                if m:
+                    retry_after = max(30, int(m.group(1)))
+                print(f"  429 Rate Limit [{attempt+1}/3] -> {retry_after}s 대기")
+                time.sleep(retry_after)
+            else:
+                wait = 2 ** (attempt + 1)
+                print(f"  LLM 오류 [{attempt + 1}/3]: {e} -> {wait}s 대기")
+                time.sleep(wait)
     else:
         raise RuntimeError(f"[{ticker}] LLM 3회 호출 실패")
 

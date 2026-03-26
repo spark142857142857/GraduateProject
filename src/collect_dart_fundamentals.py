@@ -332,7 +332,8 @@ def update_missing_columns() -> None:
         df.to_csv(path, index=False, encoding="utf-8-sig")
         cf_ok  = df["operating_cashflow"].notna().sum()
         div_ok = df["dividend_yield"].notna().sum()
-        tqdm.write(f"  [{ticker}] CF={cf_ok}/36  배당={div_ok}/36")
+        total_rows = len(df)
+        tqdm.write(f"  [{ticker}] CF={cf_ok}/{total_rows}  배당={div_ok}/{total_rows}")
 
 
 # ── 메인 ──────────────────────────────────────────────────

@@ -70,7 +70,23 @@ def fetch_detail(nid: str, ticker: str) -> tuple[int | None, str | None]:
 
 
 def fetch_reports(ticker: str, max_pages: int = 100) -> list[dict]:
-    """종목별 리포트 목록 수집"""
+    """네이버 금융에서 종목별 애널리스트 리포트 목록을 수집한다.
+
+    목록 페이지(company_list.naver)를 순회하며 START_DATE ~ END_DATE 범위 내
+    리포트마다 상세 페이지(company_read.naver)를 추가 호출해 목표주가와
+    투자의견을 가져온다.
+
+    Parameters
+    ----------
+    ticker    : str  종목 코드 (6자리)
+    max_pages : int  최대 탐색 페이지 수 (기본 100)
+
+    Returns
+    -------
+    list[dict]
+        각 리포트: {date, title, firm, target_price, opinion, nid}
+        START_DATE 이전 리포트 발견 시 조기 중단.
+    """
     list_url = (
         f"{BASE_URL}company_list.naver"
         f"?searchType=itemCode&itemCode={ticker}&page={{page}}"
@@ -78,10 +94,14 @@ def fetch_reports(ticker: str, max_pages: int = 100) -> list[dict]:
     records = []
 
     for page in range(1, max_pages + 1):
-        url  = list_url.format(page=page)
-        resp = requests.get(url, headers=HEADERS, timeout=10)
-        resp.encoding = "euc-kr"
-        soup = BeautifulSoup(resp.text, "html.parser")
+        url = list_url.format(page=page)
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=10)
+            resp.encoding = "euc-kr"
+            soup = BeautifulSoup(resp.text, "html.parser")
+        except (requests.ConnectionError, requests.Timeout) as e:
+            print(f"  [crawl] {ticker} p{page} 네트워크 오류 - {e} → 스킵")
+            continue
 
         table = soup.select_one("table.type_1")
         if not table:
