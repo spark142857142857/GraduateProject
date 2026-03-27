@@ -38,8 +38,9 @@ load_dotenv()
 
 # ── 설정 ──────────────────────────────────────────────────
 MODEL     = "gemini-2.5-flash-lite"
-HOLD_LONG = 20
-REQ_DELAY = 0.5
+HOLD_SHORT = 5   # 5거래일
+HOLD_LONG  = 20  # 20거래일
+REQ_DELAY  = 0.5
 
 BUILDER_MAP = {
     "financials":         build_financials,
@@ -268,14 +269,17 @@ def run(cond: str, test: bool = False):
     # ── 수익률 계산 ───────────────────────────────────────
     print("수익률 계산 중...")
     price_cache: dict[str, pd.DataFrame] = {}
+    ret5_list  = []
     ret20_list = []
     for _, row in ckpt_df.iterrows():
         tk = row["ticker"]
         if tk not in price_cache:
             price_cache[tk] = get_price(tk, start="2022-12-01")
+        ret5_list.append(calc_return(price_cache[tk], row["signal_date"], HOLD_SHORT))
         ret20_list.append(calc_return(price_cache[tk], row["signal_date"], HOLD_LONG))
 
     result_df = ckpt_df.copy()
+    result_df["return_5d"]  = ret5_list
     result_df["return_20d"] = ret20_list
     result_df = result_df.dropna(subset=["return_20d"]).reset_index(drop=True)
 
@@ -290,6 +294,12 @@ def run(cond: str, test: bool = False):
 
     print(f"\n저장 완료: {out_path}")
     print(f"전체 신호: {len(result_df)}개")
+    print("\n[신호별 5거래일 수익률 요약]")
+    print(result_df.groupby("signal")["return_5d"].agg(
+        count="count",
+        mean="mean",
+        hit_rate=lambda x: (x > 0).mean() * 100,
+    ).round(2))
     print("\n[신호별 20거래일 수익률 요약]")
     print(result_df.groupby("signal")["return_20d"].agg(
         count="count",

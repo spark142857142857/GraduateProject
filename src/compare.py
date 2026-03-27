@@ -130,6 +130,7 @@ def load_baselines() -> dict[str, pd.DataFrame]:
 def signal_rows(df: pd.DataFrame, label: str, has_confidence: bool = True) -> list[dict]:
     """신호별(Buy/Neutral/Sell) + 전체 통계 딕셔너리 리스트 반환."""
     rows = []
+    has_5d = "return_5d" in df.columns
     groups = [
         ("Buy",     df[df["signal"] == "Buy"]),
         ("Neutral", df[df["signal"] == "Neutral"]),
@@ -139,8 +140,16 @@ def signal_rows(df: pd.DataFrame, label: str, has_confidence: bool = True) -> li
     for sig, g in groups:
         if sig != "전체" and len(g) == 0:
             continue
-        s = calc_stats(g["return_20d"])
-        row = {"label": label, "signal": sig, **s}
+        s20 = calc_stats(g["return_20d"])
+        s5  = calc_stats(g["return_5d"]) if has_5d else {
+            "mean": float("nan"), "hit_rate": float("nan"), "sharpe": float("nan"),
+        }
+        row = {
+            "label": label, "signal": sig,
+            "n": s20["n"],
+            "mean_5d": s5["mean"], "hit_rate_5d": s5["hit_rate"], "sharpe_5d": s5["sharpe"],
+            "mean": s20["mean"], "hit_rate": s20["hit_rate"], "sharpe": s20["sharpe"],
+        }
         if has_confidence and "confidence" in g.columns and not g.empty:
             row["conf_mean"] = round(float(g["confidence"].mean()), 1)
             row["conf_std"]  = round(float(g["confidence"].std()), 1) if len(g) > 1 else float("nan")
@@ -178,10 +187,10 @@ def print_full_comparison(baseline_data: dict, cond_data: dict) -> pd.DataFrame:
 # ── 비교표 출력 ───────────────────────────────────────────
 
 def print_comparison(rows: list[dict]) -> None:
-    SEP = "─" * 80
-    FMT = "{:<22} {:<8} {:>6} {:>10} {:>10} {:>8} {:>8}"
+    SEP = "─" * 104
+    FMT = "{:<20} {:<8} {:>6} {:>10} {:>8} {:>10} {:>10} {:>8} {:>11}"
     print(SEP)
-    print(FMT.format("조건", "신호", "건수", "평균수익률", "Hit Rate", "Sharpe", "conf평균"))
+    print(FMT.format("전략", "신호", "신호수", "5d수익률", "5d Hit", "Sharpe(5d)", "20d수익률", "20d Hit", "Sharpe(20d)"))
     print(SEP)
 
     prev_label = None
@@ -190,12 +199,14 @@ def print_comparison(rows: list[dict]) -> None:
             print()
         prev_label = r["label"]
 
-        mean = f"{r['mean']:+.3f}%"    if not np.isnan(r["mean"])     else "N/A"
-        hit  = f"{r['hit_rate']:.1f}%" if not np.isnan(r["hit_rate"]) else "N/A"
-        shp  = f"{r['sharpe']:.3f}"    if not np.isnan(r["sharpe"])   else "N/A"
-        conf = f"{r['conf_mean']:.1f}" if not np.isnan(r["conf_mean"]) else "-"
+        m5   = f"{r['mean_5d']:+.3f}%"     if not np.isnan(r["mean_5d"])     else "N/A"
+        h5   = f"{r['hit_rate_5d']:.1f}%"  if not np.isnan(r["hit_rate_5d"]) else "N/A"
+        shp5 = f"{r['sharpe_5d']:.3f}"     if not np.isnan(r["sharpe_5d"])   else "N/A"
+        m20  = f"{r['mean']:+.3f}%"        if not np.isnan(r["mean"])        else "N/A"
+        h20  = f"{r['hit_rate']:.1f}%"     if not np.isnan(r["hit_rate"])    else "N/A"
+        shp  = f"{r['sharpe']:.3f}"        if not np.isnan(r["sharpe"])      else "N/A"
 
-        print(FMT.format(r["label"], r["signal"], int(r["n"]), mean, hit, shp, conf))
+        print(FMT.format(r["label"], r["signal"], int(r["n"]), m5, h5, shp5, m20, h20, shp))
         if r["signal"] == "전체":
             print(SEP)
 
