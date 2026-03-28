@@ -42,6 +42,7 @@ PRICE_DIR   = os.path.join(DATA_DIR, "price")
 RESULTS_DIR  = os.path.join(BASE_DIR, "results")
 BASELINE_DIR    = os.path.join(RESULTS_DIR, "baseline")
 EXPERIMENT_DIR  = os.path.join(RESULTS_DIR, "experiment")
+FORWARD_DIR     = os.path.join(RESULTS_DIR, "forward")
 
 
 def get_price(ticker: str, start: str = START_DATE, end: str = END_DATE) -> pd.DataFrame:

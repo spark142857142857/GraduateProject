@@ -27,7 +27,7 @@ from google import genai
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from utils import TICKERS
+from utils import TICKERS, FORWARD_DIR
 from context_builders import (
     build_financials_from_dict,
     build_reports_from_dict,
@@ -37,11 +37,6 @@ from experiments import EXPERIMENTS
 from llm_experiment import build_prompt, call_llm
 
 load_dotenv()
-
-# ── 경로 ──────────────────────────────────────────────────
-_SRC_DIR     = os.path.dirname(os.path.abspath(__file__))
-_PROJECT_DIR = os.path.dirname(_SRC_DIR)
-FORWARD_DIR  = os.path.join(_PROJECT_DIR, "results", "forward")
 
 # dict 기반 빌더 맵 (forward_test 전용)
 FORWARD_BUILDER_MAP = {
