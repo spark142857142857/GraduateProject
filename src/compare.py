@@ -22,11 +22,12 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils import EXPERIMENT_DIR, RESULTS_DIR, get_latest_baseline_dir
+from experiments import EXPERIMENTS
 
 ANALYSIS_DIR = os.path.join(RESULTS_DIR, "analysis")
 
-# --cond 옵션에서 사용할 순서 기준 목록
-COND_ORDER = ["cond1", "cond2", "cond3", "cond4", "reports_only", "dart_only"]
+# --cond 옵션에서 사용할 순서 기준 목록 (experiments.py에서 자동 파생)
+COND_ORDER = list(EXPERIMENTS.keys())
 
 # 전략별 표시 레이블
 COND_LABELS = {
