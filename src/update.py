@@ -199,7 +199,7 @@ def _update_reports_one(ticker: str, name: str) -> int:
     if os.path.exists(out_path):
         df_existing = pd.read_csv(out_path)
         if not df_existing.empty and "date" in df_existing.columns:
-            last_date = pd.to_datetime(df_existing["date"]).max().strftime("%Y-%m-%d")
+            last_date = df_existing["date"].max()  # ISO 문자열 비교로 충분
         else:
             last_date = "2023-01-01"
     else:
@@ -211,17 +211,16 @@ def _update_reports_one(ticker: str, name: str) -> int:
         return 0
 
     try:
-        records = fetch_reports(ticker)
+        records = fetch_reports(ticker, since_date=last_date)
     except Exception as e:
         print(f"  [{ticker}] {name}: 리포트 수집 오류 (네트워크?) - {e}")
         return 0
-    new_records = [r for r in records if r.get("date") and r["date"] > last_date]
 
-    if not new_records:
+    if not records:
         print(f"  [{ticker}] {name}: 신규 리포트 없음")
         return 0
 
-    df_new = pd.DataFrame(new_records)
+    df_new = pd.DataFrame(records)
     df_out = (
         pd.concat([df_existing, df_new], ignore_index=True)
         if not df_existing.empty
@@ -233,8 +232,8 @@ def _update_reports_one(ticker: str, name: str) -> int:
         .reset_index(drop=True)
     )
     df_out.to_csv(out_path, index=False, encoding="utf-8-sig")
-    print(f"  [{ticker}] {name}: 리포트 {len(new_records)}건 추가")
-    return len(new_records)
+    print(f"  [{ticker}] {name}: 리포트 {len(records)}건 추가")
+    return len(records)
 
 
 def _update_dart_one(ticker: str, name: str, base_date: pd.Timestamp) -> bool:
