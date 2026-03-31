@@ -69,23 +69,24 @@ def fetch_detail(nid: str, ticker: str) -> tuple[int | None, str | None]:
         return None, None
 
 
-def fetch_reports(ticker: str, max_pages: int = 100) -> list[dict]:
+def fetch_reports(ticker: str, since_date: str = START_DATE, max_pages: int = 100) -> list[dict]:
     """네이버 금융에서 종목별 애널리스트 리포트 목록을 수집한다.
 
-    목록 페이지(company_list.naver)를 순회하며 START_DATE ~ END_DATE 범위 내
+    목록 페이지(company_list.naver)를 순회하며 since_date ~ END_DATE 범위 내
     리포트마다 상세 페이지(company_read.naver)를 추가 호출해 목표주가와
     투자의견을 가져온다.
 
     Parameters
     ----------
-    ticker    : str  종목 코드 (6자리)
-    max_pages : int  최대 탐색 페이지 수 (기본 100)
+    ticker     : str  종목 코드 (6자리)
+    since_date : str  이 날짜 이전 리포트는 수집하지 않음 (기본: START_DATE)
+    max_pages  : int  최대 탐색 페이지 수 (기본 100)
 
     Returns
     -------
     list[dict]
         각 리포트: {date, title, firm, target_price, opinion, nid}
-        START_DATE 이전 리포트 발견 시 조기 중단.
+        since_date 이전 리포트 발견 시 조기 중단.
     """
     list_url = (
         f"{BASE_URL}company_list.naver"
@@ -123,7 +124,7 @@ def fetch_reports(ticker: str, max_pages: int = 100) -> list[dict]:
                 continue
             if date_str > END_DATE:
                 continue
-            if date_str < START_DATE:
+            if date_str < since_date:
                 stop_crawl = True
                 break
 
@@ -163,13 +164,39 @@ def fetch_reports(ticker: str, max_pages: int = 100) -> list[dict]:
 def run():
     ensure_dirs()
     for name, ticker in TICKERS.items():
-        print(f"[crawl] {name} ({ticker}) ...", end=" ", flush=True)
-        records  = fetch_reports(ticker)
-        df       = pd.DataFrame(records)
         out_path = os.path.join(REPORTS_DIR, f"{ticker}.csv")
-        df.to_csv(out_path, index=False, encoding="utf-8-sig")
+
+        if os.path.exists(out_path):
+            existing   = pd.read_csv(out_path)
+            since_date = existing["date"].max()  # ISO 문자열 비교로 충분
+            mode = "증분"
+        else:
+            existing   = pd.DataFrame()
+            since_date = START_DATE
+            mode = "전체"
+
+        print(f"[crawl] {name} ({ticker}) [{mode}, since {since_date}] ...", end=" ", flush=True)
+        records = fetch_reports(ticker, since_date=since_date)
+
+        if records:
+            new_df = pd.DataFrame(records)
+            if not existing.empty:
+                df = (
+                    pd.concat([existing, new_df])
+                    .drop_duplicates(subset=["nid"])
+                    .sort_values("date")
+                    .reset_index(drop=True)
+                )
+            else:
+                df = new_df
+        else:
+            df = existing
+
+        if not df.empty:
+            df.to_csv(out_path, index=False, encoding="utf-8-sig")
+
         has_tp = df["target_price"].notna().sum() if not df.empty else 0
-        print(f"{len(df)} rows (목표주가 {has_tp}건) → {out_path}")
+        print(f"+{len(records)}건 신규 (총 {len(df)} rows, 목표주가 {has_tp}건) → {out_path}")
 
 
 if __name__ == "__main__":
