@@ -104,10 +104,10 @@ def build_reports(ticker: str, date: str) -> str:
 # ── DART 금액 포맷 헬퍼 (모듈 레벨, CSV·dict 빌더 공용) ──
 
 def _to_trillion(val) -> str:
-    """원(KRW) 단위 값을 조원 문자열로 변환. None/NaN → 'N/A'."""
+    """백만원(KRW) 단위 값을 조원 문자열로 변환. None/NaN → 'N/A'."""
     if val is None or pd.isna(val):
         return "N/A"
-    t = val / 1_000_000_000_000
+    t = val / 1_000_000  # 백만원 → 조원
     sign = "+" if t > 0 else ""
     return f"{sign}{t:.1f}조원"
 
@@ -159,7 +159,7 @@ def build_reports_from_dict(ctx: dict) -> str:
 def build_dart_fundamentals_from_dict(ctx: dict) -> str:
     """ctx['revenue'/'operating_income'/...] → [분기 실적] 섹션 텍스트."""
     return "\n".join([
-        "[분기 실적]",
+        "[연간 실적 (DART 사업보고서)]",
         f"매출: {_to_trillion(ctx.get('revenue'))}{_fmt_yoy(ctx.get('revenue_yoy'))}",
         f"영업이익: {_to_trillion(ctx.get('operating_income'))}{_fmt_yoy(ctx.get('operating_income_yoy'))}",
         f"영업이익률: {_fmt(ctx.get('operating_margin'), 1)}%",
@@ -201,7 +201,7 @@ def build_dart_fundamentals(ticker: str, date: str) -> str:
     op_yoy     = row.get("operating_income_yoy")
 
     return "\n".join([
-        "[분기 실적]",
+        "[연간 실적 (DART 사업보고서)]",
         f"매출: {_to_trillion(revenue)}{_fmt_yoy(rev_yoy)}",
         f"영업이익: {_to_trillion(oper_inc)}{_fmt_yoy(op_yoy)}",
         f"영업이익률: {_fmt(oper_mgn, 1)}%",

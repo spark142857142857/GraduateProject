@@ -126,7 +126,7 @@ def call_llm(client: genai.Client, prompt: str) -> tuple[str, int, list[str]]:
         contents=prompt,
         config=genai_types.GenerateContentConfig(temperature=0.3),
     )
-    text = resp.text.strip()
+    text = (resp.text or "").strip()
 
     match = re.search(r'\{.*\}', text, re.DOTALL)
     if not match:

@@ -43,12 +43,15 @@ from collect_financials import applicable_fiscal_year, get_monthly_first_days
 load_dotenv()
 
 # ── 설정 ──────────────────────────────────────────────────
-DART_API_KEY  = os.environ["DARTS_API_KEY"]
+DART_API_KEY  = os.environ.get("DARTS_API_KEY", "")
 DART_FUND_DIR = os.path.join(DATA_DIR, "dart_fundamentals")
 REQ_DELAY     = 0.3   # DART API 요청 간 딜레이 (초)
 
 os.makedirs(DART_FUND_DIR, exist_ok=True)
-dart = odr(api_key=DART_API_KEY)
+try:
+    dart = odr(api_key=DART_API_KEY)
+except Exception:
+    dart = None  # 키 없음 → get_dart_annual() 내부 try/except가 NaN 반환
 
 
 def _current_ym() -> str:

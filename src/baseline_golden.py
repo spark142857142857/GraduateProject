@@ -8,7 +8,6 @@
 import os
 import shutil
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 from utils import TICKERS, get_price, calc_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir
 

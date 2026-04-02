@@ -19,7 +19,6 @@
 
 import os
 import sys
-import time
 import argparse
 import numpy as np
 import pandas as pd
@@ -31,7 +30,7 @@ load_dotenv()
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from utils import TICKERS, DATA_DIR, get_price, REPORTS_DIR
+from utils import TICKERS, get_price, REPORTS_DIR
 
 # collect_financials 핵심 함수·상수 재사용
 from collect_financials import (
@@ -78,8 +77,13 @@ def get_this_month_first_trading_day() -> pd.Timestamp | None:
 
 
 # ── 공통 KRX 발행주식수 맵 로드 ──────────────────────────
+_SHARES_MAP_CACHE: dict | None = None
+
 def _load_shares_map() -> dict:
-    """FDR StockListing에서 종목별 발행주식수 dict 반환."""
+    """FDR StockListing에서 종목별 발행주식수 dict 반환. 첫 호출 시 로드 후 캐시."""
+    global _SHARES_MAP_CACHE
+    if _SHARES_MAP_CACHE is not None:
+        return _SHARES_MAP_CACHE
     print("  발행주식수 조회 중 (FDR StockListing)...")
     listing = fdr.StockListing("KRX")
     shares_map: dict[str, int] = {}
@@ -92,6 +96,7 @@ def _load_shares_map() -> dict:
             )
         except (ValueError, TypeError):
             pass
+    _SHARES_MAP_CACHE = shares_map
     return shares_map
 
 
@@ -377,6 +382,7 @@ def get_today_context(ticker: str) -> dict:
             dart_row = df_dart.sort_values("date").iloc[-1].to_dict()
 
     # ── 최근 리포트 (CSV 직접 읽기, 오늘 기준 30일) ─────
+    # forward test는 오늘 포함, backtest(build_reports)는 전일까지 — 의도적 차이
     recent_reports: list = []
     rep_path = os.path.join(REPORTS_DIR, f"{ticker}.csv")
     if os.path.exists(rep_path):
@@ -417,15 +423,15 @@ def get_today_context(ticker: str) -> dict:
         "momentum_1m":          _v(momentum),
         "volume_change":        _v(vol_change),
         # dart_fundamentals (최신 사업연도)
-        "revenue":              dart_row.get("revenue"),
-        "operating_income":     dart_row.get("operating_income"),
-        "net_income":           dart_row.get("net_income"),
-        "operating_margin":     dart_row.get("operating_margin"),
-        "debt_ratio":           dart_row.get("debt_ratio"),
-        "operating_cashflow":   dart_row.get("operating_cashflow"),
-        "dividend_yield":       dart_row.get("dividend_yield"),
-        "revenue_yoy":          dart_row.get("revenue_yoy"),
-        "operating_income_yoy": dart_row.get("operating_income_yoy"),
+        "revenue":              _v(dart_row.get("revenue")),
+        "operating_income":     _v(dart_row.get("operating_income")),
+        "net_income":           _v(dart_row.get("net_income")),
+        "operating_margin":     _v(dart_row.get("operating_margin")),
+        "debt_ratio":           _v(dart_row.get("debt_ratio")),
+        "operating_cashflow":   _v(dart_row.get("operating_cashflow")),
+        "dividend_yield":       _v(dart_row.get("dividend_yield")),
+        "revenue_yoy":          _v(dart_row.get("revenue_yoy")),
+        "operating_income_yoy": _v(dart_row.get("operating_income_yoy")),
         # 최근 리포트
         "recent_reports":       recent_reports,
     }
