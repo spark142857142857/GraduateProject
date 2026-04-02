@@ -38,7 +38,7 @@ load_dotenv()
 
 # ── 설정 ──────────────────────────────────────────────────
 # DARTS_API_KEY는 .env 파일 또는 환경변수에서 반드시 설정 필요
-DART_API_KEY   = os.environ["DARTS_API_KEY"]
+DART_API_KEY   = os.environ.get("DARTS_API_KEY", "")
 START_YM       = "2023-01"
 END_YM         = "2025-12"
 FINANCIALS_DIR = os.path.join(DATA_DIR, "financials")   # utils.DATA_DIR 기반 절대경로
@@ -47,7 +47,10 @@ WEEKS_52       = 252   # 52주 = 252 거래일
 
 os.makedirs(FINANCIALS_DIR, exist_ok=True)
 
-dart = odr(api_key=DART_API_KEY)
+try:
+    dart = odr(api_key=DART_API_KEY)
+except Exception:
+    dart = None  # 키 없음 → get_dart_annual() 내부 try/except가 NaN 반환
 
 
 # ── 월별 첫 거래일 목록 생성 ──────────────────────────────
@@ -158,7 +161,7 @@ def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | N
 
     # 가격 데이터 로드 (52주 계산을 위해 2021까지)
     try:
-        price_df = fdr.DataReader(ticker, "2021-01-01", "2026-01-31")
+        price_df = fdr.DataReader(ticker, "2021-01-01", pd.Timestamp.today().strftime("%Y-%m-%d"))
         price_df.index = pd.to_datetime(price_df.index).tz_localize(None)
     except Exception as e:
         tqdm.write(f"  [{ticker}] 가격 데이터 오류: {e}")
@@ -262,7 +265,7 @@ def add_technical_indicators():
     """data/financials/{ticker}.csv 에 momentum_1m, volume_change 컬럼 추가.
 
     이미 두 컬럼이 모두 존재하는 파일은 스킵한다.
-    가격 데이터는 process_ticker() 와 동일 범위(2021-01-01 ~ 2026-01-31)로 조회.
+    가격 데이터는 process_ticker() 와 동일 범위(2021-01-01 ~ 오늘)로 조회.
     """
     csv_files = [f for f in os.listdir(FINANCIALS_DIR) if f.endswith(".csv")]
     if not csv_files:
@@ -281,7 +284,7 @@ def add_technical_indicators():
         ticker = fname.replace(".csv", "")
 
         try:
-            price_df = fdr.DataReader(ticker, "2021-01-01", "2026-01-31")
+            price_df = fdr.DataReader(ticker, "2021-01-01", pd.Timestamp.today().strftime("%Y-%m-%d"))
             price_df.index = pd.to_datetime(price_df.index).tz_localize(None)
         except Exception as e:
             tqdm.write(f"  [{ticker}] 가격 데이터 오류: {e}")
