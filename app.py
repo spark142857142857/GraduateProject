@@ -5,7 +5,6 @@ LLM 기반 주식 투자 신호 시스템 — Streamlit 앱
 """
 
 import glob
-import json
 import os
 import sys
 from datetime import datetime
@@ -264,9 +263,9 @@ if selected_cond in ("cond3", "cond4"):
     st.divider()
 
 
-# ── 6. 분기 실적 (cond4만) ─────────────────────────────────
+# ── 6. 연간 실적 (cond4만) ─────────────────────────────────
 if selected_cond == "cond4":
-    st.subheader("🏭 분기 실적 (DART 기준)")
+    st.subheader("🏭 연간 실적 (DART 사업보고서 기준)")
 
     col_a, col_b, col_c2 = st.columns(3)
     rev_growth = ctx.get("revenue_growth")
@@ -340,13 +339,12 @@ else:
         with st.expander("신호별 상세 통계"):
             stats = (
                 ticker_df.groupby("signal")["return_20d"]
-                .agg(
-                    건수="count",
-                    평균수익률="mean",
-                    히트율=lambda x: (x > 0).mean() * 100,
-                )
+                .agg(건수="count", 평균수익률="mean")
                 .round(2)
             )
+            for sig, g in ticker_df.groupby("signal")["return_20d"]:
+                hr = (g < 0).mean() if sig == "Sell" else (g > 0).mean()
+                stats.loc[sig, "히트율"] = round(hr * 100, 2)
             st.dataframe(stats)
 
         # 시계열 차트
