@@ -63,15 +63,17 @@ def sharpe(series: pd.Series) -> float:
     return round((s.mean() / s.std()) * np.sqrt(12), 3)
 
 
-def calc_stats(series: pd.Series) -> dict:
+def calc_stats(series: pd.Series, signal: str = "Buy") -> dict:
+    """signal='Sell'이면 hit_rate = (s < 0) 비율 (하락이 성공), 나머지는 (s > 0)."""
     s = series.dropna()
     n = len(s)
     if n == 0:
         return {"n": 0, "mean": float("nan"), "hit_rate": float("nan"), "sharpe": float("nan")}
+    hit = (s < 0).mean() if signal == "Sell" else (s > 0).mean()
     return {
         "n":        n,
         "mean":     round(float(s.mean()), 3),
-        "hit_rate": round(float((s > 0).mean() * 100), 1),
+        "hit_rate": round(float(hit * 100), 1),
         "sharpe":   sharpe(s),
     }
 
@@ -141,8 +143,8 @@ def signal_rows(df: pd.DataFrame, label: str, has_confidence: bool = True) -> li
     for sig, g in groups:
         if sig != "전체" and len(g) == 0:
             continue
-        s20 = calc_stats(g["return_20d"])
-        s5  = calc_stats(g["return_5d"]) if has_5d else {
+        s20 = calc_stats(g["return_20d"], sig)
+        s5  = calc_stats(g["return_5d"], sig) if has_5d else {
             "mean": float("nan"), "hit_rate": float("nan"), "sharpe": float("nan"),
         }
         row = {
@@ -235,7 +237,7 @@ def analysis_sector(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
             sub = df[df["ticker"].isin(tickers)]
             for sig in ["Buy", "Neutral", "Sell"]:
                 sig_sub = sub[sub["signal"] == sig]
-                s = calc_stats(sig_sub["return_20d"])
+                s = calc_stats(sig_sub["return_20d"], sig)
                 rows.append({
                     "sector": sector, "cond": cond, "signal": sig,
                     "n": s["n"], "mean": s["mean"],
