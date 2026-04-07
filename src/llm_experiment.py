@@ -134,7 +134,7 @@ def call_llm(client: genai.Client, prompt: str) -> tuple[str, int, list[str]]:
     data = json.loads(match.group())
 
     signal     = str(data["signal"]).strip()
-    confidence = int(data["confidence"])
+    confidence = max(0, min(100, int(data["confidence"])))
     reasons    = data.get("reasons", [])
 
     if signal not in ("Buy", "Sell", "Neutral"):
@@ -294,18 +294,18 @@ def run(cond: str, test: bool = False):
 
     print(f"\n저장 완료: {out_path}")
     print(f"전체 신호: {len(result_df)}개")
+    def _summary(df: pd.DataFrame, col: str) -> pd.DataFrame:
+        """신호별 수익률 요약. Sell은 (< 0) 기준 히트율."""
+        stats = df.groupby("signal")[col].agg(count="count", mean="mean").round(2)
+        for sig, g in df.groupby("signal")[col]:
+            hr = (g < 0).mean() if sig == "Sell" else (g > 0).mean()
+            stats.loc[sig, "hit_rate"] = round(hr * 100, 2)
+        return stats
+
     print("\n[신호별 5거래일 수익률 요약]")
-    print(result_df.groupby("signal")["return_5d"].agg(
-        count="count",
-        mean="mean",
-        hit_rate=lambda x: (x > 0).mean() * 100,
-    ).round(2))
+    print(_summary(result_df, "return_5d"))
     print("\n[신호별 20거래일 수익률 요약]")
-    print(result_df.groupby("signal")["return_20d"].agg(
-        count="count",
-        mean="mean",
-        hit_rate=lambda x: (x > 0).mean() * 100,
-    ).round(2))
+    print(_summary(result_df, "return_20d"))
 
     return result_df
 
