@@ -5,5 +5,7 @@ finance-datareader
 matplotlib
 numpy
 google-genai
-groq
 python-dotenv
+opendartreader
+tqdm
+streamlit
