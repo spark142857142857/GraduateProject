@@ -34,7 +34,7 @@ from utils import (
 from context_builders import build_financials, build_reports, build_dart_fundamentals
 from experiments import EXPERIMENTS
 
-load_dotenv()
+load_dotenv(override=True)
 
 # ── 설정 ──────────────────────────────────────────────────
 MODEL     = "gemini-2.5-flash-lite"
