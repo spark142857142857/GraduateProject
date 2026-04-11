@@ -15,16 +15,15 @@
 
 import argparse
 import os
+import shutil
 import sys
 
 import numpy as np
 import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from utils import EXPERIMENT_DIR, RESULTS_DIR, get_latest_baseline_dir
+from utils import EXPERIMENT_DIR, get_latest_baseline_dir, get_analysis_dir, get_latest_analysis_dir
 from experiments import EXPERIMENTS
-
-ANALYSIS_DIR = os.path.join(RESULTS_DIR, "analysis")
 
 # --cond 옵션에서 사용할 순서 기준 목록 (experiments.py에서 자동 파생)
 COND_ORDER = list(EXPERIMENTS.keys())
@@ -340,7 +339,8 @@ def analysis_stock(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
 # ── 메인 ─────────────────────────────────────────────────
 
 def run(cond_target: str | None, include_sector: bool, is_all: bool) -> None:
-    os.makedirs(ANALYSIS_DIR, exist_ok=True)
+    out_dir    = get_analysis_dir()
+    latest_dir = get_latest_analysis_dir()
 
     if is_all:
         target_conds = COND_ORDER
@@ -388,15 +388,19 @@ def run(cond_target: str | None, include_sector: bool, is_all: bool) -> None:
             d_hit = rc.iloc[0]["hit_rate"] - rp.iloc[0]["hit_rate"]
             print(f"  {c_cur} - {c_prev}  Δmean={d_ret:+.3f}%  Δhit={d_hit:+.1f}%")
 
-    out_path = os.path.join(ANALYSIS_DIR, f"{save_prefix}_comparison.csv")
+    fname    = f"{save_prefix}_comparison.csv"
+    out_path = os.path.join(out_dir, fname)
     pd.DataFrame(all_rows).to_csv(out_path, index=False, encoding="utf-8-sig")
+    shutil.copy(out_path, os.path.join(latest_dir, fname))
     print(f"\n저장: {out_path}")
 
     # ── 전략 요약표 (--all 시 전략별 한 줄 요약 + full_comparison.csv) ──
     if is_all:
         full_df = print_full_comparison(baseline_data, cond_data)
-        full_path = os.path.join(ANALYSIS_DIR, "full_comparison.csv")
+        full_fname = "full_comparison.csv"
+        full_path  = os.path.join(out_dir, full_fname)
         full_df.to_csv(full_path, index=False, encoding="utf-8-sig")
+        shutil.copy(full_path, os.path.join(latest_dir, full_fname))
         print(f"저장: {full_path}")
 
     # ── 섹터·종목 분석 ─────────────────────────────────────
@@ -404,15 +408,16 @@ def run(cond_target: str | None, include_sector: bool, is_all: bool) -> None:
         sector_df = analysis_sector(cond_data)
         stock_df  = analysis_stock(cond_data)
 
-        sector_df.to_csv(
-            os.path.join(ANALYSIS_DIR, f"{save_prefix}_sector.csv"),
-            index=False, encoding="utf-8-sig"
-        )
-        stock_df.to_csv(
-            os.path.join(ANALYSIS_DIR, f"{save_prefix}_stock.csv"),
-            index=False, encoding="utf-8-sig"
-        )
-        print(f"저장: {save_prefix}_sector.csv, {save_prefix}_stock.csv")
+        sector_fname = f"{save_prefix}_sector.csv"
+        stock_fname  = f"{save_prefix}_stock.csv"
+        sector_path  = os.path.join(out_dir, sector_fname)
+        stock_path   = os.path.join(out_dir, stock_fname)
+
+        sector_df.to_csv(sector_path, index=False, encoding="utf-8-sig")
+        stock_df.to_csv(stock_path,  index=False, encoding="utf-8-sig")
+        shutil.copy(sector_path, os.path.join(latest_dir, sector_fname))
+        shutil.copy(stock_path,  os.path.join(latest_dir, stock_fname))
+        print(f"저장: {sector_fname}, {stock_fname}")
 
     print("\n분석 완료")
 

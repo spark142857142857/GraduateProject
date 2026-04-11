@@ -108,7 +108,7 @@ def load_checkpoint(cond: str) -> pd.DataFrame:
     if os.path.exists(path):
         df = pd.read_csv(path, dtype={"ticker": str})
         if "signal" in df.columns and "confidence" in df.columns:
-            return df
+            return df.drop_duplicates(subset=["ticker", "signal_date"]).reset_index(drop=True)
         print(f"[{cond}] 체크포인트 스키마 변경 감지 → 초기화")
     return pd.DataFrame(columns=CKPT_COLS)
 
