@@ -281,57 +281,69 @@ def analysis_sector(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
 # ── 종목별 분석 ───────────────────────────────────────────
 
 def analysis_stock(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
-    """종목별 cond 간 성과 비교."""
+    """종목별 cond 간 Buy 신호 성과 비교.
+
+    Note: 모든 cond가 동일 날짜를 평가하므로 전체 신호 평균은 cond에 무관하게
+    항상 같다. Buy 신호만 필터링해야 cond별 의미 있는 차이가 드러난다.
+    """
     print("\n" + "=" * 60)
-    print("【종목별 비교】")
+    print("【종목별 비교】 (Buy 신호 기준)")
     print("=" * 60)
 
     rows = []
     for cond, df in data.items():
         for ticker, grp in df.groupby("ticker"):
             ticker = str(ticker).zfill(6)
-            s = calc_stats(grp["return_20d"])
+            buy_grp = grp[grp["signal"] == "Buy"]
+            s = calc_stats(buy_grp["return_20d"], signal="Buy")
             rows.append({
-                "ticker": ticker,
-                "name":   grp["name"].iloc[0] if "name" in grp.columns else ticker,
-                "market": "코스닥" if ticker in KOSDAQ_TICKERS else "코스피",
-                "sector": ticker_to_sector(ticker),
-                "cond":   cond,
-                **s,
+                "ticker":          ticker,
+                "name":            grp["name"].iloc[0] if "name" in grp.columns else ticker,
+                "market":          "코스닥" if ticker in KOSDAQ_TICKERS else "코스피",
+                "sector":          ticker_to_sector(ticker),
+                "cond":            cond,
+                "signal_filter":   "Buy",          # 집계 기준 명시
+                "n_buy":           s["n"],
+                "buy_mean_20d":    s["mean"],
+                "buy_hit_rate_20d": s["hit_rate"],
+                "buy_sharpe_20d":  s["sharpe"],
             })
 
     result = pd.DataFrame(rows)
     conds = list(data.keys())
 
+    # cond1 Buy mean 기준 정렬 (없으면 첫 cond)
+    sort_cond = "cond1" if "cond1" in conds else conds[0]
     tickers_sorted = (
-        result.groupby("ticker")["mean"].mean()
+        result[result["cond"] == sort_cond]
+        .set_index("ticker")["buy_mean_20d"]
         .sort_values(ascending=False).index.tolist()
     )
 
     print(f"\n{'종목':<12} {'시장':<6} {'섹터':<8}", end="")
     for cond in conds:
-        print(f"  {cond}(mean/hit)", end="")
+        print(f"  {cond}(n_buy/mean/hit)", end="")
     print()
-    print("-" * 70)
+    print("-" * 100)
 
     for ticker in tickers_sorted:
         sub = result[result["ticker"] == ticker]
         print(f"{sub['name'].iloc[0]:<12} {sub['market'].iloc[0]:<6} {sub['sector'].iloc[0]:<8}", end="")
         for cond in conds:
             row = sub[sub["cond"] == cond]
-            if row.empty:
-                print(f"  {'N/A':>16}", end="")
+            if row.empty or row.iloc[0]["n_buy"] == 0:
+                print(f"  {'N/A':>22}", end="")
             else:
                 r = row.iloc[0]
-                print(f"  {r['mean']:>5.2f}% / {r['hit_rate']:>4.1f}%", end="")
+                print(f"  {int(r['n_buy']):>2}/{r['buy_mean_20d']:>6.2f}%/{r['buy_hit_rate_20d']:>4.1f}%", end="")
         print()
 
     if "cond1" in data:
-        c1 = result[result["cond"] == "cond1"].sort_values("mean", ascending=False)
-        print("\n▶ cond1 기준 평균 수익률 상위 5개 종목")
-        print(c1.head(5)[["name", "market", "sector", "mean", "hit_rate"]].to_string(index=False))
-        print("\n▶ cond1 기준 평균 수익률 하위 5개 종목")
-        print(c1.tail(5)[["name", "market", "sector", "mean", "hit_rate"]].to_string(index=False))
+        c1 = result[result["cond"] == "cond1"].sort_values("buy_mean_20d", ascending=False)
+        print("\n▶ cond1 Buy 신호 평균 수익률 상위 5개 종목")
+        print(c1.head(5)[["name", "market", "sector", "n_buy", "buy_mean_20d", "buy_hit_rate_20d"]].to_string(index=False))
+        print("\n▶ cond1 Buy 신호 평균 수익률 하위 5개 종목")
+        print(c1.tail(5)[["name", "market", "sector", "n_buy", "buy_mean_20d", "buy_hit_rate_20d"]].to_string(index=False))
 
     return result
 
@@ -409,7 +421,7 @@ def run(cond_target: str | None, include_sector: bool, is_all: bool) -> None:
         stock_df  = analysis_stock(cond_data)
 
         sector_fname = f"{save_prefix}_sector.csv"
-        stock_fname  = f"{save_prefix}_stock.csv"
+        stock_fname  = f"{save_prefix}_stock_buy.csv"   # Buy 신호 기준 집계임을 명시
         sector_path  = os.path.join(out_dir, sector_fname)
         stock_path   = os.path.join(out_dir, stock_fname)
 
@@ -417,7 +429,7 @@ def run(cond_target: str | None, include_sector: bool, is_all: bool) -> None:
         stock_df.to_csv(stock_path,  index=False, encoding="utf-8-sig")
         shutil.copy(sector_path, os.path.join(latest_dir, sector_fname))
         shutil.copy(stock_path,  os.path.join(latest_dir, stock_fname))
-        print(f"저장: {sector_fname}, {stock_fname}")
+        print(f"저장: {sector_fname}, {stock_fname} (Buy 신호 기준)")
 
     print("\n분석 완료")
 
