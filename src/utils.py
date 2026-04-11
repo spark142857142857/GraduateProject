@@ -43,6 +43,7 @@ RESULTS_DIR  = os.path.join(BASE_DIR, "results")
 BASELINE_DIR    = os.path.join(RESULTS_DIR, "baseline")
 EXPERIMENT_DIR  = os.path.join(RESULTS_DIR, "experiment")
 FORWARD_DIR     = os.path.join(RESULTS_DIR, "forward")
+ANALYSIS_DIR    = os.path.join(RESULTS_DIR, "analysis")
 
 
 def get_price(ticker: str, start: str = START_DATE, end: str = END_DATE) -> pd.DataFrame:
@@ -138,6 +139,20 @@ def get_baseline_dir() -> str:
 def get_latest_baseline_dir() -> str:
     """baseline/latest/ 폴더 반환 및 생성."""
     latest = os.path.join(BASELINE_DIR, "latest")
+    os.makedirs(latest, exist_ok=True)
+    return latest
+
+
+def get_analysis_dir() -> str:
+    """실행 날짜 기준 analysis/ 저장 폴더 반환 및 생성."""
+    dated = os.path.join(ANALYSIS_DIR, datetime.now().strftime("%Y%m%d"))
+    os.makedirs(dated, exist_ok=True)
+    return dated
+
+
+def get_latest_analysis_dir() -> str:
+    """analysis/latest/ 폴더 반환 및 생성."""
+    latest = os.path.join(ANALYSIS_DIR, "latest")
     os.makedirs(latest, exist_ok=True)
     return latest
 
