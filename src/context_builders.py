@@ -168,9 +168,6 @@ def build_dart_fundamentals_from_dict(ctx: dict) -> str:
         "[재무 안정성]",
         f"부채비율: {_fmt(ctx.get('debt_ratio'), 1)}%",
         f"영업현금흐름: {_to_trillion(ctx.get('operating_cashflow'))}",
-        "",
-        "[주주환원]",
-        f"배당수익률: {_fmt(ctx.get('dividend_yield'), 1)}%",
     ])
 
 
@@ -196,7 +193,6 @@ def build_dart_fundamentals(ticker: str, date: str) -> str:
     oper_mgn   = row.get("operating_margin")
     debt_ratio = row.get("debt_ratio")
     oper_cf    = row.get("operating_cashflow")
-    div_yield  = row.get("dividend_yield")
     rev_yoy    = row.get("revenue_yoy")
     op_yoy     = row.get("operating_income_yoy")
 
@@ -210,7 +206,4 @@ def build_dart_fundamentals(ticker: str, date: str) -> str:
         "[재무 안정성]",
         f"부채비율: {_fmt(debt_ratio, 1)}%",
         f"영업현금흐름: {_to_trillion(oper_cf)}",
-        "",
-        "[주주환원]",
-        f"배당수익률: {_fmt(div_yield, 1)}%",
     ])
