@@ -129,16 +129,21 @@ def load_baselines() -> dict[str, pd.DataFrame]:
 
 # ── 신호별 통계 행 생성 ────────────────────────────────────
 
-def signal_rows(df: pd.DataFrame, label: str, has_confidence: bool = True) -> list[dict]:
-    """신호별(Buy/Neutral/Sell) + 전체 통계 딕셔너리 리스트 반환."""
+def signal_rows(df: pd.DataFrame, label: str, has_confidence: bool = True,
+                include_total: bool = True) -> list[dict]:
+    """신호별(Buy/Neutral/Sell) + 전체 통계 딕셔너리 리스트 반환.
+
+    include_total=False: 베이스라인처럼 단일 신호(전체=Buy)인 경우 중복 '전체' 행 생략.
+    """
     rows = []
     has_5d = "return_5d" in df.columns
     groups = [
         ("Buy",     df[df["signal"] == "Buy"]),
         ("Neutral", df[df["signal"] == "Neutral"]),
         ("Sell",    df[df["signal"] == "Sell"]),
-        ("전체",    df),
     ]
+    if include_total:
+        groups.append(("전체", df))
     for sig, g in groups:
         if sig != "전체" and len(g) == 0:
             continue
@@ -379,7 +384,8 @@ def run(cond_target: str | None, include_sector: bool, is_all: bool) -> None:
 
     all_rows = []
     for label, df in baseline_data.items():
-        all_rows.extend(signal_rows(df, label, has_confidence=False))
+        # 베이스라인은 signal="Buy" 일괄 부여 → 전체 행 = Buy 행 (중복 제거)
+        all_rows.extend(signal_rows(df, label, has_confidence=False, include_total=False))
     for cond, df in cond_data.items():
         all_rows.extend(signal_rows(df, cond, has_confidence=True))
 
