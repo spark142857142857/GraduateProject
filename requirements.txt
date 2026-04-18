@@ -9,3 +9,4 @@ python-dotenv
 opendartreader
 tqdm
 streamlit
+scipy>=1.11.0
