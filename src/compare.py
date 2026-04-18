@@ -31,14 +31,15 @@ COND_ORDER = list(EXPERIMENTS.keys())
 
 # 전략별 표시 레이블
 COND_LABELS = {
-    "Consensus":    "컨센서스",
-    "GoldenCross":  "골든크로스",
-    "cond1":        "cond1 (종목명)",
-    "cond2":        "cond2 (재무지표)",
-    "cond3":        "cond3 (재무+리포트)",
-    "cond4":        "cond4 (재무+리포트+DART)",
-    "reports_only": "리포트 단독",
-    "dart_only":    "DART 단독",
+    "Consensus":          "컨센서스",
+    "GoldenCross":        "골든크로스",
+    "cond1":              "cond1 (종목명)",
+    "cond2":              "cond2 (재무지표)",
+    "cond3":              "cond3 (재무+리포트)",
+    "cond4":              "cond4 (재무+리포트+DART)",
+    "reports_only":       "리포트 단독",
+    "dart_only":          "DART 단독",
+    "cond4_no_reports":   "cond4 - reports (재무+DART)",
 }
 
 SECTORS = {
@@ -149,11 +150,15 @@ def run_significance_tests(
     # TODO: paired test (signal flip analysis) is future work
     """
     PAIRS = [
-        ("cond4", "cond1",       "core"),
-        ("cond4", "GoldenCross", "core"),
-        ("cond4", "Consensus",   "core"),
-        ("cond2", "cond1",       "auxiliary"),
-        ("cond3", "cond1",       "auxiliary"),
+        # ── 핵심 3개 ─────────────────────────────────────
+        ("cond4", "cond1",            "core"),      # 컨텍스트 최대 vs 최소
+        ("cond4", "GoldenCross",      "core"),      # LLM vs 기술분석
+        ("cond4", "Consensus",        "core"),      # LLM vs 애널리스트
+        # ── 보조: 컨텍스트 단계별 효과 ─────────────────
+        ("cond2", "cond1",            "auxiliary"), # 재무지표 추가 효과
+        ("cond3", "cond1",            "auxiliary"), # 재무+리포트 추가 효과
+        # ── 보조: LOO ablation (reports marginal effect) ─
+        ("cond4", "cond4_no_reports", "auxiliary"), # 리포트 순수 기여도
     ]
     METRICS = [
         ("return_20d",        "absolute"),
