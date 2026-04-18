@@ -16,4 +16,7 @@ EXPERIMENTS = {
     # 단독 실험 (컨텍스트별 독립 기여도 측정)
     "reports_only": ["reports"],
     "dart_only":    ["dart_fundamentals"],
+
+    # Leave-One-Out ablation (cond4 - 단일 카테고리)
+    "cond4_no_reports": ["financials", "dart_fundamentals"],
 }

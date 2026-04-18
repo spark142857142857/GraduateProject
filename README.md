@@ -31,6 +31,7 @@ LLM에 제공하는 컨텍스트 유형에 따라 투자 신호 품질이 달라
 | **cond2** | 재무 + 기술지표 | PER / PBR / ROE / 시가총액 / 52주 위치 / 1개월 수익률 / 거래량 변화율 |
 | **cond3** | + 애널리스트 리포트 | 리포트 제목 / 목표주가 (최근 30일, 최대 5건) |
 | **cond4** | + DART 연간 실적 | 매출 / 영업이익 / 영업이익률 / 순이익 (전년比) / 부채비율 / 영업현금흐름 |
+| cond4_no_reports | cond4에서 리포트 제거 (LOO ablation) | 재무지표 + DART 실적. 리포트의 marginal effect 측정용 |
 
 ### 공통 조건
 
@@ -43,6 +44,8 @@ LLM에 제공하는 컨텍스트 유형에 따라 투자 신호 품질이 달라
 | 신호 | Buy / Neutral / Sell |
 | 수익률 측정 | 신호일 +1 거래일 매수 → 5 / 20거래일 후 종가 |
 | 대조군 | 컨센서스 추종 / 골든크로스 (MA5×MA20) |
+| 평가 지표 | 절대 수익률(return_20d) + 시장 대비 초과 수익률(excess_return_20d) |
+| 벤치마크 | KOSPI(KS11) / KOSDAQ(KQ11) — 상장 시장별 분리 |
 
 ### 결과
 
@@ -133,6 +136,7 @@ python src/llm_experiment.py --cond cond1
 python src/llm_experiment.py --cond cond2
 python src/llm_experiment.py --cond cond3
 python src/llm_experiment.py --cond cond4
+python src/llm_experiment.py --cond cond4_no_reports
 ```
 
 - 중단 후 재개 가능: 완료된 (ticker, signal_date) 쌍은 자동 스킵  
@@ -163,6 +167,7 @@ python src/compare.py --cond cond4 --sector
 | `full_comparison.csv` | 전략별 한 줄 요약 (대조군 포함) |
 | `all_sector.csv` | 섹터별 × 조건별 성과 |
 | `all_stock_buy.csv` | 종목별 × 조건별 Buy 신호 성과 |
+| `all_significance.csv` | 통계적 유의성 검정 결과 (Mann-Whitney, Welch's t-test, effect size) |
 
 ### 6. Forward Test
 
