@@ -34,6 +34,10 @@ TICKERS = {
     "두산에너빌리티": "034020",
 }
 
+KOSDAQ_TICKERS = {"247540", "196170"}  # 에코프로비엠, 알테오젠
+KOSPI_INDEX    = "KS11"
+KOSDAQ_INDEX   = "KQ11"
+
 # ── 경로 ──────────────────────────────────────────────────
 BASE_DIR    = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR    = os.path.join(BASE_DIR, "data")
@@ -127,6 +131,31 @@ def calc_return(df: pd.DataFrame, entry_date: str, hold_days: int = 20) -> float
     price_in  = future["Close"].iloc[0]
     price_out = future["Close"].iloc[hold_days]
     return (price_out - price_in) / price_in * 100
+
+
+def get_benchmark_price(ticker: str, start: str = START_DATE, end: str = END_DATE) -> pd.DataFrame:
+    """종목에 맞는 벤치마크 지수 가격 반환.
+    KOSDAQ 종목이면 KOSDAQ 지수(KQ11), 그 외는 KOSPI 지수(KS11).
+    get_price() 재사용으로 data/price/{KS11,KQ11}.csv에 캐시됨.
+    """
+    idx = KOSDAQ_INDEX if ticker in KOSDAQ_TICKERS else KOSPI_INDEX
+    return get_price(idx, start, end)
+
+
+def calc_excess_return(
+    stock_df: pd.DataFrame,
+    benchmark_df: pd.DataFrame,
+    entry_date: str,
+    hold_days: int = 20,
+) -> float | None:
+    """종목 수익률 - 벤치마크 수익률 = 초과수익률(%).
+    둘 중 하나라도 데이터 부족 시 None 반환.
+    """
+    stock_ret = calc_return(stock_df, entry_date, hold_days)
+    bench_ret = calc_return(benchmark_df, entry_date, hold_days)
+    if stock_ret is None or bench_ret is None:
+        return None
+    return stock_ret - bench_ret
 
 
 def get_baseline_dir() -> str:

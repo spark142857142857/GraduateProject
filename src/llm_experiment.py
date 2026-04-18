@@ -28,7 +28,7 @@ from google.genai import types as genai_types
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils import (
     TICKERS, EXPERIMENT_DIR,
-    get_price, calc_return,
+    get_price, calc_return, get_benchmark_price, calc_excess_return,
     get_experiment_dir, get_latest_experiment_dir,
 )
 from context_builders import build_financials, build_reports, build_dart_fundamentals
@@ -269,18 +269,30 @@ def run(cond: str, test: bool = False):
     # ── 수익률 계산 ───────────────────────────────────────
     print("수익률 계산 중...")
     price_cache: dict[str, pd.DataFrame] = {}
-    ret5_list  = []
-    ret20_list = []
+    bench_cache: dict[str, pd.DataFrame] = {}
+    ret5_list     = []
+    ret20_list    = []
+    excess5_list  = []
+    excess20_list = []
     for _, row in ckpt_df.iterrows():
         tk = row["ticker"]
         if tk not in price_cache:
             price_cache[tk] = get_price(tk, start="2022-12-01")
-        ret5_list.append(calc_return(price_cache[tk], row["signal_date"], HOLD_SHORT))
-        ret20_list.append(calc_return(price_cache[tk], row["signal_date"], HOLD_LONG))
+        if tk not in bench_cache:
+            bench_cache[tk] = get_benchmark_price(tk, start="2022-12-01")
+        stock_df = price_cache[tk]
+        bench_df = bench_cache[tk]
+        sig_date = row["signal_date"]
+        ret5_list.append(calc_return(stock_df, sig_date, HOLD_SHORT))
+        ret20_list.append(calc_return(stock_df, sig_date, HOLD_LONG))
+        excess5_list.append(calc_excess_return(stock_df, bench_df, sig_date, HOLD_SHORT))
+        excess20_list.append(calc_excess_return(stock_df, bench_df, sig_date, HOLD_LONG))
 
     result_df = ckpt_df.copy()
-    result_df["return_5d"]  = ret5_list
-    result_df["return_20d"] = ret20_list
+    result_df["return_5d"]         = ret5_list
+    result_df["return_20d"]        = ret20_list
+    result_df["excess_return_5d"]  = excess5_list
+    result_df["excess_return_20d"] = excess20_list
     result_df = result_df.dropna(subset=["return_20d"]).reset_index(drop=True)
 
     # ── 저장 ──────────────────────────────────────────────
@@ -302,10 +314,14 @@ def run(cond: str, test: bool = False):
             stats.loc[sig, "hit_rate"] = round(hr * 100, 2)
         return stats
 
-    print("\n[신호별 5거래일 수익률 요약]")
+    print("\n[신호별 5거래일 수익률 요약 (절대)]")
     print(_summary(result_df, "return_5d"))
-    print("\n[신호별 20거래일 수익률 요약]")
+    print("\n[신호별 5거래일 초과수익률 요약 (vs 시장)]")
+    print(_summary(result_df, "excess_return_5d"))
+    print("\n[신호별 20거래일 수익률 요약 (절대)]")
     print(_summary(result_df, "return_20d"))
+    print("\n[신호별 20거래일 초과수익률 요약 (vs 시장)]")
+    print(_summary(result_df, "excess_return_20d"))
 
     return result_df
 

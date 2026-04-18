@@ -155,9 +155,13 @@ def calc_52w(price_df: pd.DataFrame, date: pd.Timestamp) -> tuple:
 # ── 종목 처리 ──────────────────────────────────────────────
 def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | None:
     out_path = os.path.join(FINANCIALS_DIR, f"{ticker}.csv")
+
+    # 기존 날짜 셋 로드 (있으면 누락 월만 처리)
+    existing_dates: set[str] = set()
+    df_existing = pd.DataFrame()
     if os.path.exists(out_path):
-        tqdm.write(f"  [{ticker}] 이미 존재 → 스킵")
-        return None
+        df_existing = pd.read_csv(out_path, dtype={"ticker": str})
+        existing_dates = set(df_existing["date"].astype(str).tolist())
 
     # 가격 데이터 로드 (52주 계산을 위해 2021까지)
     try:
@@ -167,15 +171,26 @@ def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | N
         tqdm.write(f"  [{ticker}] 가격 데이터 오류: {e}")
         return None
 
-    monthly_dates = get_monthly_first_days(ticker)
+    # 오늘 기준 월까지 동적 생성
+    today = pd.Timestamp.today()
+    current_ym = f"{today.year}-{today.month:02d}"
+    monthly_dates = get_monthly_first_days(ticker, end_ym=current_ym)
     if not monthly_dates:
         tqdm.write(f"  [{ticker}] 월별 거래일 없음")
         return None
 
+    # 누락된 월만 필터링
+    missing = [d for d in monthly_dates if d.strftime("%Y-%m-%d") not in existing_dates]
+    if not missing:
+        tqdm.write(f"  [{ticker}] 이미 최신 ({len(df_existing)}행) → 스킵")
+        return None
+
+    tqdm.write(f"  [{ticker}] {len(missing)}개월 신규 추가 예정")
+
     shares = shares_map.get(ticker, np.nan)
 
     rows = []
-    for date in tqdm(monthly_dates, desc=f"  {name}({ticker})", leave=False):
+    for date in tqdm(missing, desc=f"  {name}({ticker})", leave=False):
         fy = applicable_fiscal_year(date)
 
         # 종가
@@ -223,10 +238,15 @@ def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | N
     if not rows:
         return None
 
-    result = pd.DataFrame(rows)
-    result.to_csv(out_path, index=False, encoding="utf-8-sig")
-    tqdm.write(f"  [{ticker}] {len(result)}행 저장 → {out_path}")
-    return result
+    df_new = pd.DataFrame(rows)
+    df_out = (
+        pd.concat([df_existing, df_new], ignore_index=True)
+        if not df_existing.empty else df_new
+    )
+    df_out = df_out.sort_values("date").reset_index(drop=True)
+    df_out.to_csv(out_path, index=False, encoding="utf-8-sig")
+    tqdm.write(f"  [{ticker}] +{len(rows)}행 추가 → 총 {len(df_out)}행")
+    return df_new
 
 
 # ── 기술 지표 계산 (단일 날짜) ────────────────────────────
@@ -276,9 +296,10 @@ def add_technical_indicators():
         out_path = os.path.join(FINANCIALS_DIR, fname)
         df = pd.read_csv(out_path, dtype={"ticker": str})
 
-        # 이미 두 컬럼 모두 존재하면 스킵
-        if "momentum_1m" in df.columns and "volume_change" in df.columns:
-            tqdm.write(f"  [{fname}] 컬럼 이미 존재 → 스킵")
+        # 이미 두 컬럼이 존재하고 모든 행이 채워져 있으면 스킵
+        if ("momentum_1m" in df.columns and "volume_change" in df.columns
+                and df["momentum_1m"].notna().all() and df["volume_change"].notna().all()):
+            tqdm.write(f"  [{fname}] 모든 행 이미 채워짐 → 스킵")
             continue
 
         ticker = fname.replace(".csv", "")
@@ -293,18 +314,21 @@ def add_technical_indicators():
             df.to_csv(out_path, index=False, encoding="utf-8-sig")
             continue
 
-        mom_list = []
-        vol_list = []
-        for date_str in df["date"]:
+        mom_list = df["momentum_1m"].tolist() if "momentum_1m" in df.columns else [np.nan] * len(df)
+        vol_list = df["volume_change"].tolist() if "volume_change" in df.columns else [np.nan] * len(df)
+
+        for i, date_str in enumerate(df["date"]):
+            if not pd.isna(mom_list[i]) and not pd.isna(vol_list[i]):
+                continue
             date = pd.Timestamp(date_str)
             mom, vol = calc_momentum_volume(price_df, date)
-            mom_list.append(mom)
-            vol_list.append(vol)
+            mom_list[i] = mom
+            vol_list[i] = vol
 
         df["momentum_1m"]   = mom_list
         df["volume_change"] = vol_list
         df.to_csv(out_path, index=False, encoding="utf-8-sig")
-        tqdm.write(f"  [{ticker}] momentum_1m / volume_change 추가 완료")
+        tqdm.write(f"  [{ticker}] momentum_1m / volume_change 갱신 완료")
 
 
 # ── 메인 ──────────────────────────────────────────────────
