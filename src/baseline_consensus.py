@@ -9,7 +9,7 @@ import os
 import shutil
 import pandas as pd
 import numpy as np
-from utils import TICKERS, get_price, calc_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir, load_analyst as _load_analyst
+from utils import TICKERS, get_price, calc_return, get_benchmark_price, calc_excess_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir, load_analyst as _load_analyst
 
 # ── 파라미터 ──────────────────────────────────────────────
 N_REPORTS  = 3      # 컨센서스 산출에 사용할 최근 리포트 수
@@ -36,6 +36,7 @@ def run():
         if price_df.empty:
             print(f"[consensus] {name}: 주가 없음, 스킵")
             continue
+        bench_df = get_benchmark_price(ticker)
 
         for i in range(N_REPORTS - 1, len(analyst)):
             window   = analyst.iloc[i - N_REPORTS + 1 : i + 1]
@@ -56,15 +57,17 @@ def run():
             ret = calc_return(price_df, sig_date, HOLD_DAYS)
             if ret is None:
                 continue
+            excess_ret = calc_excess_return(price_df, bench_df, sig_date, HOLD_DAYS)
 
             all_results.append({
-                "ticker":       ticker,
-                "name":         name,
-                "signal_date":  sig_date,
-                "avg_target":   round(avg_tp, 0),
-                "cur_price":    cur_price,
-                "gap_pct":      round(gap, 2),
-                "return_pct":   round(ret, 2),
+                "ticker":            ticker,
+                "name":              name,
+                "signal_date":       sig_date,
+                "avg_target":        round(avg_tp, 0),
+                "cur_price":         cur_price,
+                "gap_pct":           round(gap, 2),
+                "return_pct":        round(ret, 2),
+                "excess_return_pct": round(excess_ret, 2) if excess_ret is not None else None,
             })
 
         print(f"[consensus] {name}: {len([r for r in all_results if r['ticker']==ticker])} 신호")

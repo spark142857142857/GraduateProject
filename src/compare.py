@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from utils import EXPERIMENT_DIR, get_latest_baseline_dir, get_analysis_dir, get_latest_analysis_dir
+from utils import EXPERIMENT_DIR, KOSDAQ_TICKERS, get_latest_baseline_dir, get_analysis_dir, get_latest_analysis_dir
 from experiments import EXPERIMENTS
 
 # --cond 옵션에서 사용할 순서 기준 목록 (experiments.py에서 자동 파생)
@@ -49,9 +49,6 @@ SECTORS = {
     "IT플랫폼": ["035720", "035420"],
     "기타":     ["051910", "352820", "329180", "012450", "259960", "034020"],
 }
-KOSDAQ_TICKERS = {"247540", "196170"}
-
-
 # ── 통계 헬퍼 ─────────────────────────────────────────────
 
 def sharpe(series: pd.Series) -> float:
@@ -80,12 +77,15 @@ def calc_stats(series: pd.Series, signal: str = "Buy") -> dict:
 # ── 데이터 로드 ───────────────────────────────────────────
 
 def _normalize_ret(df: pd.DataFrame) -> pd.DataFrame:
-    """return_20d 컬럼 이름 통일."""
+    """return_20d, excess_return_20d 컬럼 이름 통일."""
     if "return_20d" not in df.columns:
         for alt in ["return_pct", "return", "수익률"]:
             if alt in df.columns:
                 df = df.rename(columns={alt: "return_20d"})
                 break
+    if "excess_return_20d" not in df.columns:
+        if "excess_return_pct" in df.columns:
+            df = df.rename(columns={"excess_return_pct": "excess_return_20d"})
     return df
 
 
@@ -136,7 +136,11 @@ def signal_rows(df: pd.DataFrame, label: str, has_confidence: bool = True,
     include_total=False: 베이스라인처럼 단일 신호(전체=Buy)인 경우 중복 '전체' 행 생략.
     """
     rows = []
-    has_5d = "return_5d" in df.columns
+    has_5d         = "return_5d" in df.columns
+    has_excess     = "excess_return_20d" in df.columns
+    has_excess_5d  = "excess_return_5d" in df.columns
+    _nan = {"mean": float("nan"), "hit_rate": float("nan"), "sharpe": float("nan")}
+
     groups = [
         ("Buy",     df[df["signal"] == "Buy"]),
         ("Neutral", df[df["signal"] == "Neutral"]),
@@ -147,15 +151,17 @@ def signal_rows(df: pd.DataFrame, label: str, has_confidence: bool = True,
     for sig, g in groups:
         if sig != "전체" and len(g) == 0:
             continue
-        s20 = calc_stats(g["return_20d"], sig)
-        s5  = calc_stats(g["return_5d"], sig) if has_5d else {
-            "mean": float("nan"), "hit_rate": float("nan"), "sharpe": float("nan"),
-        }
+        s20  = calc_stats(g["return_20d"], sig)
+        s5   = calc_stats(g["return_5d"],         sig) if has_5d        else _nan
+        es20 = calc_stats(g["excess_return_20d"],  sig) if has_excess    else _nan
+        es5  = calc_stats(g["excess_return_5d"],   sig) if has_excess_5d else _nan
         row = {
             "label": label, "signal": sig,
             "n": s20["n"],
-            "mean_5d": s5["mean"], "hit_rate_5d": s5["hit_rate"], "sharpe_5d": s5["sharpe"],
-            "mean": s20["mean"], "hit_rate": s20["hit_rate"], "sharpe": s20["sharpe"],
+            "mean_5d":           s5["mean"],   "hit_rate_5d":           s5["hit_rate"],   "sharpe_5d":           s5["sharpe"],
+            "mean":              s20["mean"],  "hit_rate":              s20["hit_rate"],  "sharpe":              s20["sharpe"],
+            "mean_excess_5d":    es5["mean"],  "hit_rate_excess_5d":    es5["hit_rate"],  "sharpe_excess_5d":    es5["sharpe"],
+            "mean_excess":       es20["mean"], "hit_rate_excess":       es20["hit_rate"], "sharpe_excess":       es20["sharpe"],
         }
         if has_confidence and "confidence" in g.columns and not g.empty:
             row["conf_mean"] = round(float(g["confidence"].mean()), 1)
@@ -171,22 +177,30 @@ def signal_rows(df: pd.DataFrame, label: str, has_confidence: bool = True,
 
 def print_full_comparison(baseline_data: dict, cond_data: dict) -> pd.DataFrame:
     """전략별 전체 통계를 한 줄씩 출력하고 DataFrame 반환."""
-    SEP = "─" * 72
-    FMT = "{:<22} {:>6} {:>12} {:>10} {:>8}"
+    SEP = "─" * 96
+    FMT = "{:<22} {:>6} {:>12} {:>10} {:>8} {:>12} {:>10} {:>8}"
     print("\n" + SEP)
-    print(FMT.format("전략", "신호수", "평균수익률", "Hit Rate", "Sharpe"))
+    print(FMT.format("전략", "신호수", "평균수익률", "Hit Rate", "Sharpe", "초과수익률", "초과Hit", "초과Sharpe"))
     print(SEP)
 
     rows = []
     for label, df in {**baseline_data, **cond_data}.items():
         s    = calc_stats(df["return_20d"])
+        has_excess = "excess_return_20d" in df.columns
+        se   = calc_stats(df["excess_return_20d"]) if has_excess else {"mean": float("nan"), "hit_rate": float("nan"), "sharpe": float("nan")}
         name = COND_LABELS.get(label, label)
-        mean = f"{s['mean']:+.3f}%" if not np.isnan(s["mean"])     else "N/A"
-        hit  = f"{s['hit_rate']:.1f}%" if not np.isnan(s["hit_rate"]) else "N/A"
-        shp  = f"{s['sharpe']:.3f}"    if not np.isnan(s["sharpe"])   else "N/A"
-        print(FMT.format(name, int(s["n"]), mean, hit, shp))
-        rows.append({"strategy": name, "n": s["n"], "mean_ret": s["mean"],
-                     "hit_rate": s["hit_rate"], "sharpe": s["sharpe"]})
+        mean  = f"{s['mean']:+.3f}%"   if not np.isnan(s["mean"])    else "N/A"
+        hit   = f"{s['hit_rate']:.1f}%" if not np.isnan(s["hit_rate"]) else "N/A"
+        shp   = f"{s['sharpe']:.3f}"    if not np.isnan(s["sharpe"])   else "N/A"
+        emean = f"{se['mean']:+.3f}%"   if not np.isnan(se["mean"])    else "N/A"
+        ehit  = f"{se['hit_rate']:.1f}%" if not np.isnan(se["hit_rate"]) else "N/A"
+        eshp  = f"{se['sharpe']:.3f}"    if not np.isnan(se["sharpe"])   else "N/A"
+        print(FMT.format(name, int(s["n"]), mean, hit, shp, emean, ehit, eshp))
+        rows.append({
+            "strategy": name, "n": s["n"],
+            "mean_ret": s["mean"], "hit_rate": s["hit_rate"], "sharpe": s["sharpe"],
+            "excess_mean": se["mean"], "excess_hit_rate": se["hit_rate"], "excess_sharpe": se["sharpe"],
+        })
     print(SEP)
     return pd.DataFrame(rows)
 
@@ -194,8 +208,10 @@ def print_full_comparison(baseline_data: dict, cond_data: dict) -> pd.DataFrame:
 # ── 비교표 출력 ───────────────────────────────────────────
 
 def print_comparison(rows: list[dict]) -> None:
+    # ── 테이블 1: 절대수익률 ──────────────────────────────────
     SEP = "─" * 104
     FMT = "{:<20} {:<8} {:>6} {:>10} {:>8} {:>10} {:>10} {:>8} {:>11}"
+    print("\n[절대수익률]")
     print(SEP)
     print(FMT.format("전략", "신호", "신호수", "5d수익률", "5d Hit", "Sharpe(5d)", "20d수익률", "20d Hit", "Sharpe(20d)"))
     print(SEP)
@@ -216,6 +232,29 @@ def print_comparison(rows: list[dict]) -> None:
         print(FMT.format(r["label"], r["signal"], int(r["n"]), m5, h5, shp5, m20, h20, shp))
         if r["signal"] == "전체":
             print(SEP)
+
+    # ── 테이블 2: 초과수익률 (vs KOSPI/KOSDAQ) ────────────────
+    SEP2 = "─" * 80
+    FMT2 = "{:<20} {:<8} {:>6} {:>12} {:>10} {:>10} {:>10}"
+    print("\n[초과수익률 — vs KOSPI/KOSDAQ]")
+    print(SEP2)
+    print(FMT2.format("전략", "신호", "신호수", "5d초과수익", "5d초과Hit", "20d초과수익", "20d초과Hit"))
+    print(SEP2)
+
+    prev_label = None
+    for r in rows:
+        if prev_label and r["label"] != prev_label and r["signal"] == "Buy":
+            print()
+        prev_label = r["label"]
+
+        em5  = f"{r['mean_excess_5d']:+.3f}%"    if not np.isnan(r["mean_excess_5d"])    else "N/A"
+        eh5  = f"{r['hit_rate_excess_5d']:.1f}%"  if not np.isnan(r["hit_rate_excess_5d"]) else "N/A"
+        em20 = f"{r['mean_excess']:+.3f}%"        if not np.isnan(r["mean_excess"])        else "N/A"
+        eh20 = f"{r['hit_rate_excess']:.1f}%"     if not np.isnan(r["hit_rate_excess"])    else "N/A"
+
+        print(FMT2.format(r["label"], r["signal"], int(r["n"]), em5, eh5, em20, eh20))
+        if r["signal"] == "전체":
+            print(SEP2)
 
 
 # ── 섹터별 분석 ───────────────────────────────────────────
@@ -239,13 +278,15 @@ def analysis_sector(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
     for sector, tickers in SECTORS.items():
         for cond, df in data.items():
             sub = df[df["ticker"].isin(tickers)]
+            has_excess = "excess_return_20d" in sub.columns
             for sig in ["Buy", "Neutral", "Sell"]:
                 sig_sub = sub[sub["signal"] == sig]
-                s = calc_stats(sig_sub["return_20d"], sig)
+                s  = calc_stats(sig_sub["return_20d"], sig)
+                se = calc_stats(sig_sub["excess_return_20d"], sig) if has_excess else {"mean": float("nan"), "hit_rate": float("nan"), "sharpe": float("nan")}
                 rows.append({
                     "sector": sector, "cond": cond, "signal": sig,
-                    "n": s["n"], "mean": s["mean"],
-                    "hit_rate": s["hit_rate"], "sharpe": s["sharpe"],
+                    "n": s["n"], "mean": s["mean"], "hit_rate": s["hit_rate"], "sharpe": s["sharpe"],
+                    "mean_excess": se["mean"], "hit_rate_excess": se["hit_rate"], "sharpe_excess": se["sharpe"],
                 })
 
     result = pd.DataFrame(rows)
@@ -297,21 +338,26 @@ def analysis_stock(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
 
     rows = []
     for cond, df in data.items():
+        has_excess = "excess_return_20d" in df.columns
         for ticker, grp in df.groupby("ticker"):
-            ticker = str(ticker).zfill(6)
+            ticker  = str(ticker).zfill(6)
             buy_grp = grp[grp["signal"] == "Buy"]
-            s = calc_stats(buy_grp["return_20d"], signal="Buy")
+            s  = calc_stats(buy_grp["return_20d"], signal="Buy")
+            se = calc_stats(buy_grp["excess_return_20d"], signal="Buy") if has_excess else {"mean": float("nan"), "hit_rate": float("nan"), "sharpe": float("nan")}
             rows.append({
-                "ticker":          ticker,
-                "name":            grp["name"].iloc[0] if "name" in grp.columns else ticker,
-                "market":          "코스닥" if ticker in KOSDAQ_TICKERS else "코스피",
-                "sector":          ticker_to_sector(ticker),
-                "cond":            cond,
-                "signal_filter":   "Buy",          # 집계 기준 명시
-                "n_buy":           s["n"],
-                "buy_mean_20d":    s["mean"],
-                "buy_hit_rate_20d": s["hit_rate"],
-                "buy_sharpe_20d":  s["sharpe"],
+                "ticker":                  ticker,
+                "name":                    grp["name"].iloc[0] if "name" in grp.columns else ticker,
+                "market":                  "코스닥" if ticker in KOSDAQ_TICKERS else "코스피",
+                "sector":                  ticker_to_sector(ticker),
+                "cond":                    cond,
+                "signal_filter":           "Buy",
+                "n_buy":                   s["n"],
+                "buy_mean_20d":            s["mean"],
+                "buy_hit_rate_20d":        s["hit_rate"],
+                "buy_sharpe_20d":          s["sharpe"],
+                "buy_excess_mean_20d":     se["mean"],
+                "buy_excess_hit_rate_20d": se["hit_rate"],
+                "buy_excess_sharpe_20d":   se["sharpe"],
             })
 
     result = pd.DataFrame(rows)
