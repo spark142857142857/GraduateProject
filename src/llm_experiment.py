@@ -27,7 +27,7 @@ from google.genai import types as genai_types
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils import (
-    TICKERS, EXPERIMENT_DIR,
+    TICKERS, KOSDAQ_TICKERS, EXPERIMENT_DIR,
     get_price, calc_return, get_benchmark_price, calc_excess_return,
     get_experiment_dir, get_latest_experiment_dir,
 )
@@ -53,8 +53,10 @@ CKPT_COLS = ["ticker", "name", "signal_date", "price", "signal", "confidence", "
 
 # ── 프롬프트 빌더 ──────────────────────────────────────────
 
-def build_prompt(name: str, price: float, context_sections: list[str]) -> str:
+def build_prompt(name: str, price: float, context_sections: list[str], ticker: str = "") -> str:
     """종목명·현재가·컨텍스트 섹션을 조합해 LLM 프롬프트 생성."""
+    market_name = "KOSDAQ" if ticker in KOSDAQ_TICKERS else "KOSPI"
+
     intro = (
         "아래 정보를 바탕으로 이 종목의 향후 20거래일 투자 방향을 판단해주세요."
         if context_sections else
@@ -63,7 +65,7 @@ def build_prompt(name: str, price: float, context_sections: list[str]) -> str:
 
     parts = [
         f"당신은 주식 투자 분석가입니다.\n{intro}",
-        f"\n[종목 정보]\n종목명: {name}\n현재가: {int(price):,}원",
+        f"\n[종목 정보]\n종목명: {name}\n현재가: {int(price):,}원\n상장 시장: {market_name}",
     ]
 
     for section in context_sections:
@@ -72,9 +74,14 @@ def build_prompt(name: str, price: float, context_sections: list[str]) -> str:
 
     parts.append(
         "\n[판단 기준]\n"
-        "- Buy    : 향후 20거래일 내 시장 대비 상승 예상\n"
-        "- Sell   : 향후 20거래일 내 시장 대비 하락 예상\n"
-        "- Neutral: 방향성 불분명하거나 판단 근거 부족\n"
+        f"- Buy    : 향후 20거래일 내 {market_name} 시장 수익률 대비 초과 상승 예상\n"
+        f"- Sell   : 향후 20거래일 내 {market_name} 시장 수익률 대비 초과 하락 예상\n"
+        "- Neutral: Buy/Sell 판단을 내리기에 정보가 불충분하거나 상승·하락 요인이 균형을 이룸\n"
+        "\n[confidence 기준]\n"
+        "- 90~100: 복수의 지표가 같은 방향을 강하게 지지\n"
+        "- 70~89 : 주요 지표가 방향을 지지하나 일부 불확실성 존재\n"
+        "- 50~69 : 방향은 있으나 근거가 제한적\n"
+        "- 50 미만: 사용 지양 (이 경우 Neutral 권장)\n"
         "\n다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요.\n"
         "{\n"
         '  "signal": "Buy" 또는 "Sell" 또는 "Neutral",\n'
@@ -124,7 +131,7 @@ def call_llm(client: genai.Client, prompt: str) -> tuple[str, int, list[str]]:
     resp = client.models.generate_content(
         model=MODEL,
         contents=prompt,
-        config=genai_types.GenerateContentConfig(temperature=0.3),
+        config=genai_types.GenerateContentConfig(temperature=0.0),
     )
     text = (resp.text or "").strip()
 
@@ -203,7 +210,7 @@ def run(cond: str, test: bool = False):
                 for ctx in contexts
             ]
 
-            prompt = build_prompt(name, cur_price, context_sections)
+            prompt = build_prompt(name, cur_price, context_sections, ticker=ticker)
 
             if test:
                 print("=" * 60)

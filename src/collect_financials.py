@@ -171,10 +171,7 @@ def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | N
         tqdm.write(f"  [{ticker}] 가격 데이터 오류: {e}")
         return None
 
-    # 오늘 기준 월까지 동적 생성
-    today = pd.Timestamp.today()
-    current_ym = f"{today.year}-{today.month:02d}"
-    monthly_dates = get_monthly_first_days(ticker, end_ym=current_ym)
+    monthly_dates = get_monthly_first_days(ticker, end_ym=END_YM)
     if not monthly_dates:
         tqdm.write(f"  [{ticker}] 월별 거래일 없음")
         return None
