@@ -26,7 +26,6 @@ import sys
 import time
 import warnings
 import requests
-from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -38,7 +37,7 @@ warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils import TICKERS, DATA_DIR
 # 월별 첫 거래일 목록·적용 회계연도 결정 함수 재사용 (코드 중복 방지)
-from collect_financials import applicable_fiscal_year, get_monthly_first_days
+from collect_financials import applicable_fiscal_year, get_monthly_first_days, END_YM
 
 load_dotenv()
 
@@ -52,12 +51,6 @@ try:
     dart = odr(api_key=DART_API_KEY)
 except Exception:
     dart = None  # 키 없음 → get_dart_annual() 내부 try/except가 NaN 반환
-
-
-def _current_ym() -> str:
-    """오늘 날짜 기준 'YYYY-MM' 반환."""
-    today = datetime.today()
-    return f"{today.year}-{today.month:02d}"
 
 
 # ── 계정과목명 후보 (우선순위 순) ─────────────────────────
@@ -147,10 +140,7 @@ def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
 # ── 종목 처리 ──────────────────────────────────────────────
 
 def process_ticker(name: str, ticker: str) -> pd.DataFrame | None:
-    """종목별 DART 실적 수집. 기존 CSV가 있으면 누락 월만 추가(append-only).
-
-    동적 END_YM(_current_ym())을 사용하므로 매월 실행 시 자동 확장.
-    """
+    """종목별 DART 실적 수집. 기존 CSV가 있으면 누락 월만 추가(append-only)."""
     out_path = os.path.join(DART_FUND_DIR, f"{ticker}.csv")
 
     # 기존 날짜 셋 로드 (있으면 누락 월만 처리)
@@ -160,8 +150,7 @@ def process_ticker(name: str, ticker: str) -> pd.DataFrame | None:
         df_existing = pd.read_csv(out_path, dtype={"ticker": str})
         existing_dates = set(df_existing["date"].astype(str).tolist())
 
-    # 오늘 기준 월까지 동적 생성
-    monthly_dates = get_monthly_first_days(ticker, end_ym=_current_ym())
+    monthly_dates = get_monthly_first_days(ticker, end_ym=END_YM)
     if not monthly_dates:
         tqdm.write(f"  [{ticker}] 월별 거래일 없음")
         return None

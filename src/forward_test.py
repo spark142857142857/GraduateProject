@@ -86,7 +86,7 @@ def run_forward(ticker: str, cond: str = "cond4") -> dict:
         FORWARD_BUILDER_MAP[key](ctx)
         for key in EXPERIMENTS[cond]
     ]
-    prompt = build_prompt(name, current_price, context_sections)
+    prompt = build_prompt(name, current_price, context_sections, ticker=ticker)
 
     # 4. Gemini API 호출 (최대 3회 재시도)
     print(f"[{ticker}] LLM 호출 중 (cond={cond})...")
