@@ -428,7 +428,7 @@ def print_comparison(rows: list[dict]) -> None:
     # ── 테이블 2: 초과수익률 (vs KOSPI/KOSDAQ) ────────────────
     SEP2 = "─" * 80
     FMT2 = "{:<20} {:<8} {:>6} {:>12} {:>10} {:>10} {:>10}"
-    print("\n[초과수익률 — vs KOSPI/KOSDAQ]")
+    print("\n[초과수익률 - vs KOSPI/KOSDAQ]")
     print(SEP2)
     print(FMT2.format("전략", "신호", "신호수", "5d초과수익", "5d초과Hit", "20d초과수익", "20d초과Hit"))
     print(SEP2)
