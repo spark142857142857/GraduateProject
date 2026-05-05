@@ -19,7 +19,7 @@ FINANCIALS_DIR    = os.path.join(DATA_DIR, "financials")
 REPORTS_DIR       = os.path.join(DATA_DIR, "reports")
 DART_FUND_DIR     = os.path.join(DATA_DIR, "dart_fundamentals")
 
-WINDOW_DAYS = 30
+WINDOW_DAYS = 30  # 신호일 기준 직전 30 calendar days 이내 리포트만 참조. LLM context 길이와 최신성 간 tradeoff
 
 
 # ── 포맷 헬퍼 ─────────────────────────────────────────────
@@ -74,7 +74,7 @@ def build_financials(ticker: str, date: str) -> str:
 
 def build_reports(ticker: str, date: str) -> str:
     """
-    data/reports/{ticker}.csv에서 date 기준 직전 30일 리포트 최대 5건 반환.
+    data/reports/{ticker}.csv에서 date 기준 직전 WINDOW_DAYS일 리포트 최대 5건 반환.
     없으면 빈 문자열 반환.
     """
     path = os.path.join(REPORTS_DIR, f"{ticker}.csv")
@@ -82,16 +82,16 @@ def build_reports(ticker: str, date: str) -> str:
         return ""
 
     df = pd.read_csv(path, parse_dates=["date"])
-    end_dt   = pd.to_datetime(date) - timedelta(days=1)
+    end_dt   = pd.to_datetime(date) - timedelta(days=1)  # 신호일 당일 발행 리포트 제외 — look-ahead bias 방지 (신호일 전일까지만 포함)
     start_dt = end_dt - timedelta(days=WINDOW_DAYS - 1)
 
     sub = df[(df["date"] >= start_dt) & (df["date"] <= end_dt)]
-    sub = sub.sort_values("date", ascending=False).head(5)
+    sub = sub.sort_values("date", ascending=False).head(5)  # 최신 5건으로 제한 — LLM 프롬프트 길이 제어 및 최신 정보 우선 반영
 
     if sub.empty:
         return ""
 
-    lines = ["[애널리스트 리포트 (최근 30일, 최대 5건)]"]
+    lines = [f"[애널리스트 리포트 (최근 {WINDOW_DAYS}일, 최대 5건)]"]
     for _, r in sub.iterrows():
         tp = r.get("target_price")
         tp_str = f"목표주가 {int(tp):,}원" if not pd.isna(tp) else "목표주가 없음"
@@ -107,7 +107,7 @@ def _to_trillion(val) -> str:
     """백만원(KRW) 단위 값을 조원 문자열로 변환. None/NaN → 'N/A'."""
     if val is None or pd.isna(val):
         return "N/A"
-    t = val / 1_000_000  # 백만원 → 조원
+    t = val / 1_000_000  # DART 원본 금액 단위는 백만원. collect_dart_fundamentals.py와 단위 가정 공유 — 단위 변경 시 두 파일 동시 수정 필요
     sign = "+" if t > 0 else ""
     return f"{sign}{t:.1f}조원"
 
@@ -148,7 +148,7 @@ def build_reports_from_dict(ctx: dict) -> str:
     reports = ctx.get("recent_reports", [])
     if not reports:
         return ""
-    lines = ["[애널리스트 리포트 (최근 30일, 최대 5건)]"]
+    lines = [f"[애널리스트 리포트 (최근 {WINDOW_DAYS}일, 최대 5건)]"]
     for r in reports:
         tp     = r.get("target_price")
         tp_str = f"목표주가 {int(tp):,}원" if tp else "목표주가 없음"
@@ -181,8 +181,8 @@ def build_dart_fundamentals(ticker: str, date: str) -> str:
     if not os.path.exists(path):
         return ""
 
-    df = pd.read_csv(path, dtype={"ticker": str})
-    row_df = df[df["date"] == date]
+    df = pd.read_csv(path, dtype={"ticker": str}, parse_dates=["date"])
+    row_df = df[df["date"].dt.strftime("%Y-%m-%d") == date]
     if row_df.empty:
         return ""
     row = row_df.iloc[0]

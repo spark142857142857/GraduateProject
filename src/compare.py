@@ -40,6 +40,7 @@ COND_LABELS = {
     "reports_only":       "리포트 단독",
     "dart_only":          "DART 단독",
     "cond4_no_reports":   "cond4 - reports (재무+DART)",
+    "cond4_blind":        "cond4_blind (종목명 익명)",
 }
 
 SECTORS = {
@@ -149,6 +150,8 @@ def run_significance_tests(
     Buy 신호만 대상, 20d 절대/초과 수익률 2개 metric.
     # TODO: paired test (signal flip analysis) is future work
     """
+    # 각 pair는 독립적 연구 질문에 대응하므로 Bonferroni 등 다중비교 보정 미적용
+    # (pair 간 귀무가설이 서로 다름. 동일 데이터 공유는 있으나 질문 자체가 독립적)
     PAIRS = [
         # ── 핵심 3개 ─────────────────────────────────────
         ("cond4", "cond1",            "core"),      # 컨텍스트 최대 vs 최소
@@ -159,6 +162,8 @@ def run_significance_tests(
         ("cond3", "cond1",            "auxiliary"), # 재무+리포트 추가 효과
         # ── 보조: LOO ablation (reports marginal effect) ─
         ("cond4", "cond4_no_reports", "auxiliary"), # 리포트 순수 기여도
+        # ── 보조: blind ablation ─────────────────────────
+        ("cond4_blind", "cond4",      "auxiliary"), # blind ablation: 종목명 익명화 효과 측정
     ]
     METRICS = [
         ("return_20d",        "absolute"),
@@ -313,7 +318,7 @@ def load_baselines() -> dict[str, pd.DataFrame]:
         df["ticker"] = df["ticker"].astype(str).str.zfill(6)
         df = _normalize_ret(df)
         if "signal" not in df.columns:
-            df["signal"] = "Buy"
+            df["signal"] = "Buy"  # 베이스라인은 신호 구분 없으므로 전체를 Buy로 일괄 처리
         result[label] = df
         print(f"  로드: {label} ({len(df)}행)")
     return result
@@ -623,7 +628,7 @@ def run(cond_target: str | None, include_sector: bool, is_all: bool) -> None:
     all_rows = []
     for label, df in baseline_data.items():
         # 베이스라인은 signal="Buy" 일괄 부여 → 전체 행 = Buy 행 (중복 제거)
-        all_rows.extend(signal_rows(df, label, has_confidence=False, include_total=False))
+        all_rows.extend(signal_rows(df, label, has_confidence=False, include_total=False))  # 베이스라인은 전체 신호=Buy이므로 '전체' 행이 'Buy' 행과 동일 — 중복 행 생략
     for cond, df in cond_data.items():
         all_rows.extend(signal_rows(df, cond, has_confidence=True))
 
