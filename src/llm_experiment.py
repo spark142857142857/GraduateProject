@@ -32,7 +32,7 @@ from utils import (
     get_experiment_dir, get_latest_experiment_dir,
 )
 from context_builders import build_financials, build_reports, build_dart_fundamentals
-from experiments import EXPERIMENTS
+from experiments import EXPERIMENTS, BLIND_CONDITIONS
 
 load_dotenv(override=True)
 
@@ -53,9 +53,14 @@ CKPT_COLS = ["ticker", "name", "signal_date", "price", "signal", "confidence", "
 
 # ── 프롬프트 빌더 ──────────────────────────────────────────
 
-def build_prompt(name: str, price: float, context_sections: list[str], ticker: str = "") -> str:
+def build_prompt(name: str, price: float, context_sections: list[str], ticker: str = "", blind: bool = False) -> str:
     """종목명·현재가·컨텍스트 섹션을 조합해 LLM 프롬프트 생성."""
     market_name = "KOSDAQ" if ticker in KOSDAQ_TICKERS else "KOSPI"
+
+    # 종목 식별 정보를 제거해 LLM 사전학습 기반 편향을 차단하는 ablation 조건
+    display_name = "종목 A" if blind else name
+    market_line  = "" if blind else f"\n상장 시장: {market_name}"
+    judge_market = "주식 시장" if blind else market_name
 
     intro = (
         "아래 정보를 바탕으로 이 종목의 향후 20거래일 투자 방향을 판단해주세요."
@@ -65,7 +70,7 @@ def build_prompt(name: str, price: float, context_sections: list[str], ticker: s
 
     parts = [
         f"당신은 주식 투자 분석가입니다.\n{intro}",
-        f"\n[종목 정보]\n종목명: {name}\n현재가: {int(price):,}원\n상장 시장: {market_name}",
+        f"\n[종목 정보]\n종목명: {display_name}\n현재가: {int(price):,}원{market_line}",
     ]
 
     for section in context_sections:
@@ -74,8 +79,8 @@ def build_prompt(name: str, price: float, context_sections: list[str], ticker: s
 
     parts.append(
         "\n[판단 기준]\n"
-        f"- Buy    : 향후 20거래일 내 {market_name} 시장 수익률 대비 초과 상승 예상\n"
-        f"- Sell   : 향후 20거래일 내 {market_name} 시장 수익률 대비 초과 하락 예상\n"
+        f"- Buy    : 향후 20거래일 내 {judge_market} 수익률 대비 초과 상승 예상\n"
+        f"- Sell   : 향후 20거래일 내 {judge_market} 수익률 대비 초과 하락 예상\n"
         "- Neutral: Buy/Sell 판단을 내리기에 정보가 불충분하거나 상승·하락 요인이 균형을 이룸\n"
         "\n[confidence 기준]\n"
         "- 90~100: 복수의 지표가 같은 방향을 강하게 지지\n"
@@ -142,7 +147,7 @@ def call_llm(client: genai.Client, prompt: str) -> tuple[str, int, list[str]]:
 
     signal     = str(data["signal"]).strip()
     confidence = max(0, min(100, int(data["confidence"])))
-    reasons    = data.get("reasons", [])
+    reasons    = data.get("reasons") or []  # None 반환 시 빈 리스트로 대체
 
     if signal not in ("Buy", "Sell", "Neutral"):
         raise ValueError(f"signal 값 오류: {signal}")
@@ -172,6 +177,7 @@ def run(cond: str, test: bool = False):
     print(f"[{cond}] 컨텍스트: {contexts if contexts else '없음 (No Context)'}")
     print(f"[{cond}] 체크포인트 로드: {len(ckpt_df)}건 기처리\n")
 
+    is_blind = cond in BLIND_CONDITIONS  # 종목 식별 정보 익명화 여부 (experiments.py의 BLIND_CONDITIONS 참조)
     total = 0
 
     for name, ticker in TICKERS.items():
@@ -187,7 +193,7 @@ def run(cond: str, test: bool = False):
             print(f"[{cond}] {name}: 완료됨 ({len(fin_df)}건), 스킵")
             continue
 
-        price_df = get_price(ticker, start="2022-12-01")
+        price_df = get_price(ticker, start="2022-12-01")  # 2022-12-01부터 로드: 52주 고저가·모멘텀 계산에 실험 시작일(2023-01) 이전 데이터 필요
         if price_df.empty:
             print(f"[{cond}] {name}: 주가 없음, 스킵")
             continue
@@ -210,7 +216,7 @@ def run(cond: str, test: bool = False):
                 for ctx in contexts
             ]
 
-            prompt = build_prompt(name, cur_price, context_sections, ticker=ticker)
+            prompt = build_prompt(name, cur_price, context_sections, ticker=ticker, blind=is_blind)
 
             if test:
                 print("=" * 60)
@@ -284,7 +290,7 @@ def run(cond: str, test: bool = False):
     for _, row in ckpt_df.iterrows():
         tk = row["ticker"]
         if tk not in price_cache:
-            price_cache[tk] = get_price(tk, start="2022-12-01")
+            price_cache[tk] = get_price(tk, start="2022-12-01")  # 2022-12-01부터 로드: 52주 고저가·모멘텀 계산에 실험 시작일(2023-01) 이전 데이터 필요
         if tk not in bench_cache:
             bench_cache[tk] = get_benchmark_price(tk, start="2022-12-01")
         stock_df = price_cache[tk]
@@ -300,7 +306,7 @@ def run(cond: str, test: bool = False):
     result_df["return_20d"]        = ret20_list
     result_df["excess_return_5d"]  = excess5_list
     result_df["excess_return_20d"] = excess20_list
-    result_df = result_df.dropna(subset=["return_20d"]).reset_index(drop=True)
+    result_df = result_df.dropna(subset=["return_20d"]).reset_index(drop=True)  # 백테스팅 말미(2025-12 등) 신호는 20거래일 매도가 미확정이므로 자동 제외
 
     # ── 저장 ──────────────────────────────────────────────
     out_dir    = get_experiment_dir(cond)

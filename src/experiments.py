@@ -19,4 +19,11 @@ EXPERIMENTS = {
 
     # Leave-One-Out ablation (cond4 - 단일 카테고리)
     "cond4_no_reports": ["financials", "dart_fundamentals"],
+
+    # Blind ablation (종목 식별 정보 제거 — LLM 사전학습 편향 측정)
+    "cond4_blind": ["financials", "dart_fundamentals"],
 }
+
+# blind=True로 build_prompt()를 호출할 조건 명시적 집합
+# 문자열 매칭("blind" in cond) 대신 이 집합으로 판별
+BLIND_CONDITIONS: set[str] = {"cond4_blind"}

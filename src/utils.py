@@ -8,7 +8,7 @@ import FinanceDataReader as fdr
 from datetime import datetime
 
 # ── 분석 설정 ─────────────────────────────────────────────
-START_DATE = "2023-01-01"
+START_DATE = "2023-01-01"  # collect_financials의 START_YM(2023-01)과 동일 기준점
 END_DATE   = datetime.today().strftime("%Y-%m-%d")
 
 TICKERS = {
@@ -70,7 +70,7 @@ def get_price(ticker: str, start: str = START_DATE, end: str = END_DATE) -> pd.D
             try:
                 new = fdr.DataReader(ticker, last_date, today)
                 if not new.empty:
-                    new["Change"] = (new["Change"] * 100).round(2)
+                    new["Change"] = (new["Change"] * 100).round(2)  # FDR이 소수 비율(0.01)로 반환하므로 백분율로 변환
                     new = new[~new.index.isin(df.index)]  # 중복 제거
                     if not new.empty:
                         df = pd.concat([df, new]).sort_index()
@@ -81,7 +81,7 @@ def get_price(ticker: str, start: str = START_DATE, end: str = END_DATE) -> pd.D
     else:
         try:
             df = fdr.DataReader(ticker, start, today)
-            df["Change"] = (df["Change"] * 100).round(2)
+            df["Change"] = (df["Change"] * 100).round(2)  # FDR이 소수 비율(0.01)로 반환하므로 백분율로 변환
             df.index.name = "Date"
             os.makedirs(PRICE_DIR, exist_ok=True)
             df.reset_index().to_csv(cache_path, index=False)
@@ -122,6 +122,9 @@ def calc_return(df: pd.DataFrame, entry_date: str, hold_days: int = 20) -> float
     entry_date 이후 첫 거래일 종가 기준으로 hold_days 후 수익률(%) 반환.
     데이터 부족 시 None 반환.
     """
+    # hold_days는 거래일 기준
+    # iloc[0]: signal_date 다음 첫 거래일 종가 = 매수 기준가 (look-ahead bias 방지)
+    # iloc[hold_days]: 매수 후 hold_days번째 거래일 종가 = 매도 기준가
     df = df.sort_index()
     future = df.loc[df.index > entry_date]
 
