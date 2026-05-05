@@ -60,7 +60,7 @@ def get_this_month_first_trading_day() -> pd.Timestamp | None:
     ym_start = pd.Timestamp(today.year, today.month, 1)
     ym_end   = ym_start + pd.offsets.MonthEnd(0)
 
-    ref_ticker = "005930"  # 삼성전자 기준
+    ref_ticker = "005930"  # 삼성전자 거래 달력을 KRX 대표 달력으로 사용 — 대형주 거래정지 없다는 가정 하에 안전
     try:
         price_df = fdr.DataReader(
             ref_ticker,
@@ -278,6 +278,7 @@ def _update_dart_one(ticker: str, name: str, base_date: pd.Timestamp) -> bool:
         else np.nan
     )
 
+    # collect_dart_fundamentals._yoy와 동일 로직 — Phase 4에서 통합 필요 (현재 중복 관리)
     def _yoy(curr, prev):
         if np.isnan(curr) or np.isnan(prev) or prev == 0:
             return np.nan
@@ -372,7 +373,7 @@ def get_today_context(ticker: str) -> dict:
         if not df_dart.empty:
             latest_dart_date = pd.to_datetime(df_dart["date"].max())
             days_stale = (pd.Timestamp(today_str) - latest_dart_date).days
-            if days_stale > 90:
+            if days_stale > 90:  # 사업보고서 분기 공시 기준. 90일 = 약 1분기로 stale 판단
                 print(f"  [{ticker}] DART 데이터 {days_stale}일 경과 -> 이번 달 행 추가 시도")
                 base_date = get_this_month_first_trading_day()
                 if base_date is not None:

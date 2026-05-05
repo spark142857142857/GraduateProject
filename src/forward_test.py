@@ -33,7 +33,7 @@ from context_builders import (
     build_reports_from_dict,
     build_dart_fundamentals_from_dict,
 )
-from experiments import EXPERIMENTS
+from experiments import EXPERIMENTS, BLIND_CONDITIONS
 from llm_experiment import build_prompt, call_llm
 
 load_dotenv()
@@ -65,7 +65,7 @@ def run_forward(ticker: str, cond: str = "cond4") -> dict:
     """
     today_str  = datetime.today().strftime("%Y-%m-%d")
     cache_dir  = os.path.join(FORWARD_DIR, today_str)
-    cache_path = os.path.join(cache_dir, f"{ticker}_{cond}.json")
+    cache_path = os.path.join(cache_dir, f"{ticker}_{cond}.json")  # 당일 동일 ticker+cond 캐시 반환 — Gemini API 중복 호출 방지
 
     # 1. 캐시
     if os.path.exists(cache_path):
@@ -75,7 +75,7 @@ def run_forward(ticker: str, cond: str = "cond4") -> dict:
 
     # 2. 실시간 지표 수집
     print(f"[{ticker}] 실시간 데이터 수집 중...")
-    from update import get_today_context
+    from update import get_today_context  # 함수 내 지연 import — update.py와의 순환 의존성 방지
     ctx = get_today_context(ticker)
 
     name          = ctx["name"]
@@ -86,7 +86,8 @@ def run_forward(ticker: str, cond: str = "cond4") -> dict:
         FORWARD_BUILDER_MAP[key](ctx)
         for key in EXPERIMENTS[cond]
     ]
-    prompt = build_prompt(name, current_price, context_sections, ticker=ticker)
+    is_blind = cond in BLIND_CONDITIONS
+    prompt = build_prompt(name, current_price, context_sections, ticker=ticker, blind=is_blind)
 
     # 4. Gemini API 호출 (최대 3회 재시도)
     print(f"[{ticker}] LLM 호출 중 (cond={cond})...")
@@ -134,7 +135,7 @@ def run_forward(ticker: str, cond: str = "cond4") -> dict:
         "ticker":       ticker,
         "name":         name,
         "date":         today_str,
-        "context_date": today_str,   # 오늘 날짜 기준
+        "context_date": today_str,   # 백테스팅은 월 첫 거래일, forward test는 오늘 날짜 기준 — 의도적 차이
         "price":        current_price,
         "signal":       signal,
         "confidence":   confidence,

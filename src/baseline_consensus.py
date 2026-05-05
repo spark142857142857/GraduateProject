@@ -5,15 +5,18 @@
 - 결과: results/consensus_returns.csv
 """
 
+import sys
 import os
 import shutil
 import pandas as pd
 import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils import TICKERS, get_price, calc_return, get_benchmark_price, calc_excess_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir, load_analyst as _load_analyst
 
 # ── 파라미터 ──────────────────────────────────────────────
-N_REPORTS  = 3      # 컨센서스 산출에 사용할 최근 리포트 수
-BUY_GAP    = 10.0   # 목표주가가 현재가보다 X% 이상 높으면 매수 신호 (%)
+N_REPORTS  = 3      # 최근 3개 리포트 평균 목표주가로 컨센서스 산출. 너무 많으면 과거 의견 혼입
+BUY_GAP    = 10.0   # 목표주가 괴리율 10% 이상일 때만 매수 신호 — 임계값
 HOLD_DAYS  = 20     # 보유 기간 (거래일)
 
 
@@ -38,7 +41,7 @@ def run():
             continue
         bench_df = get_benchmark_price(ticker)
 
-        for i in range(N_REPORTS - 1, len(analyst)):
+        for i in range(N_REPORTS - 1, len(analyst)):  # i=N-1부터 시작해야 첫 윈도우에서 N개 리포트 확보
             window   = analyst.iloc[i - N_REPORTS + 1 : i + 1]
             avg_tp   = window["target_price"].mean()
             sig_date = str(analyst.iloc[i]["date"].date())

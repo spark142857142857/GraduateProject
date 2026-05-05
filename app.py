@@ -75,6 +75,7 @@ if _dart_warn:
 
 
 # ── 상수 ──────────────────────────────────────────────────
+# 연구용 조건(cond4_no_reports, cond4_blind)은 UI 미노출 — 사용자 편의 조건만 표시
 COND_LABELS = {
     "cond1": "cond1 — 종목명만",
     "cond2": "cond2 — + 재무지표",
@@ -90,7 +91,7 @@ SIGNAL_STYLE = {
 
 
 # ── 헬퍼 ──────────────────────────────────────────────────
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)  # 백테스팅 결과 5분 캐시 — 빈번한 파일 재로드 방지
 def load_backtest_results(cond: str) -> pd.DataFrame | None:
     """results/experiment/{cond}/latest/{cond}_results.csv 로드."""
     path = os.path.join(EXPERIMENT_DIR, cond, "latest", f"{cond}_results.csv")
@@ -168,7 +169,7 @@ with st.status("분석 중...", expanded=True) as _status:
     try:
         _status.write(f"**{selected_name}** 실시간 데이터 수집 중 (FDR / DART)...")
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as _ex:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as _ex:  # 단일 스레드지만 Future.result(timeout=)으로 타임아웃 처리가 목적
             _future = _ex.submit(run_forward, selected_ticker, selected_cond)
             try:
                 result = _future.result(timeout=180)   # 최대 3분

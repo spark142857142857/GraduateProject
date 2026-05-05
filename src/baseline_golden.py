@@ -5,15 +5,18 @@
 - 결과: results/golden_returns.csv
 """
 
+import sys
 import os
 import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils import TICKERS, get_price, calc_return, get_benchmark_price, calc_excess_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir
 
 # ── 파라미터 ──────────────────────────────────────────────
-MA_SHORT  = 5
-MA_LONG   = 20
+MA_SHORT  = 5   # 주간 MA vs 월간 MA. 일반적인 단기 골든크로스 파라미터
+MA_LONG   = 20  # 주간 MA vs 월간 MA. 일반적인 단기 골든크로스 파라미터
 HOLD_DAYS = 20
 
 
@@ -26,7 +29,7 @@ def detect_golden_cross(df: pd.DataFrame) -> list[str]:
     df["ma_short"] = df["Close"].rolling(MA_SHORT).mean()
     df["ma_long"]  = df["Close"].rolling(MA_LONG).mean()
     df["above"]    = df["ma_short"] > df["ma_long"]
-    df["cross"]    = df["above"] & ~df["above"].shift(1).fillna(False)
+    df["cross"]    = df["above"] & ~df["above"].shift(1).infer_objects(copy=False).fillna(False)  # 골든크로스: 전일 MA_SHORT < MA_LONG이고 당일 MA_SHORT > MA_LONG인 날 탐지
 
     cross_dates = df.index[df["cross"]].strftime("%Y-%m-%d").tolist()
     return cross_dates
