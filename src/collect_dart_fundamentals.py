@@ -85,7 +85,7 @@ def _yoy(curr: float, prev: float) -> float:
     """전년比 변화율 (%). 분모 0 또는 NaN이면 np.nan."""
     if np.isnan(curr) or np.isnan(prev) or prev == 0:
         return np.nan
-    return round((curr - prev) / abs(prev) * 100, 2)
+    return round((curr - prev) / abs(prev) * 100, 2)  # 전년 손실(음수) 분모의 부호 오류 방지
 
 
 def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
@@ -110,13 +110,13 @@ def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
 
     try:
         time.sleep(REQ_DELAY)
-        df = dart.finstate_all(ticker, fiscal_year, "11011")   # 사업보고서
+        df = dart.finstate_all(ticker, fiscal_year, "11011")   # 사업보고서. DART 보고서 코드: 11011=사업보고서 (분기·반기 제외)
         if df is None or df.empty:
             _cache[key] = result
             return result
 
         # 재무제표 구분별 분리 (연결 재무제표 우선)
-        is_df = df[df["sj_div"].isin(["IS", "CIS"])]   # 손익계산서
+        is_df = df[df["sj_div"].isin(["IS", "CIS"])]   # IS(개별)/CIS(포괄) 모두 포함. finstate_all은 연결재무제표 우선 반환
         bs_df = df[df["sj_div"] == "BS"]                # 재무상태표
         cf_df = df[df["sj_div"] == "CF"]                # 현금흐름표
 
@@ -196,7 +196,7 @@ def process_ticker(name: str, ticker: str) -> pd.DataFrame | None:
             "operating_margin":     oper_margin,
             "debt_ratio":           debt_ratio,
             "operating_cashflow":   oper_cf,
-            "dividend_yield":       np.nan,
+            "dividend_yield":       np.nan,  # 배당수익률은 LLM 프롬프트 미사용. Streamlit 표시용으로만 수집하며 update_missing_columns()에서 사후 수집
             "revenue_yoy":          _yoy(revenue,  data["revenue_prev"]),
             "operating_income_yoy": _yoy(oper_inc, data["operating_income_prev"]),
         })

@@ -147,7 +147,7 @@ def applicable_fiscal_year(date: pd.Timestamp) -> int:
 def calc_52w(price_df: pd.DataFrame, date: pd.Timestamp) -> tuple:
     """date 포함 과거 252 거래일의 종가 최고·최저 반환."""
     hist = price_df.loc[price_df.index <= date].tail(WEEKS_52)
-    if len(hist) < 20:            # 데이터 부족
+    if len(hist) < 20:  # 20행 미만은 신뢰 불가로 NaN 반환. 첫 신호일(2023-01) 기준 ~500거래일 확보되어 실제 미충족
         return np.nan, np.nan
     return float(hist["Close"].max()), float(hist["Close"].min())
 
@@ -165,7 +165,7 @@ def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | N
 
     # 가격 데이터 로드 (52주 계산을 위해 2021까지)
     try:
-        price_df = fdr.DataReader(ticker, "2021-01-01", pd.Timestamp.today().strftime("%Y-%m-%d"))
+        price_df = fdr.DataReader(ticker, "2021-01-01", pd.Timestamp.today().strftime("%Y-%m-%d"))  # 52주 고저가(252거래일)·모멘텀 계산을 위해 실험 시작(2023-01)보다 2년 앞당겨 로드
         price_df.index = pd.to_datetime(price_df.index).tz_localize(None)
     except Exception as e:
         tqdm.write(f"  [{ticker}] 가격 데이터 오류: {e}")
@@ -206,7 +206,7 @@ def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | N
         bps = equity / shares        if (not np.isnan(equity) and not np.isnan(shares)
                                          and shares > 0) else np.nan
         pbr = round(price / bps, 2)  if (not np.isnan(bps)   and bps > 0) else np.nan
-        roe = round(pbr / per * 100, 2) if (not np.isnan(per) and not np.isnan(pbr)
+        roe = round(pbr / per * 100, 2) if (not np.isnan(per) and not np.isnan(pbr)  # ROE = PBR/PER × 100 (DuPont identity). DART에서 직접 미제공하므로 산출
                                              and per > 0) else np.nan
 
         # 시가총액
@@ -351,7 +351,6 @@ def run():
             all_rows.append(result)
 
     if all_rows:
-        combined = pd.concat(all_rows, ignore_index=True)
         total = sum(len(r) for r in all_rows)
         print(f"\n완료: {total}행 수집 ({len(all_rows)}개 종목)")
     else:

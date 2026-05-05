@@ -10,11 +10,14 @@
   - 투자의견: 상세 페이지 em.coment
 """
 
+import sys
 import time
 import os
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils import TICKERS, REPORTS_DIR, START_DATE, END_DATE, ensure_dirs
 
 HEADERS = {
@@ -48,8 +51,8 @@ def fetch_detail(nid: str, ticker: str) -> tuple[int | None, str | None]:
         resp.encoding = "euc-kr"
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        price_tag   = soup.select_one("em.money")
-        opinion_tag = soup.select_one("em.coment")
+        price_tag   = soup.select_one("em.money")    # 네이버 금융 CSS 선택자 — 서비스 UI 변경 시 수정 필요
+        opinion_tag = soup.select_one("em.coment")  # 네이버 금융 CSS 선택자 — 서비스 UI 변경 시 수정 필요
 
         price_text   = price_tag.get_text(strip=True)   if price_tag   else None
         opinion_text = opinion_tag.get_text(strip=True) if opinion_tag else None
@@ -122,7 +125,7 @@ def fetch_reports(ticker: str, since_date: str = START_DATE, max_pages: int = 10
 
             if date_str is None:
                 continue
-            if date_str > END_DATE:
+            if date_str > END_DATE:  # 네이버 오표기 등 미래 날짜 데이터 방어
                 continue
             if date_str < since_date:
                 stop_crawl = True
@@ -168,7 +171,7 @@ def run():
 
         if os.path.exists(out_path):
             existing   = pd.read_csv(out_path)
-            since_date = existing["date"].max()  # ISO 문자열 비교로 충분
+            since_date = existing["date"].max()  # ISO 문자열 비교로 충분. nid 기반 drop_duplicates()로 동일 날짜 중복 수집이 최종 CSV에서 제거됨
             mode = "증분"
         else:
             existing   = pd.DataFrame()
