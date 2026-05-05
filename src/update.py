@@ -30,7 +30,7 @@ load_dotenv()
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from utils import TICKERS, get_price, REPORTS_DIR
+from utils import TICKERS, get_price, REPORTS_DIR, START_DATE
 
 # collect_financials 핵심 함수·상수 재사용
 from collect_financials import (
@@ -43,6 +43,8 @@ from collect_financials import (
 
 # crawl 핵심 함수 재사용
 from crawl import fetch_reports
+
+from context_builders import WINDOW_DAYS
 
 # collect_dart_fundamentals 핵심 함수·상수 재사용
 from collect_dart_fundamentals import (
@@ -206,10 +208,10 @@ def _update_reports_one(ticker: str, name: str) -> int:
         if not df_existing.empty and "date" in df_existing.columns:
             last_date = df_existing["date"].max()  # ISO 문자열 비교로 충분
         else:
-            last_date = "2023-01-01"
+            last_date = START_DATE
     else:
         df_existing = pd.DataFrame()
-        last_date = "2023-01-01"
+        last_date = START_DATE
 
     if last_date >= today_str:
         print(f"  [{ticker}] {name}: 최신 리포트 이미 존재 - 스킵")
@@ -389,7 +391,7 @@ def get_today_context(ticker: str) -> dict:
     if os.path.exists(rep_path):
         df_rep   = pd.read_csv(rep_path, parse_dates=["date"])
         end_dt   = pd.Timestamp(today_str)
-        start_dt = end_dt - pd.Timedelta(days=30)
+        start_dt = end_dt - pd.Timedelta(days=WINDOW_DAYS)
         sub = df_rep[(df_rep["date"] >= start_dt) & (df_rep["date"] <= end_dt)]
         sub = sub.sort_values("date", ascending=False).head(5)
         for _, r in sub.iterrows():

@@ -22,6 +22,9 @@ EXPERIMENTS = {
 
     # Leave-One-Out ablation
     "cond4_no_reports": ["financials", "dart_fundamentals"],  # cond4에서 리포트만 제거
+
+    # Blind ablation
+    "cond4_blind": ["financials", "dart_fundamentals"],  # 종목명 익명화 — LLM prior knowledge 편향 측정
 }
 ```
 
@@ -55,13 +58,12 @@ EXPERIMENTS = {
 | 변수 | 현재값 | 설명 |
 |---|---|---|
 | `MODEL` | `"gemini-2.5-flash-lite"` | 사용할 Gemini 모델명 |
-| `temperature` | `0.3` | 샘플링 온도. 0이면 결정적(재현 가능), 높을수록 다양한 출력 |
+| `temperature` | `0.0` | 샘플링 온도. 0이면 결정적(재현 가능) — 2차 실험부터 재현성 확보를 위해 0.0 고정 |
 | `HOLD_SHORT` | `5` | 단기 수익률 측정 기간 (거래일) |
 | `HOLD_LONG` | `20` | 장기 수익률 측정 기간 (거래일) |
 | `REQ_DELAY` | `0.5` | Gemini API 호출 간 대기 시간 (초) |
 
-> **논문 주의:** `temperature > 0`이면 동일 프롬프트에도 실행마다 결과가 달라집니다.
-> 완전한 재현성이 필요하면 `temperature=0`으로 설정하세요.
+> **논문 주의:** 현재 `temperature=0.0`으로 고정 — 재현성 확보. API 수준의 완전한 결정론적 출력은 보장되지 않을 수 있음.
 
 ### Sharpe Ratio 계산
 

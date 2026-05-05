@@ -32,6 +32,7 @@ LLM에 제공하는 컨텍스트 유형에 따라 투자 신호 품질이 달라
 | **cond3** | + 애널리스트 리포트 | 리포트 제목 / 목표주가 (최근 30일, 최대 5건) |
 | **cond4** | + DART 연간 실적 | 매출 / 영업이익 / 영업이익률 / 순이익 (전년比) / 부채비율 / 영업현금흐름 |
 | cond4_no_reports | cond4에서 리포트 제거 (LOO ablation) | 재무지표 + DART 실적. 리포트의 marginal effect 측정용 |
+| cond4_blind | 재무지표 + DART (종목명 익명화) | LLM 사전학습 편향 측정 |
 
 ### 공통 조건
 
@@ -40,7 +41,7 @@ LLM에 제공하는 컨텍스트 유형에 따라 투자 신호 품질이 달라
 | 실험 기간 | 2023-01 ~ 2025-12 (36개월) |
 | 평가 시점 | 매월 첫 거래일 |
 | 대상 종목 | KOSPI / KOSDAQ 대형주 20개 |
-| LLM | Gemini 2.5 Flash-Lite (temperature=0.3) |
+| LLM | Gemini 2.5 Flash-Lite (temperature=0.0) |
 | 신호 | Buy / Neutral / Sell |
 | 수익률 측정 | 신호일 +1 거래일 매수 → 5 / 20거래일 후 종가 |
 | 대조군 | 컨센서스 추종 / 골든크로스 (MA5×MA20) |
