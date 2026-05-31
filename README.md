@@ -101,8 +101,17 @@ stock_analysis/
 
 ### 1. 환경 설정
 
+[uv](https://docs.astral.sh/uv/) 설치 후 의존성을 한 번에 설치한다.
+
 ```bash
-pip install -r requirements.txt
+# uv 설치 (최초 1회)
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 가상환경 생성 + 의존성 설치
+uv sync
 ```
 
 `.env` 파일을 생성하고 API 키를 입력한다.

@@ -1,0 +1,19 @@
+[project]
+name = "stock-analysis"
+version = "0.1.0"
+description = "LLM 기반 주식 투자 신호 생성 시스템 (Ablation Study)"
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "finance-datareader>=0.9.202",
+    "google-genai>=2.7.0",
+    "matplotlib>=3.10.9",
+    "numpy>=2.4.6",
+    "opendartreader>=0.3.2",
+    "pandas>=3.0.3",
+    "python-dotenv>=1.2.2",
+    "requests>=2.34.2",
+    "scipy>=1.11.0",
+    "streamlit>=1.58.0",
+    "tqdm>=4.67.3",
+]

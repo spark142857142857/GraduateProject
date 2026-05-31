@@ -23,6 +23,9 @@ results/
 # Claude Code 내부 설정
 .claude/
 
+# uv 가상환경 (재현은 uv sync로)
+.venv/
+
 # IDE
 .vscode/
 .idea/
