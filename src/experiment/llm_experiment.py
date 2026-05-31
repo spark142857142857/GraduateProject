@@ -33,6 +33,7 @@ from utils import (
 )
 from context_builders import build_financials, build_reports, build_dart_fundamentals
 from experiments import EXPERIMENTS, BLIND_CONDITIONS
+from prompt import ROLE, CONFIDENCE_GUIDE, build_criteria
 
 load_dotenv(override=True)
 
@@ -69,7 +70,7 @@ def build_prompt(name: str, price: float, context_sections: list[str], ticker: s
     )
 
     parts = [
-        f"당신은 주식 투자 분석가입니다.\n{intro}",
+        f"{ROLE}\n{intro}",
         f"\n[종목 정보]\n종목명: {display_name}\n현재가: {int(price):,}원{market_line}",
     ]
 
@@ -78,15 +79,8 @@ def build_prompt(name: str, price: float, context_sections: list[str], ticker: s
             parts.append(f"\n{section}")
 
     parts.append(
-        "\n[판단 기준]\n"
-        f"- Buy    : 향후 20거래일 내 {judge_market} 수익률 대비 초과 상승 예상\n"
-        f"- Sell   : 향후 20거래일 내 {judge_market} 수익률 대비 초과 하락 예상\n"
-        "- Neutral: Buy/Sell 판단을 내리기에 정보가 불충분하거나 상승·하락 요인이 균형을 이룸\n"
-        "\n[confidence 기준]\n"
-        "- 90~100: 복수의 지표가 같은 방향을 강하게 지지\n"
-        "- 70~89 : 주요 지표가 방향을 지지하나 일부 불확실성 존재\n"
-        "- 50~69 : 방향은 있으나 근거가 제한적\n"
-        "- 50 미만: 사용 지양 (이 경우 Neutral 권장)\n"
+        f"\n{build_criteria(judge_market)}\n"
+        f"\n{CONFIDENCE_GUIDE}\n"
         "\n다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요.\n"
         "{\n"
         '  "signal": "Buy" 또는 "Sell" 또는 "Neutral",\n'
