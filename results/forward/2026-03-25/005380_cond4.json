@@ -1,0 +1,45 @@
+{
+  "ticker": "005380",
+  "name": "현대차",
+  "date": "2026-03-25",
+  "context_date": "2026-03-25",
+  "price": 503000.0,
+  "signal": "Neutral",
+  "confidence": 60,
+  "reasons": [
+    "최근 1개월 수익률이 마이너스이고 거래량 변화율도 감소하는 등 단기적인 하락 압력이 존재합니다.",
+    "팰리세이드 리콜 이슈와 더불어 영업이익이 전년 대비 감소한 점은 투자 심리에 부정적인 영향을 줄 수 있습니다.",
+    "하지만 애널리스트들의 목표주가가 현재가 대비 높게 제시되고 있으며, Physical-AI 관련 긍정적인 전망도 있어 하락만 예상하기는 어렵습니다."
+  ],
+  "cond": "cond4",
+  "context_used": {
+    "per": 10.62,
+    "pbr": 0.86,
+    "roe": 8.1,
+    "market_cap": 103.0,
+    "momentum_1m": -3.8241,
+    "volume_change": -21.2016,
+    "price_position_52w": 65.56,
+    "revenue_growth": 7.73,
+    "operating_margin": 8.13,
+    "debt_ratio": 182.52,
+    "dividend_yield": NaN,
+    "recent_reports": [
+      {
+        "date": "2026-03-16",
+        "title": "팰리세이드 리콜 관련 업데이트",
+        "target_price": 660000
+      },
+      {
+        "date": "2026-03-03",
+        "title": "Physical-AI 확산 경쟁의 승자",
+        "target_price": 900000
+      },
+      {
+        "date": "2026-02-27",
+        "title": "우선주에 대한 투자 전략",
+        "target_price": 660000
+      }
+    ]
+  }
+}

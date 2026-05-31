@@ -1,0 +1,29 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-04-02",
+  "context_date": "2026-04-02",
+  "price": 1585000.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "삼성바이오로직스는 견조한 매출 및 영업이익 성장세를 보이며, 영업이익률 또한 높은 수준을 유지하고 있습니다.",
+    "부채비율이 59.0%로 낮고 영업현금흐름이 양호하여 재무 안정성이 뛰어납니다.",
+    "최근 1개월 수익률이 4.55%로 긍정적인 흐름을 보이고 있으며, 52주 최고가 대비 현재 위치가 25.0%로 상승 여력이 남아있습니다."
+  ],
+  "cond": "cond4",
+  "context_used": {
+    "per": 65.79,
+    "pbr": 9.85,
+    "roe": 14.97,
+    "market_cap": 73.4,
+    "momentum_1m": 4.5515,
+    "volume_change": -22.6374,
+    "price_position_52w": 24.98,
+    "revenue_growth": 23.08,
+    "operating_margin": 29.03,
+    "debt_ratio": 58.98,
+    "dividend_yield": null,
+    "recent_reports": []
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-03-25",
+  "context_date": "2026-03-25",
+  "price": 103300.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월 수익률이 1.27%로 소폭 상승세를 보이고 있으며, 52주 최고가 대비 현재 위치가 93.0%로 상승 여력이 남아있습니다.",
+    "대형원전 및 SMR 수주 모멘텀 확장에 대한 긍정적인 애널리스트 리포트가 있으며, 목표주가 130,000원은 현재가 대비 상승 가능성을 시사합니다.",
+    "매출은 감소했으나 영업이익과 순이익이 흑자를 기록하고 있으며, 영업현금흐름 또한 양호한 수준을 유지하고 있습니다."
+  ],
+  "cond": "cond4",
+  "context_used": {
+    "per": 593.68,
+    "pbr": 5.67,
+    "roe": 0.96,
+    "market_cap": 66.2,
+    "momentum_1m": 1.2745,
+    "volume_change": -15.381,
+    "price_position_52w": 92.96,
+    "revenue_growth": -7.71,
+    "operating_margin": 6.27,
+    "debt_ratio": 125.66,
+    "dividend_yield": NaN,
+    "recent_reports": [
+      {
+        "date": "2026-02-25",
+        "title": "대형원전, SMR 모두 수주 모멘텀 확장",
+        "target_price": 130000
+      }
+    ]
+  }
+}

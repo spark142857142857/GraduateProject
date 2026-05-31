@@ -1,0 +1,42 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-03-25",
+  "context_date": "2026-03-03",
+  "price": 196100.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월간 22.32%의 높은 수익률을 기록하며 강한 상승 모멘텀을 보여주고 있습니다.",
+    "52주 최고가 대비 현재 위치가 86.1%로, 여전히 상승 여력이 남아있음을 시사합니다.",
+    "최근 애널리스트 리포트에서 긍정적인 전망과 함께 목표주가가 현재가보다 높게 제시되고 있습니다."
+  ],
+  "cond": "cond3",
+  "context_used": {
+    "per": 39.41,
+    "pbr": 2.87,
+    "roe": 7.28,
+    "market_cap": 1154.9,
+    "momentum_1m": 22.3197,
+    "volume_change": 13.0087,
+    "price_position_52w": 86.12,
+    "revenue_growth": 16.2,
+    "operating_margin": 10.88,
+    "debt_ratio": 27.93,
+    "dividend_yield": 2.7,
+    "recent_reports": [
+      {
+        "title": "재평가가 필요하다",
+        "target_price": 300000
+      },
+      {
+        "title": "국민 1등 주식",
+        "target_price": 270000
+      },
+      {
+        "title": "4Q26 비메모리 영업흑자 전환 예상",
+        "target_price": 210000
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-04-02",
+  "context_date": "2026-04-02",
+  "price": 178400.0,
+  "signal": "Buy",
+  "confidence": 85,
+  "reasons": [
+    "최근 애널리스트 리포트들이 일관되게 긍정적인 전망과 높은 목표주가를 제시하고 있습니다.",
+    "연간 실적에서 매출과 영업이익이 크게 증가했으며, 특히 영업이익률 개선은 매우 긍정적인 신호입니다.",
+    "부채비율이 낮고 영업현금흐름이 양호하여 재무 안정성이 뛰어나며, 배당수익률도 매력적인 수준입니다."
+  ],
+  "cond": "cond4",
+  "context_used": {
+    "per": 27.01,
+    "pbr": 2.42,
+    "roe": 8.96,
+    "market_cap": 1056.1,
+    "momentum_1m": 3.6005,
+    "volume_change": -23.6466,
+    "price_position_52w": 76.0,
+    "revenue_growth": 16.2,
+    "operating_margin": 10.88,
+    "debt_ratio": 27.93,
+    "dividend_yield": 2.7,
+    "recent_reports": [
+      {
+        "date": "2026-03-23",
+        "title": "긍정적 흐름의 연속",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-03-18",
+        "title": "진정한 풀스택",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-03-16",
+        "title": "지금이라도 사야 하는 이유",
+        "target_price": 270000
+      },
+      {
+        "date": "2026-03-13",
+        "title": "실적 상향과 밸류업 기대감",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-03-11",
+        "title": "자사주 취득, 처분, 소각 계획 공시",
+        "target_price": null
+      }
+    ]
+  }
+}

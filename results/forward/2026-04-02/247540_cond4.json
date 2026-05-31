@@ -1,0 +1,29 @@
+{
+  "ticker": "247540",
+  "name": "에코프로비엠",
+  "date": "2026-04-02",
+  "context_date": "2026-04-02",
+  "price": 196900.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "연간 실적에서 매출 및 영업이익이 큰 폭으로 감소하고 영업이익률이 마이너스를 기록하며 재무 상태가 악화된 점은 부정적인 요인입니다.",
+    "PER이 488.6으로 매우 높아 현재 주가가 기업 가치 대비 고평가되었을 가능성이 있습니다.",
+    "최근 1개월 수익률은 높지만, 거래량 변화율이 크게 감소한 것은 투자 심리가 위축되었음을 시사하며 단기적인 상승 동력이 약화될 수 있습니다."
+  ],
+  "cond": "cond4",
+  "context_used": {
+    "per": 488.59,
+    "pbr": 9.55,
+    "roe": 1.95,
+    "market_cap": 19.3,
+    "momentum_1m": 18.901,
+    "volume_change": -37.5584,
+    "price_position_52w": 70.21,
+    "revenue_growth": -59.91,
+    "operating_margin": -1.23,
+    "debt_ratio": 118.7,
+    "dividend_yield": null,
+    "recent_reports": []
+  }
+}

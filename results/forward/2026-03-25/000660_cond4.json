@@ -1,0 +1,55 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-03-25",
+  "context_date": "2026-03-25",
+  "price": 1036000.0,
+  "signal": "Buy",
+  "confidence": 85,
+  "reasons": [
+    "최근 애널리스트 리포트에서 일관되게 긍정적인 전망과 높은 목표주가를 제시하고 있습니다.",
+    "분기 실적이 전년 대비 폭발적인 성장세를 기록하며 견조한 재무 상태를 보여주고 있습니다.",
+    "현재 주가가 52주 최고가에 근접해 있지만, 여전히 상승 여력이 있다고 판단됩니다."
+  ],
+  "cond": "cond4",
+  "context_used": {
+    "per": 36.06,
+    "pbr": 9.99,
+    "roe": 27.7,
+    "market_cap": 738.4,
+    "momentum_1m": 8.2019,
+    "volume_change": -3.5504,
+    "price_position_52w": 93.26,
+    "revenue_growth": 102.02,
+    "operating_margin": 35.45,
+    "debt_ratio": 62.15,
+    "dividend_yield": 1.1,
+    "recent_reports": [
+      {
+        "date": "2026-03-25",
+        "title": "ADR 발행과 의미",
+        "target_price": 1540000
+      },
+      {
+        "date": "2026-03-23",
+        "title": "이제 주식도 수출한다",
+        "target_price": 1540000
+      },
+      {
+        "date": "2026-03-16",
+        "title": "현저한 저평가",
+        "target_price": 1450000
+      },
+      {
+        "date": "2026-03-16",
+        "title": "HBM 전선 이상 무",
+        "target_price": 1540000
+      },
+      {
+        "date": "2026-03-05",
+        "title": "메모리 업황은 평화롭다",
+        "target_price": 1540000
+      }
+    ]
+  }
+}

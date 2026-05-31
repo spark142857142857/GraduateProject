@@ -6,18 +6,11 @@ __pycache__/
 *.pyc
 *.pyo
 
-# 수집 데이터 (용량 큰 파일)
-data/price/
-data/financials/
-data/reports/
+# 수집 데이터 (불필요 폴더만 제외)
 data/announcements/
 docs_cache/
 
-# 실험 결과
-results/
-
 # 데이터 파일
-*.csv
 *.png
 
 # Claude Code 내부 설정

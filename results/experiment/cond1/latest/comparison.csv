@@ -1,0 +1,11 @@
+﻿strategy,signal_type,period,distribution,n_signals,mean_ret,hit_rate,sharpe
+Consensus,All,5d,Buy:1179,1179,1.392,53.69,0.2439
+Consensus,All,20d,Buy:1179,1179,3.7012,53.69,0.3102
+GoldenCross,All,5d,Buy:2828,2828,1.2159,51.77,0.1674
+GoldenCross,All,20d,Buy:2828,2828,5.3872,57.14,0.355
+Cond1_LLM,All,5d,Buy:590 / Sell:43,633,1.7484,57.82,0.2854
+Cond1_LLM,Buy,5d,Buy:590 / Sell:43,590,1.8751,57.8,0.2995
+Cond1_LLM,Sell,5d,Buy:590 / Sell:43,43,0.0091,58.14,0.0026
+Cond1_LLM,All,20d,Buy:590 / Sell:43,633,4.8397,57.5,0.3584
+Cond1_LLM,Buy,20d,Buy:590 / Sell:43,590,5.2686,58.98,0.3845
+Cond1_LLM,Sell,20d,Buy:590 / Sell:43,43,-1.0444,37.21,-0.1228
