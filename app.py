@@ -12,7 +12,10 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
+_src = os.path.join(os.path.dirname(__file__), "src")
+sys.path.insert(0, os.path.join(_src, "collect"))
+sys.path.insert(0, os.path.join(_src, "experiment"))
+sys.path.insert(0, _src)
 
 from utils import TICKERS, EXPERIMENT_DIR
 

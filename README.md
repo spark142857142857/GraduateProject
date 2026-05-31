@@ -64,16 +64,18 @@ stock_analysis/
 │   ├── experiments.py               # 실험 조건 정의 (cond1~cond4)
 │   ├── context_builders.py          # LLM 프롬프트용 컨텍스트 섹션 빌더
 │   │
-│   ├── crawl.py                     # 네이버금융 애널리스트 리포트 크롤링 (증분)
-│   ├── collect_financials.py        # DART + FDR 재무/기술지표 수집
-│   ├── collect_dart_fundamentals.py # DART 사업보고서 연간 실적 수집
-│   ├── update.py                    # Forward Test용 실시간 데이터 수집
+│   ├── collect/                     # 데이터 수집
+│   │   ├── crawl.py                 # 네이버금융 애널리스트 리포트 크롤링 (증분)
+│   │   ├── collect_financials.py    # DART + FDR 재무/기술지표 수집
+│   │   ├── collect_dart_fundamentals.py  # DART 사업보고서 연간 실적 수집
+│   │   └── update.py               # Forward Test용 실시간 데이터 수집
 │   │
-│   ├── baseline_consensus.py        # 대조군 A: 컨센서스 추종 전략
-│   ├── baseline_golden.py           # 대조군 B: 골든크로스 전략
-│   ├── llm_experiment.py            # LLM 백테스팅 (체크포인트 재개 지원)
-│   ├── compare.py                   # 조건 간 성과 비교 분석
-│   └── forward_test.py              # Forward Test (오늘 기준 신호 생성)
+│   └── experiment/                  # 실험 실행 및 분석
+│       ├── baseline_consensus.py    # 대조군 A: 컨센서스 추종 전략
+│       ├── baseline_golden.py       # 대조군 B: 골든크로스 전략
+│       ├── llm_experiment.py        # LLM 백테스팅 (체크포인트 재개 지원)
+│       ├── compare.py               # 조건 간 성과 비교 분석
+│       └── forward_test.py          # Forward Test (오늘 기준 신호 생성)
 │
 ├── data/                            # 수집 데이터 (gitignore)
 │   ├── financials/                  # 재무 + 기술지표 CSV
@@ -114,50 +116,50 @@ GEMINI_API_KEY=your_gemini_api_key
 
 ```bash
 # 애널리스트 리포트 크롤링 (네이버금융, 증분 업데이트)
-python src/crawl.py
+python src/collect/crawl.py
 
 # 재무/기술지표 수집 (DART + FinanceDataReader)
-python src/collect_financials.py
+python src/collect/collect_financials.py
 
 # DART 연간 실적 수집 (cond4용)
-python src/collect_dart_fundamentals.py
+python src/collect/collect_dart_fundamentals.py
 ```
 
 ### 3. 베이스라인 실험 (대조군)
 
 ```bash
-python src/baseline_consensus.py   # 컨센서스 추종
-python src/baseline_golden.py      # 골든크로스 (MA5×MA20)
+python src/experiment/baseline_consensus.py   # 컨센서스 추종
+python src/experiment/baseline_golden.py      # 골든크로스 (MA5×MA20)
 ```
 
 ### 4. LLM 백테스팅
 
 ```bash
-python src/llm_experiment.py --cond cond1
-python src/llm_experiment.py --cond cond2
-python src/llm_experiment.py --cond cond3
-python src/llm_experiment.py --cond cond4
-python src/llm_experiment.py --cond cond4_no_reports
+python src/experiment/llm_experiment.py --cond cond1
+python src/experiment/llm_experiment.py --cond cond2
+python src/experiment/llm_experiment.py --cond cond3
+python src/experiment/llm_experiment.py --cond cond4
+python src/experiment/llm_experiment.py --cond cond4_no_reports
 ```
 
 - 중단 후 재개 가능: 완료된 (ticker, signal_date) 쌍은 자동 스킵  
 - 단일 종목 테스트 (프롬프트 출력 확인): `--test` 플래그 추가
 
 ```bash
-python src/llm_experiment.py --cond cond4 --test
+python src/experiment/llm_experiment.py --cond cond4 --test
 ```
 
 ### 5. 성과 비교 분석
 
 ```bash
 # cond1~4 전체 + 섹터·종목별 분석
-python src/compare.py --all
+python src/experiment/compare.py --all
 
 # 특정 조건까지만 비교
-python src/compare.py --cond cond3
+python src/experiment/compare.py --cond cond3
 
 # 섹터·종목 분석 포함
-python src/compare.py --cond cond4 --sector
+python src/experiment/compare.py --cond cond4 --sector
 ```
 
 결과 파일은 `results/analysis/{날짜}/` 및 `results/analysis/latest/`에 저장된다.
@@ -177,10 +179,10 @@ python src/compare.py --cond cond4 --sector
 
 ```bash
 # 삼성전자, cond4 (기본값)
-python src/forward_test.py --ticker 005930
+python src/experiment/forward_test.py --ticker 005930
 
 # 조건 지정
-python src/forward_test.py --ticker 035420 --cond cond3
+python src/experiment/forward_test.py --ticker 035420 --cond cond3
 ```
 
 - 결과는 `results/forward/{날짜}/{ticker}_{cond}.json`에 저장  

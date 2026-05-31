@@ -28,7 +28,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+_here = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(_here, ".."))  # src/ — utils, context_builders
+sys.path.insert(0, _here)                       # src/collect/ — collect_financials
 
 from utils import TICKERS, get_price, REPORTS_DIR, START_DATE
 

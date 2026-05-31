@@ -34,7 +34,9 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 warnings.filterwarnings("ignore")
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+_here = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(_here, ".."))  # src/ — utils
+sys.path.insert(0, _here)                       # src/collect/ — collect_financials
 from utils import TICKERS, DATA_DIR
 # 월별 첫 거래일 목록·적용 회계연도 결정 함수 재사용 (코드 중복 방지)
 from collect_financials import applicable_fiscal_year, get_monthly_first_days, END_YM

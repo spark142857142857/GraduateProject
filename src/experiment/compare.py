@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats as scipy_stats
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from utils import EXPERIMENT_DIR, KOSDAQ_TICKERS, get_latest_baseline_dir, get_analysis_dir, get_latest_analysis_dir
 from experiments import EXPERIMENTS
 

@@ -53,7 +53,7 @@ EXPERIMENTS = {
 
 ## 2. LLM 파라미터
 
-**파일:** `src/llm_experiment.py`
+**파일:** `src/experiment/llm_experiment.py`
 
 | 변수 | 현재값 | 설명 |
 |---|---|---|
@@ -67,7 +67,7 @@ EXPERIMENTS = {
 
 ### Sharpe Ratio 계산
 
-**파일:** `src/compare.py` — `sharpe()` 함수
+**파일:** `src/experiment/compare.py` — `sharpe()` 함수
 
 - 연환산 승수: `√(252 / hold_days)`
   - `hold_days=5`: √(252/5) ≈ 7.10
@@ -78,7 +78,7 @@ EXPERIMENTS = {
 
 ## 3. 프롬프트
 
-**파일:** `src/llm_experiment.py` — `build_prompt()` 함수
+**파일:** `src/experiment/llm_experiment.py` — `build_prompt()` 함수
 
 수정 가능한 요소:
 
@@ -90,7 +90,7 @@ EXPERIMENTS = {
 
 ## 4. 백테스팅 기간
 
-**파일:** `src/collect_financials.py`
+**파일:** `src/collect/collect_financials.py`
 
 | 변수 | 현재값 | 설명 |
 |---|---|---|
@@ -111,7 +111,7 @@ EXPERIMENTS = {
 
 ### 컨센서스 전략
 
-**파일:** `src/baseline_consensus.py`
+**파일:** `src/experiment/baseline_consensus.py`
 
 | 변수 | 현재값 | 설명 |
 |---|---|---|
@@ -121,7 +121,7 @@ EXPERIMENTS = {
 
 ### 골든크로스 전략
 
-**파일:** `src/baseline_golden.py`
+**파일:** `src/experiment/baseline_golden.py`
 
 | 변수 | 현재값 | 설명 |
 |---|---|---|
@@ -144,7 +144,7 @@ TICKERS = {
 ```
 
 종목 추가/제거로 실험 범위를 조정할 수 있습니다.
-`compare.py`의 `SECTORS` 딕셔너리도 함께 수정해야 섹터 분석이 정확하게 동작합니다.
+`experiment/compare.py`의 `SECTORS` 딕셔너리도 함께 수정해야 섹터 분석이 정확하게 동작합니다.
 
 ### 벤치마크 지수 (초과수익률 계산용)
 
@@ -165,16 +165,16 @@ TICKERS = {
 
 | 변수 | 현재값 | 파일 | 설명 |
 |---|---|---|---|
-| `REQ_DELAY` | `0.3` | `collect_financials.py` | DART API 요청 간 대기 시간 (초) |
-| `REQ_DELAY` | `0.3` | `collect_dart_fundamentals.py` | DART API 요청 간 대기 시간 (초) |
-| `max_pages` | `100` | `crawl.py` | 종목당 크롤링 최대 페이지 수 |
-| `WEEKS_52` | `252` | `collect_financials.py` | 52주 고저가 계산 기준 거래일 수 |
+| `REQ_DELAY` | `0.3` | `collect/collect_financials.py` | DART API 요청 간 대기 시간 (초) |
+| `REQ_DELAY` | `0.3` | `collect/collect_dart_fundamentals.py` | DART API 요청 간 대기 시간 (초) |
+| `max_pages` | `100` | `collect/crawl.py` | 종목당 크롤링 최대 페이지 수 |
+| `WEEKS_52` | `252` | `collect/collect_financials.py` | 52주 고저가 계산 기준 거래일 수 |
 
 ---
 
 ## 8. 통계 검정
 
-**파일:** `src/compare.py` — `run_significance_tests()` 함수
+**파일:** `src/experiment/compare.py` — `run_significance_tests()` 함수
 
 ### 검정 대상 Pair
 
@@ -219,11 +219,11 @@ TICKERS = {
 | 우선도 | 변수 | 위치 | 논문 기여 |
 |---|---|---|---|
 | ★★★ | `cond1~4 + cond4_no_reports` | `experiments.py` | Ablation Study 핵심 — 컨텍스트 추가/LOO 효과 |
-| ★★★ | `temperature` | `llm_experiment.py` | 재현성에 직접 영향 |
-| ★★★ | `MODEL` | `llm_experiment.py` | 실험 조건의 핵심 명세 |
-| ★★ | `HOLD_LONG` | `llm_experiment.py` | 예측 기간 설정 (20거래일이 적절한가?) |
+| ★★★ | `temperature` | `experiment/llm_experiment.py` | 재현성에 직접 영향 |
+| ★★★ | `MODEL` | `experiment/llm_experiment.py` | 실험 조건의 핵심 명세 |
+| ★★ | `HOLD_LONG` | `experiment/llm_experiment.py` | 예측 기간 설정 (20거래일이 적절한가?) |
 | ★★ | `KOSPI_INDEX / KOSDAQ_INDEX` | `utils.py` | 초과수익률 계산 기준 |
-| ★★ | `BUY_GAP` | `baseline_consensus.py` | 컨센서스 임계값 민감도 분석 가능 |
-| ★ | `N_REPORTS` | `baseline_consensus.py` | 컨센서스 윈도우 크기 |
-| ★ | `MA_SHORT / MA_LONG` | `baseline_golden.py` | 골든크로스 파라미터 |
-| ★ | 통계 검정 pair 구성 | `compare.py` | `run_significance_tests()` 내 `PAIRS` 리스트 |
+| ★★ | `BUY_GAP` | `experiment/baseline_consensus.py` | 컨센서스 임계값 민감도 분석 가능 |
+| ★ | `N_REPORTS` | `experiment/baseline_consensus.py` | 컨센서스 윈도우 크기 |
+| ★ | `MA_SHORT / MA_LONG` | `experiment/baseline_golden.py` | 골든크로스 파라미터 |
+| ★ | 통계 검정 pair 구성 | `experiment/compare.py` | `run_significance_tests()` 내 `PAIRS` 리스트 |

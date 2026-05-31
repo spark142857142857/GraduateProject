@@ -11,7 +11,7 @@ import shutil
 import pandas as pd
 import numpy as np
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from utils import TICKERS, get_price, calc_return, get_benchmark_price, calc_excess_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir, load_analyst as _load_analyst
 
 # ── 파라미터 ──────────────────────────────────────────────

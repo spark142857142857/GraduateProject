@@ -31,7 +31,7 @@ from dotenv import load_dotenv
 from tqdm import tqdm
 
 warnings.filterwarnings("ignore")
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from utils import TICKERS, DATA_DIR
 
 load_dotenv()

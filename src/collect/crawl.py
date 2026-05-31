@@ -17,7 +17,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from utils import TICKERS, REPORTS_DIR, START_DATE, END_DATE, ensure_dirs
 
 HEADERS = {

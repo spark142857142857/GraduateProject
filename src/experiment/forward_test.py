@@ -25,7 +25,11 @@ from datetime import datetime
 from dotenv import load_dotenv
 from google import genai
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+_here = os.path.dirname(os.path.abspath(__file__))
+_src  = os.path.join(_here, "..")
+sys.path.insert(0, os.path.join(_src, "collect"))  # src/collect/ — update (지연 import)
+sys.path.insert(0, _here)                           # src/experiment/ — llm_experiment
+sys.path.insert(0, _src)                            # src/ — utils, context_builders, experiments
 
 from utils import TICKERS, FORWARD_DIR
 from context_builders import (

@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types as genai_types
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from utils import (
     TICKERS, KOSDAQ_TICKERS, EXPERIMENT_DIR,
     get_price, calc_return, get_benchmark_price, calc_excess_return,
