@@ -77,12 +77,12 @@ stock_analysis/
 │       ├── compare.py               # 조건 간 성과 비교 분석
 │       └── forward_test.py          # Forward Test (오늘 기준 신호 생성)
 │
-├── data/                            # 수집 데이터 (gitignore)
+├── data/                            # 수집 데이터
 │   ├── financials/                  # 재무 + 기술지표 CSV
 │   ├── price/                       # 주가 캐시 CSV
 │   ├── reports/                     # 애널리스트 리포트 CSV
 │   └── dart_fundamentals/           # DART 연간 실적 CSV
-├── results/                         # 실험 결과 (gitignore)
+├── results/                         # 실험 결과
 │   ├── baseline/                    # 대조군 수익률
 │   ├── experiment/cond{1-4}/        # LLM 실험 결과 (체크포인트 포함)
 │   ├── analysis/                    # 비교 분석 CSV
@@ -91,7 +91,8 @@ stock_analysis/
 │   └── experiments_log.md           # 실험 일지
 ├── docs_cache/                      # DART API 법인코드 캐시 (gitignore)
 ├── EXPERIMENT_VARS.md               # 실험 변수 정리
-├── requirements.txt
+├── pyproject.toml                   # 의존성 정의 (uv)
+├── uv.lock                          # 정확한 버전 고정 파일
 └── .env                             # 환경변수 (gitignore)
 ```
 
