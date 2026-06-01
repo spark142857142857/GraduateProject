@@ -199,10 +199,13 @@ def run(cond: str, test: bool = False):
             if (ticker, sig_date) in done:
                 continue
 
-            future = price_df.loc[price_df.index > sig_date]
-            if future.empty:
+            if price_df.loc[price_df.index > sig_date].empty:
                 continue
-            cur_price = future["Close"].iloc[0]
+
+            past = price_df.loc[price_df.index <= sig_date]
+            if past.empty:
+                continue
+            cur_price = past["Close"].iloc[-1]  # 신호일 당일 종가 (재무지표 기준 시점과 일치)
 
             # 컨텍스트 섹션 빌드
             context_sections = [
