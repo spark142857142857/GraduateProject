@@ -162,8 +162,10 @@ python src/experiment/llm_experiment.py --cond cond4 --test
 
 ### 5. 성과 비교 분석
 
+기술통계(평균·Hit Rate·Sharpe)는 `compare.py`, 추론통계(유의성 검정)는 `significance.py`로 분리돼 있다.
+
 ```bash
-# cond1~4 전체 + 섹터·종목별 분석
+# 기술통계 — cond1~4 전체 + 섹터·종목별 분석
 python src/experiment/compare.py --all
 
 # 특정 조건까지만 비교
@@ -171,17 +173,20 @@ python src/experiment/compare.py --cond cond3
 
 # 섹터·종목 분석 포함
 python src/experiment/compare.py --cond cond4 --sector
+
+# 추론통계 — 조건 간 차이의 유의성 검정 (별도 실행)
+python src/experiment/significance.py --all
 ```
 
 결과 파일은 `results/analysis/{날짜}/` 및 `results/analysis/latest/`에 저장된다.
 
-| 파일 | 내용 |
-|------|------|
-| `all_comparison.csv` | 신호별(Buy/Neutral/Sell/전체) × 조건별 수익률·Hit Rate·Sharpe |
-| `full_comparison.csv` | 전략별 한 줄 요약 (대조군 포함) |
-| `all_sector.csv` | 섹터별 × 조건별 성과 |
-| `all_stock_buy.csv` | 종목별 × 조건별 Buy 신호 성과 |
-| `all_significance.csv` | 통계적 유의성 검정 결과 (Mann-Whitney, Welch's t-test, effect size) |
+| 파일 | 생성 | 내용 |
+|------|------|------|
+| `all_comparison.csv` | compare.py | 신호별(Buy/Neutral/Sell/전체) × 조건별 수익률·Hit Rate·Sharpe |
+| `full_comparison.csv` | compare.py | 전략별 한 줄 요약 (대조군 포함) |
+| `all_sector.csv` | compare.py | 섹터별 × 조건별 성과 |
+| `all_stock_buy.csv` | compare.py | 종목별 × 조건별 Buy 신호 성과 |
+| `all_significance.csv` | significance.py | 통계적 유의성 검정 결과 (Mann-Whitney, Welch's t-test, effect size) |
 
 ### 6. Forward Test
 

@@ -174,7 +174,7 @@ TICKERS = {
 
 ## 8. 통계 검정
 
-**파일:** `src/experiment/compare.py` — `run_significance_tests()` 함수
+**파일:** `src/experiment/significance.py` — `run_significance_tests()` 함수
 
 ### 검정 대상 Pair
 
@@ -226,4 +226,4 @@ TICKERS = {
 | ★★ | `BUY_GAP` | `experiment/baseline_consensus.py` | 컨센서스 임계값 민감도 분석 가능 |
 | ★ | `N_REPORTS` | `experiment/baseline_consensus.py` | 컨센서스 윈도우 크기 |
 | ★ | `MA_SHORT / MA_LONG` | `experiment/baseline_golden.py` | 골든크로스 파라미터 |
-| ★ | 통계 검정 pair 구성 | `experiment/compare.py` | `run_significance_tests()` 내 `PAIRS` 리스트 |
+| ★ | 통계 검정 pair 구성 | `experiment/significance.py` | `run_significance_tests()` 내 `PAIRS` 리스트 |
