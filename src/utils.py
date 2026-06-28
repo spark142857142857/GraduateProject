@@ -65,7 +65,25 @@ def get_price(ticker: str, start: str = START_DATE, end: str = END_DATE) -> pd.D
     if os.path.exists(cache_path):
         df = pd.read_csv(cache_path, parse_dates=["Date"])
         df = df.set_index("Date")
-        last_date = df.index.max().strftime("%Y-%m-%d")
+        first_date = df.index.min().strftime("%Y-%m-%d")
+        last_date  = df.index.max().strftime("%Y-%m-%d")
+
+        # 앞쪽 보강: 요청 start가 캐시 시작보다 이르면 그 구간을 추가 fetch.
+        # 캐시는 뒤쪽(최신)만 갱신되므로, 먼저 만들어진 캐시의 시작일에
+        # 워밍업이 묶이는 실행순서 의존성(예: consensus가 만든 캐시에
+        # golden의 2022-12 워밍업이 무력화됨)을 차단한다.
+        if start < first_date:
+            try:
+                old = fdr.DataReader(ticker, start, first_date)
+                if not old.empty:
+                    old["Change"] = (old["Change"] * 100).round(2)  # FDR이 소수 비율(0.01)로 반환하므로 백분율로 변환
+                    old = old[~old.index.isin(df.index)]  # 경계일(first_date) 중복 제거
+                    if not old.empty:
+                        df = pd.concat([old, df]).sort_index()
+                        df.index.name = "Date"
+                        df.reset_index().to_csv(cache_path, index=False)
+            except Exception:
+                pass  # 앞쪽 보강 실패 시 기존 캐시 데이터로 계속 진행
 
         if last_date < today:
             try:
