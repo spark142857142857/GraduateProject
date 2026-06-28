@@ -62,8 +62,9 @@ stock_analysis/
 ├── app.py                           # Streamlit 대시보드
 ├── src/
 │   ├── utils.py                     # 공통 유틸 (TICKERS, 경로, 주가 캐시, 수익률 계산)
-│   ├── experiments.py               # 실험 조건 정의 (cond1~cond4)
+│   ├── experiments.py               # 실험 조건 정의 (cond1~cond4 + ablation)
 │   ├── context_builders.py          # LLM 프롬프트용 컨텍스트 섹션 빌더
+│   ├── prompt.py                    # LLM 프롬프트 구성 요소 (역할·판단기준·confidence)
 │   │
 │   ├── collect/                     # 데이터 수집
 │   │   ├── crawl.py                 # 네이버금융 애널리스트 리포트 크롤링 (증분)
@@ -75,7 +76,8 @@ stock_analysis/
 │       ├── baseline_consensus.py    # 대조군 A: 컨센서스 추종 전략
 │       ├── baseline_golden.py       # 대조군 B: 골든크로스 전략
 │       ├── llm_experiment.py        # LLM 백테스팅 (체크포인트 재개 지원)
-│       ├── compare.py               # 조건 간 성과 비교 분석
+│       ├── compare.py               # 기술통계 비교 (평균·Hit·Sharpe, 섹터·종목)
+│       ├── significance.py          # 추론통계 (유의성 검정: Mann-Whitney·Welch·effect size)
 │       └── forward_test.py          # Forward Test (오늘 기준 신호 생성)
 │
 ├── data/                            # 수집 데이터
