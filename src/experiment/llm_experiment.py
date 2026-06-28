@@ -27,7 +27,7 @@ from google.genai import types as genai_types
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from utils import (
-    TICKERS, KOSDAQ_TICKERS, EXPERIMENT_DIR,
+    TICKERS, KOSDAQ_TICKERS, EXPERIMENT_DIR, EXPERIMENT_END,
     get_price, calc_return, get_benchmark_price, calc_excess_return,
     get_experiment_dir, get_latest_experiment_dir,
 )
@@ -42,7 +42,6 @@ MODEL     = "gemini-2.5-flash-lite"
 HOLD_SHORT = 5   # 5거래일
 HOLD_LONG  = 20  # 20거래일
 REQ_DELAY  = 0.5
-EXPERIMENT_END = "2025-12-31"  # 백테스팅 실험 기간 상한. update.py가 financials에 미래(forward test) 행을 추가해도 백테스팅 오염 방지
 
 BUILDER_MAP = {
     "financials":         build_financials,

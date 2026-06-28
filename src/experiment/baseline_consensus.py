@@ -12,7 +12,7 @@ import pandas as pd
 import numpy as np
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-from utils import TICKERS, get_price, calc_return, get_benchmark_price, calc_excess_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir, load_analyst as _load_analyst
+from utils import TICKERS, get_price, calc_return, get_benchmark_price, calc_excess_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir, load_analyst as _load_analyst, START_DATE, EXPERIMENT_END
 
 # ── 파라미터 ──────────────────────────────────────────────
 N_REPORTS  = 3      # 최근 3개 리포트 평균 목표주가로 컨센서스 산출. 너무 많으면 과거 의견 혼입
@@ -45,6 +45,9 @@ def run():
             window   = analyst.iloc[i - N_REPORTS + 1 : i + 1]
             avg_tp   = window["target_price"].mean()
             sig_date = str(analyst.iloc[i]["date"].date())
+
+            if sig_date < START_DATE or sig_date > EXPERIMENT_END:
+                continue  # 실험 기간(2023-01~2025-12) 밖 신호 제외 — LLM 실험과 기간 정합
 
             # 신호일 당일 종가 (재무지표 기준 시점과 일치, look-ahead 방지)
             if price_df.loc[price_df.index > sig_date].empty:

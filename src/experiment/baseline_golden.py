@@ -12,7 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-from utils import TICKERS, get_price, calc_return, get_benchmark_price, calc_excess_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir
+from utils import TICKERS, get_price, calc_return, get_benchmark_price, calc_excess_return, ensure_dirs, get_baseline_dir, get_latest_baseline_dir, START_DATE, EXPERIMENT_END
 
 # ── 파라미터 ──────────────────────────────────────────────
 MA_SHORT  = 5   # 주간 MA vs 월간 MA. 일반적인 단기 골든크로스 파라미터
@@ -40,7 +40,7 @@ def run():
     all_results = []
 
     for name, ticker in TICKERS.items():
-        price_df = get_price(ticker)
+        price_df = get_price(ticker, start="2022-12-01")  # MA20 워밍업 확보 — 실험 시작월(2023-01) 신호 누락 방지
         if price_df.empty:
             print(f"[golden] {name}: 주가 없음, 스킵")
             continue
@@ -49,6 +49,8 @@ def run():
         cross_dates = detect_golden_cross(price_df)
 
         for sig_date in cross_dates:
+            if sig_date < START_DATE or sig_date > EXPERIMENT_END:
+                continue  # 실험 기간(2023-01~2025-12) 밖 신호 제외 (워밍업용 2022-12 데이터로 생성된 크로스 포함)
             ret = calc_return(price_df, sig_date, HOLD_DAYS)
             if ret is None:
                 continue

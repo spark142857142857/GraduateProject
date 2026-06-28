@@ -9,6 +9,7 @@ from datetime import datetime
 
 # ── 분석 설정 ─────────────────────────────────────────────
 START_DATE = "2023-01-01"  # collect_financials의 START_YM(2023-01)과 동일 기준점
+EXPERIMENT_END = "2025-12-31"  # 백테스팅 실험 기간 상한 (2023-01~2025-12). LLM·baseline 공통 참조로 기간 정합성 보장
 END_DATE   = datetime.today().strftime("%Y-%m-%d")
 
 TICKERS = {
