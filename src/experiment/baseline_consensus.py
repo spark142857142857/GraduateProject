@@ -46,11 +46,13 @@ def run():
             avg_tp   = window["target_price"].mean()
             sig_date = str(analyst.iloc[i]["date"].date())
 
-            # 신호일 현재가
-            future = price_df.loc[price_df.index > sig_date]
-            if future.empty:
+            # 신호일 당일 종가 (재무지표 기준 시점과 일치, look-ahead 방지)
+            if price_df.loc[price_df.index > sig_date].empty:
+                continue  # 20거래일 수익률 측정에 필요한 미래 데이터 확보 보장
+            past = price_df.loc[price_df.index <= sig_date]
+            if past.empty:
                 continue
-            cur_price = future["Close"].iloc[0]
+            cur_price = past["Close"].iloc[-1]
 
             gap = (avg_tp - cur_price) / cur_price * 100
             # avg_tp가 NaN이면 gap도 NaN → 명시적으로 스킵 (NaN < BUY_GAP은 False라 통과되는 버그 방지)

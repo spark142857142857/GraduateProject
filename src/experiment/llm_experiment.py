@@ -42,6 +42,7 @@ MODEL     = "gemini-2.5-flash-lite"
 HOLD_SHORT = 5   # 5거래일
 HOLD_LONG  = 20  # 20거래일
 REQ_DELAY  = 0.5
+EXPERIMENT_END = "2025-12-31"  # 백테스팅 실험 기간 상한. update.py가 financials에 미래(forward test) 행을 추가해도 백테스팅 오염 방지
 
 BUILDER_MAP = {
     "financials":         build_financials,
@@ -195,6 +196,9 @@ def run(cond: str, test: bool = False):
         ticker_new = 0
         for _, row in fin_df.iterrows():
             sig_date = str(row["date"].date())
+
+            if sig_date > EXPERIMENT_END:
+                continue  # 실험 기간(2023-01~2025-12) 밖 행은 백테스팅 대상에서 제외
 
             if (ticker, sig_date) in done:
                 continue
