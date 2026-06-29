@@ -13,8 +13,8 @@ Look-ahead Bias 방지 (collect_financials.py 와 동일):
   - 1~3월 → 전전년도 사업보고서 (3/31 이전은 전년도 미공시)
   - 4~12월 → 전년도 사업보고서
 
-금액 단위: DART 원본 그대로 저장 (대부분의 대형 상장사 기준 백만원)
-  → 조원 환산은 context_builders.py 에서 처리
+금액 단위: DART 원본 그대로 저장 (원/full KRW)
+  → 조원·억원 환산은 context_builders.py 에서 처리
 
 저장 경로: data/dart_fundamentals/{ticker}.csv
 

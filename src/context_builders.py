@@ -103,13 +103,22 @@ def build_reports(ticker: str, date: str) -> str:
 
 # ── DART 금액 포맷 헬퍼 (모듈 레벨, CSV·dict 빌더 공용) ──
 
-def _to_trillion(val) -> str:
-    """백만원(KRW) 단위 값을 조원 문자열로 변환. None/NaN → 'N/A'."""
+def _fmt_amount(val) -> str:
+    """원(KRW) 단위 값을 조원/억원 문자열로 변환. None/NaN → 'N/A'.
+
+    DART finstate_all은 금액을 원(full KRW) 단위로 반환한다.
+    1조 이상은 '조원'(소수 1자리), 1조 미만은 '억원'으로 표기해
+    소형주 이익이 0.0조원으로 뭉개지는 것을 방지한다.
+    """
     if val is None or pd.isna(val):
         return "N/A"
-    t = val / 1_000_000  # DART 원본 금액 단위는 백만원. collect_dart_fundamentals.py와 단위 가정 공유 — 단위 변경 시 두 파일 동시 수정 필요
-    sign = "+" if t > 0 else ""
-    return f"{sign}{t:.1f}조원"
+    jo = val / 1_000_000_000_000  # 원 → 조원 (1e12)
+    if abs(jo) >= 1:
+        sign = "+" if jo > 0 else ""
+        return f"{sign}{jo:.1f}조원"
+    eok = val / 100_000_000  # 원 → 억원 (1e8)
+    sign = "+" if eok > 0 else ""
+    return f"{sign}{eok:,.0f}억원"
 
 
 def _fmt_yoy(val) -> str:
@@ -160,14 +169,14 @@ def build_dart_fundamentals_from_dict(ctx: dict) -> str:
     """ctx['revenue'/'operating_income'/...] → [분기 실적] 섹션 텍스트."""
     return "\n".join([
         "[연간 실적 (DART 사업보고서)]",
-        f"매출: {_to_trillion(ctx.get('revenue'))}{_fmt_yoy(ctx.get('revenue_yoy'))}",
-        f"영업이익: {_to_trillion(ctx.get('operating_income'))}{_fmt_yoy(ctx.get('operating_income_yoy'))}",
+        f"매출: {_fmt_amount(ctx.get('revenue'))}{_fmt_yoy(ctx.get('revenue_yoy'))}",
+        f"영업이익: {_fmt_amount(ctx.get('operating_income'))}{_fmt_yoy(ctx.get('operating_income_yoy'))}",
         f"영업이익률: {_fmt(ctx.get('operating_margin'), 1)}%",
-        f"순이익: {_to_trillion(ctx.get('net_income'))}",
+        f"순이익: {_fmt_amount(ctx.get('net_income'))}",
         "",
         "[재무 안정성]",
         f"부채비율: {_fmt(ctx.get('debt_ratio'), 1)}%",
-        f"영업현금흐름: {_to_trillion(ctx.get('operating_cashflow'))}",
+        f"영업현금흐름: {_fmt_amount(ctx.get('operating_cashflow'))}",
     ])
 
 
@@ -198,12 +207,12 @@ def build_dart_fundamentals(ticker: str, date: str) -> str:
 
     return "\n".join([
         "[연간 실적 (DART 사업보고서)]",
-        f"매출: {_to_trillion(revenue)}{_fmt_yoy(rev_yoy)}",
-        f"영업이익: {_to_trillion(oper_inc)}{_fmt_yoy(op_yoy)}",
+        f"매출: {_fmt_amount(revenue)}{_fmt_yoy(rev_yoy)}",
+        f"영업이익: {_fmt_amount(oper_inc)}{_fmt_yoy(op_yoy)}",
         f"영업이익률: {_fmt(oper_mgn, 1)}%",
-        f"순이익: {_to_trillion(net_inc)}",
+        f"순이익: {_fmt_amount(net_inc)}",
         "",
         "[재무 안정성]",
         f"부채비율: {_fmt(debt_ratio, 1)}%",
-        f"영업현금흐름: {_to_trillion(oper_cf)}",
+        f"영업현금흐름: {_fmt_amount(oper_cf)}",
     ])
