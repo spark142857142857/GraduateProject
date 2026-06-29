@@ -26,7 +26,7 @@ import warnings
 import pandas as pd
 import numpy as np
 import FinanceDataReader as fdr
-import OpenDartReader as odr
+from opendartreader import OpenDartReader as odr
 from dotenv import load_dotenv
 from tqdm import tqdm
 
@@ -113,9 +113,11 @@ def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
                 except ValueError:
                     pass
 
-        # 자본총계 (연결 재무상태표, 지배기업+비지배 합계)
+        # 자본총계 (연결 재무상태표). 계정명이 회사·업종마다 상이:
+        # "자본총계" / "자본 총계"(공백) / "기말자본"(은행) 순으로 fallback
         bs = df[df["sj_div"] == "BS"]
-        eq_row = bs[bs["account_nm"] == "자본총계"]
+        eq_candidates = [bs[bs["account_nm"] == en] for en in ("자본총계", "자본 총계", "기말자본")]
+        eq_row = next((c for c in eq_candidates if not c.empty), pd.DataFrame())
         if not eq_row.empty:
             val = eq_row["thstrm_amount"].iloc[0]
             if val and str(val).strip() not in ("", "-", "−"):

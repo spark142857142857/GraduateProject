@@ -29,7 +29,7 @@ import requests
 
 import numpy as np
 import pandas as pd
-import OpenDartReader as odr
+from opendartreader import OpenDartReader as odr
 from dotenv import load_dotenv
 from tqdm import tqdm
 
@@ -59,9 +59,9 @@ except Exception:
 # DART 보고서마다 계정명이 상이해 fallback 목록 사용
 REVENUE_NAMES      = ["매출액", "수익(매출액)", "영업수익", "매출"]
 OPER_INC_NAMES     = ["영업이익", "영업이익(손실)"]
-NET_INC_NAMES      = ["당기순이익", "당기순이익(손실)"]
+NET_INC_NAMES      = ["당기순이익", "당기순이익(손실)", "연결당기순이익"]   # 현대차 등 연결재무제표는 "연결당기순이익" 사용
 TOTAL_LIAB_NAMES   = ["부채총계"]
-TOTAL_EQUITY_NAMES = ["자본총계"]
+TOTAL_EQUITY_NAMES = ["자본총계", "자본 총계", "기말자본"]   # 공백 포함 표기 및 은행("기말자본") 대응
 OPER_CF_NAMES      = ["영업활동 현금흐름", "영업활동현금흐름", "영업활동으로 인한 현금흐름"]
 
 # ── DART 조회 캐시 ────────────────────────────────────────

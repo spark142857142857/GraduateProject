@@ -62,7 +62,7 @@ def _check_dart_cache() -> str:
 
     # OpenDartReader 재초기화 → 캐시 자동 재생성
     try:
-        import OpenDartReader as _odr
+        from opendartreader import OpenDartReader as _odr
         dart_key = os.environ.get("DARTS_API_KEY", "")
         if not dart_key:
             return "DARTS_API_KEY 환경변수가 설정되지 않았습니다."
