@@ -71,6 +71,10 @@
 - [ ] 멀티모델 비교 (프롬프트 확정 후 5~6개 모델, temperature=0.0 고정)
 - [ ] Forward Test 검증: 오늘 기준 신호 생성 → **한 달 후 실제 결과 추적** (실전 유효성)
 - [ ] app.py 디자인 개선 (최후 — 발표/데모용)
+  - [ ] 전체 종목 한눈에 보기 탭 추가
+  - [ ] Streamlit Community Cloud 배포 (API 키를 st.secrets로 전환)
 
-### C-4. 선택 (재현성)
+### C-4. 선택 (재현성·기술부채)
 - [ ] 결과 메타데이터(JSON) 저장 루틴
+- [ ] 코드 중복 단일화: `COND_LABELS`(compare.py/app.py), `TICKERS`/`SECTORS`(utils→compare 파생)
+- [ ] 베이스라인 return_5d 추가 여부 결정 (현재 20d만)
