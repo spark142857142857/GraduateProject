@@ -29,7 +29,8 @@ def detect_golden_cross(df: pd.DataFrame) -> list[str]:
     df["ma_short"] = df["Close"].rolling(MA_SHORT).mean()
     df["ma_long"]  = df["Close"].rolling(MA_LONG).mean()
     df["above"]    = df["ma_short"] > df["ma_long"]
-    df["cross"]    = df["above"] & ~df["above"].shift(1).infer_objects(copy=False).fillna(False)  # 골든크로스: 전일 MA_SHORT < MA_LONG이고 당일 MA_SHORT > MA_LONG인 날 탐지
+    prev_above     = df["above"].shift(1, fill_value=False)  # 첫 행은 직전값 없음 → False. bool dtype 유지(NaN 미발생)로 ~ 연산이 정수 bitwise로 새는 것 방지
+    df["cross"]    = df["above"] & ~prev_above  # 골든크로스: 전일 MA_SHORT < MA_LONG이고 당일 MA_SHORT > MA_LONG인 날 탐지
 
     cross_dates = df.index[df["cross"]].strftime("%Y-%m-%d").tolist()
     return cross_dates
