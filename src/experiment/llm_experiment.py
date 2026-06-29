@@ -258,6 +258,10 @@ def run(cond: str, test: bool = False):
                 "reasons":     json.dumps(reasons, ensure_ascii=False),
             }
 
+            if test:
+                print(f"\n[테스트 완료] signal={signal}, confidence={confidence}")
+                return  # 테스트 모드는 실제 체크포인트를 오염시키지 않도록 저장 전에 종료
+
             ckpt_df = pd.concat([ckpt_df, pd.DataFrame([record])], ignore_index=True)
             save_checkpoint(ckpt_df, cond)
             done.add((ticker, sig_date))
@@ -265,10 +269,6 @@ def run(cond: str, test: bool = False):
             ticker_new += 1
 
             print(f"  [{total:4d}] {name} {sig_date}  가격={int(cur_price):,}  signal={signal}  confidence={confidence}")
-
-            if test:
-                print(f"\n[테스트 완료] signal={signal}, confidence={confidence}")
-                return
 
             time.sleep(REQ_DELAY)
 
