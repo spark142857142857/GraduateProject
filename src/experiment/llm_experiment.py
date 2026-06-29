@@ -61,7 +61,6 @@ def build_prompt(name: str, price: float, context_sections: list[str], ticker: s
     # 종목 식별 정보를 제거해 LLM 사전학습 기반 편향을 차단하는 ablation 조건
     display_name = "종목 A" if blind else name
     market_line  = "" if blind else f"\n상장 시장: {market_name}"
-    judge_market = "주식 시장" if blind else market_name
 
     intro = (
         "아래 정보를 바탕으로 이 종목의 향후 20거래일 투자 방향을 판단해주세요."
@@ -79,7 +78,7 @@ def build_prompt(name: str, price: float, context_sections: list[str], ticker: s
             parts.append(f"\n{section}")
 
     parts.append(
-        f"\n{build_criteria(judge_market)}\n"
+        f"\n{build_criteria()}\n"
         f"\n{CONFIDENCE_GUIDE}\n"
         "\n다음 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요.\n"
         "{\n"
