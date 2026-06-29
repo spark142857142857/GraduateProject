@@ -86,9 +86,9 @@ def build_prompt(name: str, price: float, context_sections: list[str], ticker: s
         '  "signal": "Buy" 또는 "Sell" 또는 "Neutral",\n'
         '  "confidence": 0~100 사이 정수 (판단에 대한 확신도),\n'
         '  "reasons": [\n'
-        '    "한 문장",\n'
-        '    "한 문장",\n'
-        '    "한 문장"\n'
+        '    "제공된 데이터를 근거로 든 한 문장",\n'
+        '    "제공된 데이터를 근거로 든 한 문장",\n'
+        '    "제공된 데이터를 근거로 든 한 문장"\n'
         "  ]\n"
         "}"
     )
