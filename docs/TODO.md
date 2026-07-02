@@ -85,6 +85,7 @@
   - [x] 입력 검증 `forward_verify.py` — 현재가=FDR최신·ROE정합성·52주·리포트30일·DART신선도 (종목당 1회). 리포트 0건 시 crawl 경고
   - **모델 계획**: 이번 일요일 앵커(flash-lite) 단독 → 다음 주 provider 분기 후 4모델. forward 앵커는 **반드시 백테스트와 동일 모델(flash-lite)**
   - [ ] `forward_test.py`에 **model 필드 + 파일명(`{ticker}_{cond}_{model}.json`)** 추가 — 멀티모델 forward 시 파일 충돌 방지 (현재는 단일 앵커라 미반영)
+  - [ ] **forward DART를 인메모리 fetch로 전환** — `get_today_context`가 `data/dart_fundamentals/`에 당월 행을 쓰지 않고 현재 FY를 인메모리로 가져오게 (~15줄). 목적: 백테스트 dart를 2023-2025 순수 36행 유지 → 데이터 출처 구분 명확. reports는 이미 라이브라 그대로. (내일)
   - **주간 리듬(일요일 저녁)**: ① `crawl.py`(리포트 최신화) ② `forward_run_all.py`(생성) ③ `forward_verify.py`(입력 점검) ④(4주 뒤~) `forward_eval.py`(성숙 평가). ⚠️ **리포트 자동갱신 안 됨 → ① 필수**. 20d 보유 겹쳐 표본 비독립 → 실전 참고용(유의성은 백테스트)
 - [ ] app.py 디자인 개선 (최후 — 발표/데모용)
   - [ ] 전체 종목 한눈에 보기 탭 추가
