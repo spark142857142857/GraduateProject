@@ -62,12 +62,15 @@ def _cond_rows(cond: str, bucket: str, g: pd.DataFrame,
         sub = g[g["signal"] == sig]
         s_abs = calc_stats(sub["return_20d"], sig)
         s_exc = calc_stats(sub["excess_return_20d"], sig)
+        # 중앙값 병기 — 소수 모멘텀 종목의 극단 수익률에 강건한 견고성 지표
+        med_abs = round(sub["return_20d"].median(), 2) if len(sub) else float("nan")
+        med_exc = round(sub["excess_return_20d"].median(), 2) if len(sub) else float("nan")
         rows.append({
             "bucket": bucket, "cond": cond, "signal": sig,
             "n": s_abs["n"],
             "share_pct": round(s_abs["n"] / n_total * 100, 1) if n_total else 0.0,
-            "abs_mean": s_abs["mean"], "abs_hit": s_abs["hit_rate"],
-            "excess_mean": s_exc["mean"], "excess_hit": s_exc["hit_rate"],
+            "abs_mean": s_abs["mean"], "abs_median": med_abs, "abs_hit": s_abs["hit_rate"],
+            "excess_mean": s_exc["mean"], "excess_median": med_exc, "excess_hit": s_exc["hit_rate"],
             "bench_abs": bench_abs, "bench_excess": bench_exc,
         })
     return rows
@@ -90,8 +93,8 @@ def run_axis(cond_data: dict[str, pd.DataFrame], axis_col: str,
             continue
         b_abs, b_exc = _bucket_benchmark(ref_b)
         print(f"\n▶ [{bucket}]  신호 {len(ref_b)}건 | 무기술 벤치: 절대 {b_abs:+.2f}% / 초과 {b_exc:+.2f}%")
-        print(f"  {'조건':<14}{'Buy n':>6}{'Buy초과':>9}{'Buy초Hit':>9}  │{'Sell n':>7}{'Sell절Hit':>10}{'Sell초Hit':>10}")
-        print("  " + "-" * 74)
+        print(f"  {'조건':<14}{'Buy n':>6}{'Buy초과':>9}{'Buy초Hit':>9}  │{'Sell n':>7}{'Sell절Hit':>10}{'Sell초Hit':>10}{'Sell초中':>9}")
+        print("  " + "-" * 83)
         for cond in REPORT_CONDS:
             if cond not in cond_data:
                 continue
@@ -107,7 +110,7 @@ def run_axis(cond_data: dict[str, pd.DataFrame], axis_col: str,
                 return " N/A" if pd.isna(v) else f"{v:.1f}%"
             print(f"  {COND_SHORT.get(cond, cond):<14}"
                   f"{buy['n']:>6}{f(buy['excess_mean']):>9}{h(buy['excess_hit']):>9}  │"
-                  f"{sell['n']:>7}{h(sell['abs_hit']):>10}{h(sell['excess_hit']):>10}")
+                  f"{sell['n']:>7}{h(sell['abs_hit']):>10}{h(sell['excess_hit']):>10}{f(sell['excess_median']):>9}")
 
     return pd.DataFrame(all_rows)
 
