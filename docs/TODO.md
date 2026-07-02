@@ -68,11 +68,18 @@
 - [ ] Confidence calibration 분석 (temp=0라 고정 가능성 — 실익 확인 후)
 
 ### C-3. 확장
-- [ ] **멀티모델 비교** (temperature=0.0 고정) — 세트 확정:
-  - Gemini 2.5 Flash-Lite(현재 주력) / Gemini 2.5 Flash(티어↑) / GPT-5 mini(OpenAI) / Claude Haiku 4.5(Anthropic)
-  - 목적: 발견의 제공사 일반성 검증. 여유 시 강모델 1개(Gemini 2.5 Pro/Claude Sonnet 4.6)
-  - ⚠️ 교차 제공사는 `llm_experiment.call_llm`에 provider 추상화 1개 추가 필요
-- [ ] Forward Test 검증: 오늘 기준 신호 생성 → **한 달 후 실제 결과 추적** (실전 유효성)
+- [ ] **멀티모델 비교** (temperature=0.0 고정) — **예산 상한 5만원(~$35) 총합, 여러 번 재실행 전제**
+  - **세트 확정 (4종, 제공사 3사 + 오픈)** — 괄호는 1회 비용(5조건×720콜):
+    - 앵커·반복: **Gemini 2.5 Flash-Lite** (현재 주력, ~$0.67)
+    - 오픈·금융평판: **Gemma 4** (AI Studio, 무료·rate-limit)
+    - OpenAI 검증: **GPT-5.4-mini** (~$6.7)
+    - Anthropic 검증: **Claude Haiku 4.5** (~$7.8)
+  - **전략**: 앵커(Flash-Lite+Gemma)로 개발·반복은 공짜에 가깝게 → 유료 2종은 **최종 프롬프트에서 각 1회만**. 예상 총합 ~$26.5 (여유). 빡빡하면 유료 1종으로 축소($15 안쪽)
+  - **제외**: Sonnet 4.6/Opus 4.8/Gemini Pro/3.5 Flash — 1회 $23~$39로 예산 초과. (1주 내 실행 예정; 가격 인하 시 상위 모델 재검토)
+  - ⚠️ Gemma 무료 tier rate-limit → 3,600콜 풀 백테스트는 분할/여러 날 or 3rd-party(~$1). forward test 위주 대안
+  - ⚠️ **GPT·Claude만** `llm_experiment.call_llm`에 provider 추상화 1개 필요 (Gemini/Gemma는 MODEL 문자열 교체로 끝)
+  - 정확한 모델 ID는 실행 시점 재확인 (GPT-5.x·Gemini 3.x 빠르게 변동; Claude만 확정 `claude-haiku-4-5`)
+- [ ] Forward Test 검증: 오늘 기준 신호 생성 → **한 달 후 실제 결과 추적** (실전 유효성). 백테스트와 **동일 4모델**로 일관성 유지 (콜 수 적어 비용 무관)
 - [ ] app.py 디자인 개선 (최후 — 발표/데모용)
   - [ ] 전체 종목 한눈에 보기 탭 추가
   - [ ] Streamlit Community Cloud 배포 (API 키를 st.secrets로 전환)

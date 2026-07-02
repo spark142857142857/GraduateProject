@@ -57,13 +57,24 @@ EXPERIMENTS = {
 
 | 변수 | 현재값 | 설명 |
 |---|---|---|
-| `MODEL` | `"gemini-2.5-flash-lite"` | 사용할 Gemini 모델명 |
+| `MODEL` | `"gemini-2.5-flash-lite"` | 사용할 모델명 (앵커·주력). 멀티모델 비교 세트는 아래 참고 |
 | `temperature` | `0.0` | 샘플링 온도. 0이면 결정적(재현 가능) — 2차 실험부터 재현성 확보를 위해 0.0 고정 |
 | `HOLD_SHORT` | `5` | 단기 수익률 측정 기간 (거래일) |
 | `HOLD_LONG` | `20` | 장기 수익률 측정 기간 (거래일) |
-| `REQ_DELAY` | `0.5` | Gemini API 호출 간 대기 시간 (초) |
+| `REQ_DELAY` | `0.5` | API 호출 간 대기 시간 (초) |
 
 > **논문 주의:** 현재 `temperature=0.0`으로 고정 — 재현성 확보. API 수준의 완전한 결정론적 출력은 보장되지 않을 수 있음.
+
+**멀티모델 비교 세트 (예산 5만원 상한, 백테스트·forward 동일 모델):**
+
+| 역할 | 모델 | 1회 비용(5조건×720콜) | 반복 |
+|---|---|---|---|
+| 앵커·주력 | `gemini-2.5-flash-lite` | ~$0.67 | 개발 내내 반복 |
+| 오픈·금융평판 | `gemma` 계열 (AI Studio) | 무료(rate-limit) | 반복 |
+| OpenAI 검증 | `gpt-5.4-mini` 계열 | ~$6.7 | 최종 1회 |
+| Anthropic 검증 | `claude-haiku-4-5` | ~$7.8 | 최종 1회 |
+
+> Sonnet/Opus/Gemini Pro 등은 1회 $23~$39로 예산 초과 → 제외. Gemini·Gemma는 `MODEL` 문자열 교체, GPT·Claude는 `call_llm`에 provider 분기 필요. 정확한 ID는 실행 시점 재확인.
 
 ### Sharpe Ratio 계산
 
