@@ -81,6 +81,7 @@ stock_analysis/
 │       ├── breakdown.py             # 다축 분해 (연도별·시장국면별, mean+median 병기)
 │       ├── forward_test.py          # Forward Test (오늘 기준 단일 종목 신호 생성)
 │       ├── forward_run_all.py       # Forward 일괄 실행 (전 종목 × 5조건, 주간 반복)
+│       ├── forward_verify.py        # Forward 입력 정보 신선도·정합성 검증
 │       └── forward_eval.py          # Forward 성숙 신호 평가 (신호일 이후 실제 수익률·적중)
 │
 ├── data/                            # 수집 데이터
@@ -202,22 +203,22 @@ python src/experiment/breakdown.py
 
 오늘 날짜 기준으로 LLM 신호를 실시간 생성하고, 일정 기간 후 실제 수익률로 검증한다. 백테스팅과 **동일 모델·프롬프트**로 일관성을 유지한다 (앵커: gemini-2.5-flash-lite).
 
+**주간 워크플로우 (일요일 저녁 권장):**
+
 ```bash
-# 단일 종목 (삼성전자, cond4 기본값)
-python src/experiment/forward_test.py --ticker 005930
-python src/experiment/forward_test.py --ticker 035420 --cond cond3
-
-# 전 종목 × 5조건 일괄 (주간 반복용 — 일요일 저녁 실행 권장)
-python src/experiment/forward_run_all.py
-
-# 성숙 신호 평가 (신호일 이후 20거래일 경과분 → 실제 수익률·적중 집계)
-python src/experiment/forward_eval.py
+python src/collect/crawl.py                # ① 애널리스트 리포트 최신화 (증분) — cond3/4에 필요
+python src/experiment/forward_run_all.py   # ② 전 종목 × 5조건 신호 생성 (DART는 자동 갱신)
+python src/experiment/forward_verify.py    # ③ 넣은 정보 신선도·정합성 점검 (현재가·ROE·리포트·DART)
+# (4주 뒤부터) python src/experiment/forward_eval.py   # ④ 성숙분 실제 수익률·적중 평가
 ```
+
+단일 종목 테스트: `python src/experiment/forward_test.py --ticker 005930 --cond cond3`
 
 - 신호 저장: `results/forward/{날짜}/{ticker}_{cond}.json` (당일 동일 ticker+cond는 캐시 반환)
 - 평가 저장: `results/forward/evaluation.csv` — 미성숙(20거래일 미경과) 신호는 pending
 - 주간 반복 시 20거래일 보유구간이 겹쳐 표본이 독립이 아니므로 **실전 참고용** (유의성 검정은 백테스트가 담당)
-- ⚠️ **부수효과**: `get_today_context`가 최신 재무를 위해 `data/dart_fundamentals/`에 당월 행을 추가한다. 백테스트는 2023-01~2025-12 날짜만 사용(EXPERIMENT_END)하므로 결과에 영향 없음. `data/financials/`는 오염시키지 않음(인메모리 계산).
+- ⚠️ **리포트는 자동 갱신 안 됨** → forward 전 반드시 `crawl.py` 실행 (안 하면 cond3/4가 빈 리포트). `forward_verify.py`가 리포트 0건 시 경고.
+- ⚠️ **부수효과**: `get_today_context`가 최신 재무를 위해 `data/dart_fundamentals/`에 당월 행을 추가(멱등, 분기당 1행). 백테스트는 2023-01~2025-12 날짜만 사용(EXPERIMENT_END)하므로 결과에 영향 없음. `data/financials/`는 오염시키지 않음(인메모리 계산).
 
 ### 7. Streamlit 대시보드
 
