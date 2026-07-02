@@ -79,7 +79,9 @@ stock_analysis/
 │       ├── compare.py               # 기술통계 비교 (평균·Hit·Sharpe, 섹터·종목)
 │       ├── significance.py          # 추론통계 (유의성 검정: Mann-Whitney·Welch·effect size)
 │       ├── breakdown.py             # 다축 분해 (연도별·시장국면별, mean+median 병기)
-│       └── forward_test.py          # Forward Test (오늘 기준 신호 생성)
+│       ├── forward_test.py          # Forward Test (오늘 기준 단일 종목 신호 생성)
+│       ├── forward_run_all.py       # Forward 일괄 실행 (전 종목 × 5조건, 주간 반복)
+│       └── forward_eval.py          # Forward 성숙 신호 평가 (신호일 이후 실제 수익률·적중)
 │
 ├── data/                            # 수집 데이터
 │   ├── financials/                  # 재무 + 기술지표 CSV
@@ -198,19 +200,24 @@ python src/experiment/breakdown.py
 
 ### 6. Forward Test
 
-오늘 날짜 기준으로 단일 종목의 LLM 신호를 실시간 생성한다.  
-백테스팅 데이터(`data/financials/`)를 오염시키지 않도록 별도 수집 경로를 사용한다.
+오늘 날짜 기준으로 LLM 신호를 실시간 생성하고, 일정 기간 후 실제 수익률로 검증한다. 백테스팅과 **동일 모델·프롬프트**로 일관성을 유지한다 (앵커: gemini-2.5-flash-lite).
 
 ```bash
-# 삼성전자, cond4 (기본값)
+# 단일 종목 (삼성전자, cond4 기본값)
 python src/experiment/forward_test.py --ticker 005930
-
-# 조건 지정
 python src/experiment/forward_test.py --ticker 035420 --cond cond3
+
+# 전 종목 × 5조건 일괄 (주간 반복용 — 일요일 저녁 실행 권장)
+python src/experiment/forward_run_all.py
+
+# 성숙 신호 평가 (신호일 이후 20거래일 경과분 → 실제 수익률·적중 집계)
+python src/experiment/forward_eval.py
 ```
 
-- 결과는 `results/forward/{날짜}/{ticker}_{cond}.json`에 저장  
-- 당일 동일 ticker + cond는 캐시에서 즉시 반환 (API 재호출 없음)
+- 신호 저장: `results/forward/{날짜}/{ticker}_{cond}.json` (당일 동일 ticker+cond는 캐시 반환)
+- 평가 저장: `results/forward/evaluation.csv` — 미성숙(20거래일 미경과) 신호는 pending
+- 주간 반복 시 20거래일 보유구간이 겹쳐 표본이 독립이 아니므로 **실전 참고용** (유의성 검정은 백테스트가 담당)
+- ⚠️ **부수효과**: `get_today_context`가 최신 재무를 위해 `data/dart_fundamentals/`에 당월 행을 추가한다. 백테스트는 2023-01~2025-12 날짜만 사용(EXPERIMENT_END)하므로 결과에 영향 없음. `data/financials/`는 오염시키지 않음(인메모리 계산).
 
 ### 7. Streamlit 대시보드
 
