@@ -43,10 +43,10 @@ LLM에 제공하는 재무 컨텍스트 조합을 달리하며 최적 구성을 
 | 평가 시점 | 매월 첫 거래일 |
 | 대상 종목 | KOSPI / KOSDAQ 대형주 20개 |
 | LLM | Gemini 2.5 Flash-Lite (temperature=0.0) |
-| 신호 | Buy / Neutral / Sell |
+| 신호 | Buy / Neutral / Sell (**절대 방향** 예측 — 단일 종목 데이터만 받는 LLM에 시장 대비 예측은 ill-posed) |
 | 수익률 측정 | 신호일 +1 거래일 매수 → 5 / 20거래일 후 종가 |
 | 대조군 | 컨센서스 추종 / 골든크로스 (MA5×MA20) |
-| 평가 지표 | 절대 수익률(return_20d) + 시장 대비 초과 수익률(excess_return_20d) |
+| 평가 지표 | 절대 수익률(return_20d) + **시장 대비 초과 수익률**(excess_return_20d, 알파) |
 | 벤치마크 | KOSPI(KS11) / KOSDAQ(KQ11) — 상장 시장별 분리 |
 
 ### 결과
@@ -78,6 +78,7 @@ stock_analysis/
 │       ├── llm_experiment.py        # LLM 백테스팅 (체크포인트 재개 지원)
 │       ├── compare.py               # 기술통계 비교 (평균·Hit·Sharpe, 섹터·종목)
 │       ├── significance.py          # 추론통계 (유의성 검정: Mann-Whitney·Welch·effect size)
+│       ├── breakdown.py             # 다축 분해 (연도별·시장국면별, mean+median 병기)
 │       └── forward_test.py          # Forward Test (오늘 기준 신호 생성)
 │
 ├── data/                            # 수집 데이터
@@ -164,7 +165,7 @@ python src/experiment/llm_experiment.py --cond cond4 --test
 
 ### 5. 성과 비교 분석
 
-기술통계(평균·Hit Rate·Sharpe)는 `compare.py`, 추론통계(유의성 검정)는 `significance.py`로 분리돼 있다.
+기술통계는 `compare.py`, 추론통계(유의성 검정)는 `significance.py`, 다축 분해(연도·국면)는 `breakdown.py`로 분리돼 있다. 3년 총합은 국면 효과를 가릴 수 있어 breakdown으로 보완한다.
 
 ```bash
 # 기술통계 — cond1~4 전체 + 섹터·종목별 분석
@@ -178,6 +179,9 @@ python src/experiment/compare.py --cond cond4 --sector
 
 # 추론통계 — 조건 간 차이의 유의성 검정 (별도 실행)
 python src/experiment/significance.py --all
+
+# 다축 분해 — 연도별 / 시장 국면별 (mean+median 병기)
+python src/experiment/breakdown.py
 ```
 
 결과 파일은 `results/analysis/{날짜}/` 및 `results/analysis/latest/`에 저장된다.
@@ -189,6 +193,8 @@ python src/experiment/significance.py --all
 | `all_sector.csv` | compare.py | 섹터별 × 조건별 성과 |
 | `all_stock_buy.csv` | compare.py | 종목별 × 조건별 Buy 신호 성과 |
 | `all_significance.csv` | significance.py | 통계적 유의성 검정 결과 (Mann-Whitney, Welch's t-test, effect size) |
+| `breakdown_yearly.csv` | breakdown.py | 연도별(2023~25) × 조건별 Buy/Sell 성과 (mean+median) |
+| `breakdown_regime.csv` | breakdown.py | 시장 국면별(상승/하락) × 조건별 Buy/Sell 성과 |
 
 ### 6. Forward Test
 

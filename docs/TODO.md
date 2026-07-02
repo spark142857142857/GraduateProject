@@ -55,20 +55,23 @@
 
 ## C. 남은 작업 (TODO)
 
-### C-1. 즉시 (3차 실험)
-- [ ] 체크포인트 삭제 (프롬프트 절대전환·DART 단위/충전·cur_price 변경으로 2차 stale)
-- [ ] 8조건 실행: cond1~4, cond4_no_reports, cond4_blind, reports_only, dart_only
-- [ ] `compare.py --all` + `significance.py --all` → 신호 분포·수익률·유의성
-- [ ] 신호 분포 점검: Sell 비율 회복 정도, Neutral 적정성 → 프롬프트 최종 판단
+> **보고 범위 (GPT 리뷰 확정)**: cond1~4 + cond4_no_reports 산출물로 서술. reports_only/dart_only/cond4_blind는 미완료 보조실험으로 분리. 성능 해석은 전체 평균이 아닌 **Buy 신호 성과·초과수익·신호 분포·컨센서스 대비 유의성** 중심.
+
+### C-1. 3차 실험 (완료 2026-06-29)
+- [x] 5조건 실행(cond1~4 + cond4_no_reports) → compare + significance
+- [x] 다축 분해(연도별·국면별) — breakdown.py, mean+median
+- [x] Sell 이상치 사후 분석 — 하락장 Sell 견고(중앙값·hit·윈저라이즈 안정)
 
 ### C-2. 분석·서술 (코드 최소)
+- [x] ~~거래비용 반영 여부~~ → **미구현 결정**. 왕복 ~0.25%는 near-flat 차감이라 조건 간 랭킹·유의성 불변, 무기술 벤치 대비 상쇄. 지수 대비 Buy 초과수익만 ~0.25%p 감소(양수 유지). → 논문 한 줄 명시.
 - [ ] Buy & Hold(시장참여) 벤치마크 호명 — 서술
-- [ ] Confidence calibration 분석 (compare에 함수 추가)
-- [ ] Sell 이상치 사후 분석
-- [ ] 거래비용 반영 여부 결정
+- [ ] Confidence calibration 분석 (temp=0라 고정 가능성 — 실익 확인 후)
 
 ### C-3. 확장
-- [ ] 멀티모델 비교 (프롬프트 확정 후 5~6개 모델, temperature=0.0 고정)
+- [ ] **멀티모델 비교** (temperature=0.0 고정) — 세트 확정:
+  - Gemini 2.5 Flash-Lite(현재 주력) / Gemini 2.5 Flash(티어↑) / GPT-5 mini(OpenAI) / Claude Haiku 4.5(Anthropic)
+  - 목적: 발견의 제공사 일반성 검증. 여유 시 강모델 1개(Gemini 2.5 Pro/Claude Sonnet 4.6)
+  - ⚠️ 교차 제공사는 `llm_experiment.call_llm`에 provider 추상화 1개 추가 필요
 - [ ] Forward Test 검증: 오늘 기준 신호 생성 → **한 달 후 실제 결과 추적** (실전 유효성)
 - [ ] app.py 디자인 개선 (최후 — 발표/데모용)
   - [ ] 전체 종목 한눈에 보기 탭 추가
