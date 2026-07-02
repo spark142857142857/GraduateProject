@@ -80,6 +80,9 @@
   - ⚠️ **GPT·Claude만** `llm_experiment.call_llm`에 provider 추상화 1개 필요 (Gemini/Gemma는 MODEL 문자열 교체로 끝)
   - 정확한 모델 ID는 실행 시점 재확인 (GPT-5.x·Gemini 3.x 빠르게 변동; Claude만 확정 `claude-haiku-4-5`)
 - [ ] Forward Test 검증: 오늘 기준 신호 생성 → **한 달 후 실제 결과 추적** (실전 유효성). 백테스트와 **동일 4모델**로 일관성 유지 (콜 수 적어 비용 무관)
+  - [x] 성숙 신호 평가 스크립트 `forward_eval.py` — 신호일 이후 실제 5/20d 수익률·방향/초과 적중 집계 (calc_return 재사용, 미성숙은 pending)
+  - [ ] `forward_test.py`에 **model 필드 + 파일명(`{ticker}_{cond}_{model}.json`)** 추가 — 멀티모델 forward 시 파일 충돌 방지 (현재는 단일 앵커라 미반영)
+  - **주간 리듬(일요일 저녁)**: ① 신규 신호 생성 ② 성숙분(≈4주 전) 평가. 20d 보유 겹쳐 표본 비독립 → 실전 참고용(유의성은 백테스트)
 - [ ] app.py 디자인 개선 (최후 — 발표/데모용)
   - [ ] 전체 종목 한눈에 보기 탭 추가
   - [ ] Streamlit Community Cloud 배포 (API 키를 st.secrets로 전환)
