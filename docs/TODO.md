@@ -77,7 +77,9 @@
   - **전략**: 앵커(Flash-Lite+Gemma)로 개발·반복은 공짜에 가깝게 → 유료 2종은 **최종 프롬프트에서 각 1회만**. 예상 총합 ~$26.5 (여유). 빡빡하면 유료 1종으로 축소($15 안쪽)
   - **제외**: Sonnet 4.6/Opus 4.8/Gemini Pro/3.5 Flash — 1회 $23~$39로 예산 초과. (1주 내 실행 예정; 가격 인하 시 상위 모델 재검토)
   - ⚠️ Gemma 무료 tier rate-limit → 3,600콜 풀 백테스트는 분할/여러 날 or 3rd-party(~$1). forward test 위주 대안
-  - ⚠️ **GPT·Claude만** `llm_experiment.call_llm`에 provider 추상화 1개 필요 (Gemini/Gemma는 MODEL 문자열 교체로 끝)
+  - [x] **provider 분기 + 저장 분리(C1) 구현 완료** — `call_llm(prompt, model)` 접두어 분기(lazy client), `--model` 스레딩, `experiment/{cond}/{model}/`·`analysis/{model}/` 하위폴더, 앵커 결과 이전. Gemini 검증됨
+  - [ ] `.env`에 `OPENAI_API_KEY`·`ANTHROPIC_API_KEY` 추가 → GPT·Claude 1콜 스모크
+  - [ ] 실제 실행: 각 모델 `llm_experiment --model X` (5조건) → `compare/breakdown/significance --model X`
   - 정확한 모델 ID는 실행 시점 재확인 (GPT-5.x·Gemini 3.x 빠르게 변동; Claude만 확정 `claude-haiku-4-5`)
 - [ ] Forward Test 검증: 오늘 기준 신호 생성 → **한 달 후 실제 결과 추적** (실전 유효성). 백테스트와 **동일 4모델**로 일관성 유지 (콜 수 적어 비용 무관)
   - [x] 성숙 신호 평가 스크립트 `forward_eval.py` — 신호일 이후 실제 5/20d 수익률·방향/초과 적중 집계 (calc_return 재사용, 미성숙은 pending)

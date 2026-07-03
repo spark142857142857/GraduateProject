@@ -187,7 +187,11 @@ python src/experiment/significance.py --all
 python src/experiment/breakdown.py
 ```
 
-결과 파일은 `results/analysis/{날짜}/` 및 `results/analysis/latest/`에 저장된다.
+**멀티모델**: 백테스팅·분석 모두 `--model`로 모델 지정 (기본값 앵커 `gemini-2.5-flash-lite`). 모델 접두어로 provider 자동 분기 (gemini/gemma→Google, gpt→OpenAI, claude→Anthropic). 교차 제공사는 `.env`에 `OPENAI_API_KEY`·`ANTHROPIC_API_KEY` 필요 (쓰는 provider만). 예: `python src/experiment/llm_experiment.py --cond cond4 --model claude-haiku-4-5`.
+
+결과는 모델별로 분리 저장된다:
+- 실험: `results/experiment/{cond}/{model}/{latest|날짜}/`
+- 분석: `results/analysis/{model}/{latest|날짜}/`
 
 | 파일 | 생성 | 내용 |
 |------|------|------|
