@@ -245,28 +245,18 @@ def _update_reports_one(ticker: str, name: str) -> int:
     return len(records)
 
 
-def _update_dart_one(ticker: str, name: str, base_date: pd.Timestamp) -> bool:
-    """단일 종목 dart_fundamentals 갱신. 갱신 시 True.
+def _build_dart_row(ticker: str, name: str, fy: int) -> dict:
+    """DART 회계연도(fy) 실적을 조회해 dart_fundamentals 한 행(dict)을 계산.
 
-    이번 달 기준일(base_date) 행이 없으면 해당 연도 DART 실적을 조회해 append.
+    파일 쓰기 없이 매출·이익·영업이익률·부채비율·YoY·배당수익률까지 산출한다.
+    forward 인메모리 경로(get_today_context)와 백테스트 write 경로
+    (_update_dart_one)가 공용한다.
     """
-    base_date_str = base_date.strftime("%Y-%m-%d")
-    out_path = os.path.join(DART_FUND_DIR, f"{ticker}.csv")
-
-    if os.path.exists(out_path):
-        df_existing = pd.read_csv(out_path, dtype={"ticker": str})
-        if base_date_str in df_existing["date"].values:
-            print(f"  [{ticker}] {name}: DART {base_date_str} 이미 존재 - 스킵")
-            return False
-    else:
-        df_existing = pd.DataFrame()
-
-    fy   = dart_applicable_fy(base_date)
     data = get_dart_fund_annual(ticker, fy)
 
-    revenue  = data["revenue"]
-    oper_inc = data["operating_income"]
-    net_inc  = data["net_income"]
+    revenue    = data["revenue"]
+    oper_inc   = data["operating_income"]
+    net_inc    = data["net_income"]
     total_liab = data["total_liabilities"]
     total_eq   = data["total_equity"]
     oper_cf    = data["operating_cashflow"]
@@ -288,10 +278,7 @@ def _update_dart_one(ticker: str, name: str, base_date: pd.Timestamp) -> bool:
             return np.nan
         return round((curr - prev) / abs(prev) * 100, 2)
 
-    div_yield = get_dividend_yield(ticker, fy)
-
-    new_row = pd.DataFrame([{
-        "date":                 base_date_str,
+    return {
         "ticker":               str(ticker).zfill(6),
         "name":                 name,
         "revenue":              revenue,
@@ -300,10 +287,31 @@ def _update_dart_one(ticker: str, name: str, base_date: pd.Timestamp) -> bool:
         "operating_margin":     oper_margin,
         "debt_ratio":           debt_ratio,
         "operating_cashflow":   oper_cf,
-        "dividend_yield":       div_yield,
+        "dividend_yield":       get_dividend_yield(ticker, fy),
         "revenue_yoy":          _yoy(revenue,  data["revenue_prev"]),
         "operating_income_yoy": _yoy(oper_inc, data["operating_income_prev"]),
-    }])
+    }
+
+
+def _update_dart_one(ticker: str, name: str, base_date: pd.Timestamp) -> bool:
+    """단일 종목 dart_fundamentals 갱신 (백테스트 데이터 수집용, CSV write). 갱신 시 True.
+
+    이번 달 기준일(base_date) 행이 없으면 해당 연도 DART 실적을 조회해 append.
+    forward(get_today_context)는 이 함수를 쓰지 않고 인메모리 조회한다.
+    """
+    base_date_str = base_date.strftime("%Y-%m-%d")
+    out_path = os.path.join(DART_FUND_DIR, f"{ticker}.csv")
+
+    if os.path.exists(out_path):
+        df_existing = pd.read_csv(out_path, dtype={"ticker": str})
+        if base_date_str in df_existing["date"].values:
+            print(f"  [{ticker}] {name}: DART {base_date_str} 이미 존재 - 스킵")
+            return False
+    else:
+        df_existing = pd.DataFrame()
+
+    fy      = dart_applicable_fy(base_date)
+    new_row = pd.DataFrame([{"date": base_date_str, **_build_dart_row(ticker, name, fy)}])
 
     df_out = pd.concat([df_existing, new_row], ignore_index=True)
     df_out = df_out.sort_values("date").reset_index(drop=True)
@@ -369,22 +377,11 @@ def get_today_context(ticker: str) -> dict:
         pos52 = np.nan
     momentum, vol_change = calc_momentum_volume(full_price, today_ts)
 
-    # ── dart_fundamentals 최신 행 재활용 (3개월 이상 지났으면 갱신) ──
-    dart_row: dict = {}
-    dart_path = os.path.join(DART_FUND_DIR, f"{ticker}.csv")
-    if os.path.exists(dart_path):
-        df_dart = pd.read_csv(dart_path, dtype={"ticker": str})
-        if not df_dart.empty:
-            latest_dart_date = pd.to_datetime(df_dart["date"].max())
-            days_stale = (pd.Timestamp(today_str) - latest_dart_date).days
-            if days_stale > 90:  # 사업보고서 분기 공시 기준. 90일 = 약 1분기로 stale 판단
-                print(f"  [{ticker}] DART 데이터 {days_stale}일 경과 -> 이번 달 행 추가 시도")
-                base_date = get_this_month_first_trading_day()
-                if base_date is not None:
-                    _update_dart_one(ticker, name, base_date)
-                    # 갱신 후 재로드
-                    df_dart = pd.read_csv(dart_path, dtype={"ticker": str})
-            dart_row = df_dart.sort_values("date").iloc[-1].to_dict()
+    # ── dart_fundamentals: 현재 회계연도 실적을 인메모리로 조회 (CSV 미기록) ──
+    # 백테스트 데이터(data/dart_fundamentals/, 2023-2025)를 오염시키지 않도록
+    # forward는 파일에 쓰지 않고 오늘 기준 회계연도 연간 실적을 직접 계산한다.
+    fy_now   = dart_applicable_fy(pd.Timestamp(today_str))
+    dart_row = _build_dart_row(ticker, name, fy_now)
 
     # ── 최근 리포트 (CSV 직접 읽기, 오늘 기준 30일) ─────
     # forward test는 오늘 포함, backtest(build_reports)는 전일까지 — 의도적 차이

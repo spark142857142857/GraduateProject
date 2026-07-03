@@ -218,7 +218,7 @@ python src/experiment/forward_verify.py    # ③ 넣은 정보 신선도·정합
 - 평가 저장: `results/forward/evaluation.csv` — 미성숙(20거래일 미경과) 신호는 pending
 - 주간 반복 시 20거래일 보유구간이 겹쳐 표본이 독립이 아니므로 **실전 참고용** (유의성 검정은 백테스트가 담당)
 - ⚠️ **리포트는 자동 갱신 안 됨** → forward 전 반드시 `crawl.py` 실행 (안 하면 cond3/4가 빈 리포트). `forward_verify.py`가 리포트 0건 시 경고.
-- ⚠️ **부수효과**: `get_today_context`가 최신 재무를 위해 `data/dart_fundamentals/`에 당월 행을 추가(멱등, 분기당 1행). 백테스트는 2023-01~2025-12 날짜만 사용(EXPERIMENT_END)하므로 결과에 영향 없음. `data/financials/`는 오염시키지 않음(인메모리 계산).
+- ✅ **백테스트 데이터 비오염**: forward는 재무지표·DART를 모두 **인메모리로 계산**하며 `data/financials/`·`data/dart_fundamentals/`에 쓰지 않는다 → 백테스트 데이터(2023-2025)가 순수하게 유지됨. 리포트만 `crawl.py`로 증분 갱신(백테스트는 신호일 30일 창으로 필터하여 무영향).
 
 ### 7. Streamlit 대시보드
 
