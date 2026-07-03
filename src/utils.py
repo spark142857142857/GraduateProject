@@ -194,30 +194,30 @@ def get_latest_baseline_dir() -> str:
     return latest
 
 
-def get_analysis_dir() -> str:
-    """실행 날짜 기준 analysis/ 저장 폴더 반환 및 생성."""
-    dated = os.path.join(ANALYSIS_DIR, datetime.now().strftime("%Y%m%d"))
+def get_analysis_dir(model: str) -> str:
+    """실행 날짜 기준 analysis/{model}/{날짜}/ 저장 폴더 반환 및 생성."""
+    dated = os.path.join(ANALYSIS_DIR, model, datetime.now().strftime("%Y%m%d"))
     os.makedirs(dated, exist_ok=True)
     return dated
 
 
-def get_latest_analysis_dir() -> str:
-    """analysis/latest/ 폴더 반환 및 생성."""
-    latest = os.path.join(ANALYSIS_DIR, "latest")
+def get_latest_analysis_dir(model: str) -> str:
+    """analysis/{model}/latest/ 폴더 반환 및 생성."""
+    latest = os.path.join(ANALYSIS_DIR, model, "latest")
     os.makedirs(latest, exist_ok=True)
     return latest
 
 
-def get_experiment_dir(cond: str) -> str:
-    """실행 날짜 기준 experiment/{cond}/ 저장 폴더 반환 및 생성."""
-    dated = os.path.join(EXPERIMENT_DIR, cond, datetime.now().strftime("%Y%m%d"))
+def get_experiment_dir(cond: str, model: str) -> str:
+    """실행 날짜 기준 experiment/{cond}/{model}/{날짜}/ 저장 폴더 반환 및 생성."""
+    dated = os.path.join(EXPERIMENT_DIR, cond, model, datetime.now().strftime("%Y%m%d"))
     os.makedirs(dated, exist_ok=True)
     return dated
 
 
-def get_latest_experiment_dir(cond: str) -> str:
-    """experiment/{cond}/latest/ 폴더 반환 및 생성."""
-    latest = os.path.join(EXPERIMENT_DIR, cond, "latest")
+def get_latest_experiment_dir(cond: str, model: str) -> str:
+    """experiment/{cond}/{model}/latest/ 폴더 반환 및 생성."""
+    latest = os.path.join(EXPERIMENT_DIR, cond, model, "latest")
     os.makedirs(latest, exist_ok=True)
     return latest
 

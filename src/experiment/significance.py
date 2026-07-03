@@ -30,7 +30,7 @@ from scipy import stats as scipy_stats
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from utils import get_analysis_dir, get_latest_analysis_dir
 from experiments import EXPERIMENTS
-from compare import load_cond_data, load_baselines
+from compare import load_cond_data, load_baselines, DEFAULT_MODEL
 
 # --cond 옵션에서 사용할 순서 기준 목록 (experiments.py에서 자동 파생)
 COND_ORDER = list(EXPERIMENTS.keys())
@@ -221,9 +221,9 @@ def print_significance_tests(df: pd.DataFrame) -> None:
 
 # ── 메인 ─────────────────────────────────────────────────
 
-def run(cond_target: str | None, is_all: bool) -> None:
-    out_dir    = get_analysis_dir()
-    latest_dir = get_latest_analysis_dir()
+def run(cond_target: str | None, is_all: bool, model: str = DEFAULT_MODEL) -> None:
+    out_dir    = get_analysis_dir(model)
+    latest_dir = get_latest_analysis_dir(model)
 
     if is_all:
         target_conds = COND_ORDER
@@ -233,10 +233,10 @@ def run(cond_target: str | None, is_all: bool) -> None:
         target_conds = COND_ORDER[: idx + 1]
         save_prefix  = cond_target
 
-    print(f"\n검정 대상: {target_conds}")
+    print(f"\n모델: {model} | 검정 대상: {target_conds}")
     print("결과 파일 로드 중...")
 
-    cond_data     = load_cond_data(target_conds)
+    cond_data     = load_cond_data(target_conds, model)
     baseline_data = load_baselines()
 
     if not cond_data:
@@ -267,8 +267,10 @@ if __name__ == "__main__":
         "--all", action="store_true",
         help="전체 cond + 베이스라인 검정",
     )
+    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"분석할 모델 (기본값: {DEFAULT_MODEL})")
     args = parser.parse_args()
     run(
         cond_target = args.cond if not args.all else None,
         is_all      = args.all,
+        model       = args.model,
     )

@@ -16,6 +16,7 @@ breakdown은 기술통계(추세 확인)용. 유의성 검정은 significance.py
 저장:   results/analysis/{날짜|latest}/breakdown_yearly.csv, breakdown_regime.csv
 """
 
+import argparse
 import os
 import sys
 import shutil
@@ -24,7 +25,7 @@ import pandas as pd
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from utils import get_analysis_dir, get_latest_analysis_dir
-from compare import load_cond_data, calc_stats
+from compare import load_cond_data, calc_stats, DEFAULT_MODEL
 
 REPORT_CONDS = ["cond1", "cond2", "cond3", "cond4", "cond4_no_reports"]
 
@@ -115,12 +116,12 @@ def run_axis(cond_data: dict[str, pd.DataFrame], axis_col: str,
     return pd.DataFrame(all_rows)
 
 
-def main():
-    out_dir = get_analysis_dir()
-    latest_dir = get_latest_analysis_dir()
+def main(model: str = DEFAULT_MODEL):
+    out_dir = get_analysis_dir(model)
+    latest_dir = get_latest_analysis_dir(model)
 
-    print("결과 로드 중...")
-    cond_data = load_cond_data(REPORT_CONDS)
+    print(f"결과 로드 중... (모델: {model})")
+    cond_data = load_cond_data(REPORT_CONDS, model)
     if not cond_data:
         print("결과 파일이 없습니다.")
         return
@@ -138,4 +139,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="다축 분해 분석 (연도별·국면별)")
+    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"분석할 모델 (기본값: {DEFAULT_MODEL})")
+    args = parser.parse_args()
+    main(args.model)

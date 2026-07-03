@@ -107,9 +107,9 @@ def load_financials_dates(ticker: str) -> pd.DataFrame | None:
     return df.sort_values("date").reset_index(drop=True)
 
 
-def load_checkpoint(cond: str) -> pd.DataFrame:
-    """체크포인트 로드. 스키마 불일치 시 초기화."""
-    path = os.path.join(EXPERIMENT_DIR, cond, "checkpoint.csv")
+def load_checkpoint(cond: str, model: str) -> pd.DataFrame:
+    """체크포인트 로드 (모델별). 스키마 불일치 시 초기화."""
+    path = os.path.join(EXPERIMENT_DIR, cond, model, "checkpoint.csv")
     if os.path.exists(path):
         df = pd.read_csv(path, dtype={"ticker": str})
         if "signal" in df.columns and "confidence" in df.columns:
@@ -118,8 +118,8 @@ def load_checkpoint(cond: str) -> pd.DataFrame:
     return pd.DataFrame(columns=CKPT_COLS)
 
 
-def save_checkpoint(df: pd.DataFrame, cond: str) -> None:
-    path = os.path.join(EXPERIMENT_DIR, cond, "checkpoint.csv")
+def save_checkpoint(df: pd.DataFrame, cond: str, model: str) -> None:
+    path = os.path.join(EXPERIMENT_DIR, cond, model, "checkpoint.csv")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     df.to_csv(path, index=False, encoding="utf-8-sig")
 
@@ -193,7 +193,7 @@ def run(cond: str, test: bool = False, model: str = MODEL):
     """전체 종목 × base_date LLM 실험 실행."""
     contexts = EXPERIMENTS[cond]
 
-    ckpt_df = load_checkpoint(cond)
+    ckpt_df = load_checkpoint(cond, model)
     # 테스트 모드: 기존 체크포인트 무시하고 첫 1건만 실행
     if test:
         done        = set()
@@ -205,7 +205,7 @@ def run(cond: str, test: bool = False, model: str = MODEL):
                    .groupby("ticker").size()
         )
 
-    print(f"[{cond}] 컨텍스트: {contexts if contexts else '없음 (No Context)'}")
+    print(f"[{cond}] 모델: {model} | 컨텍스트: {contexts if contexts else '없음 (No Context)'}")
     print(f"[{cond}] 체크포인트 로드: {len(ckpt_df)}건 기처리\n")
 
     is_blind = cond in BLIND_CONDITIONS  # 종목 식별 정보 익명화 여부 (experiments.py의 BLIND_CONDITIONS 참조)
@@ -301,7 +301,7 @@ def run(cond: str, test: bool = False, model: str = MODEL):
                 return  # 테스트 모드는 실제 체크포인트를 오염시키지 않도록 저장 전에 종료
 
             ckpt_df = pd.concat([ckpt_df, pd.DataFrame([record])], ignore_index=True)
-            save_checkpoint(ckpt_df, cond)
+            save_checkpoint(ckpt_df, cond, model)
             done.add((ticker, sig_date))
             total      += 1
             ticker_new += 1
@@ -346,8 +346,8 @@ def run(cond: str, test: bool = False, model: str = MODEL):
     result_df = result_df.dropna(subset=["return_20d"]).reset_index(drop=True)  # 백테스팅 말미(2025-12 등) 신호는 20거래일 매도가 미확정이므로 자동 제외
 
     # ── 저장 ──────────────────────────────────────────────
-    out_dir    = get_experiment_dir(cond)
-    latest_dir = get_latest_experiment_dir(cond)
+    out_dir    = get_experiment_dir(cond, model)
+    latest_dir = get_latest_experiment_dir(cond, model)
     fname      = f"{cond}_results.csv"
     out_path   = os.path.join(out_dir, fname)
 

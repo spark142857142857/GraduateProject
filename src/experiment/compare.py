@@ -28,6 +28,8 @@ from experiments import EXPERIMENTS
 # --cond 옵션에서 사용할 순서 기준 목록 (experiments.py에서 자동 파생)
 COND_ORDER = list(EXPERIMENTS.keys())
 
+DEFAULT_MODEL = "gemini-2.5-flash-lite"  # 앵커 모델 (멀티모델 비교 기준)
+
 # 전략별 표시 레이블
 COND_LABELS = {
     "Consensus":          "컨센서스",
@@ -104,11 +106,11 @@ def _normalize_ret(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def load_cond_data(conds: list[str]) -> dict[str, pd.DataFrame]:
-    """존재하는 cond 결과 파일만 로드."""
+def load_cond_data(conds: list[str], model: str = DEFAULT_MODEL) -> dict[str, pd.DataFrame]:
+    """존재하는 cond 결과 파일만 로드 (모델별 experiment/{cond}/{model}/latest)."""
     loaded = {}
     for cond in conds:
-        path = os.path.join(EXPERIMENT_DIR, cond, "latest", f"{cond}_results.csv")
+        path = os.path.join(EXPERIMENT_DIR, cond, model, "latest", f"{cond}_results.csv")
         if not os.path.exists(path):
             continue
         df = pd.read_csv(path, dtype={"ticker": str})
@@ -416,9 +418,10 @@ def analysis_stock(data: dict[str, pd.DataFrame]) -> pd.DataFrame:
 
 # ── 메인 ─────────────────────────────────────────────────
 
-def run(cond_target: str | None, include_sector: bool, is_all: bool) -> None:
-    out_dir    = get_analysis_dir()
-    latest_dir = get_latest_analysis_dir()
+def run(cond_target: str | None, include_sector: bool, is_all: bool,
+        model: str = DEFAULT_MODEL) -> None:
+    out_dir    = get_analysis_dir(model)
+    latest_dir = get_latest_analysis_dir(model)
 
     if is_all:
         target_conds = COND_ORDER
@@ -428,10 +431,10 @@ def run(cond_target: str | None, include_sector: bool, is_all: bool) -> None:
         target_conds = COND_ORDER[: idx + 1]
         save_prefix  = cond_target
 
-    print(f"\n비교 대상: {target_conds}")
+    print(f"\n모델: {model} | 비교 대상: {target_conds}")
     print("결과 파일 로드 중...")
 
-    cond_data     = load_cond_data(target_conds)
+    cond_data     = load_cond_data(target_conds, model)
     baseline_data = load_baselines()
 
     if not cond_data:
@@ -518,9 +521,11 @@ if __name__ == "__main__":
         "--sector", action="store_true",
         help="섹터·종목별 분석 추가 (--cond와 함께 사용)",
     )
+    parser.add_argument("--model", default=DEFAULT_MODEL, help=f"분석할 모델 (기본값: {DEFAULT_MODEL})")
     args = parser.parse_args()
     run(
         cond_target    = args.cond if not args.all else None,
         include_sector = args.sector,
         is_all         = args.all,
+        model          = args.model,
     )

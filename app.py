@@ -94,10 +94,12 @@ SIGNAL_STYLE = {
 
 
 # ── 헬퍼 ──────────────────────────────────────────────────
+BACKTEST_MODEL = "gemini-2.5-flash-lite"  # 대시보드 백테스트 성과 표시용 앵커 모델
+
 @st.cache_data(ttl=300, show_spinner=False)  # 백테스팅 결과 5분 캐시 — 빈번한 파일 재로드 방지
 def load_backtest_results(cond: str) -> pd.DataFrame | None:
-    """results/experiment/{cond}/latest/{cond}_results.csv 로드."""
-    path = os.path.join(EXPERIMENT_DIR, cond, "latest", f"{cond}_results.csv")
+    """results/experiment/{cond}/{model}/latest/{cond}_results.csv 로드 (앵커 모델)."""
+    path = os.path.join(EXPERIMENT_DIR, cond, BACKTEST_MODEL, "latest", f"{cond}_results.csv")
     if not os.path.exists(path):
         return None
     try:
