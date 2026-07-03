@@ -23,7 +23,6 @@ import time
 from datetime import datetime
 
 from dotenv import load_dotenv
-from google import genai
 
 _here = os.path.dirname(os.path.abspath(__file__))
 _src  = os.path.join(_here, "..")
@@ -38,7 +37,7 @@ from context_builders import (
     build_dart_fundamentals_from_dict,
 )
 from experiments import EXPERIMENTS, BLIND_CONDITIONS
-from llm_experiment import build_prompt, call_llm
+from llm_experiment import build_prompt, call_llm, MODEL
 
 load_dotenv()
 
@@ -51,7 +50,7 @@ FORWARD_BUILDER_MAP = {
 
 
 # ── 메인 ──────────────────────────────────────────────────
-def run_forward(ticker: str, cond: str = "cond4") -> dict:
+def run_forward(ticker: str, cond: str = "cond4", model: str = MODEL) -> dict:
     """오늘 날짜 기준 단일 종목 LLM 신호 생성.
 
     1. 캐시 확인 (당일 동일 ticker+cond → 즉시 반환)
@@ -69,7 +68,7 @@ def run_forward(ticker: str, cond: str = "cond4") -> dict:
     """
     today_str  = datetime.today().strftime("%Y-%m-%d")
     cache_dir  = os.path.join(FORWARD_DIR, today_str)
-    cache_path = os.path.join(cache_dir, f"{ticker}_{cond}.json")  # 당일 동일 ticker+cond 캐시 반환 — Gemini API 중복 호출 방지
+    cache_path = os.path.join(cache_dir, f"{ticker}_{cond}_{model}.json")  # 당일 동일 ticker+cond+model 캐시 반환 — 중복 호출 방지
 
     # 1. 캐시
     if os.path.exists(cache_path):
@@ -93,13 +92,12 @@ def run_forward(ticker: str, cond: str = "cond4") -> dict:
     is_blind = cond in BLIND_CONDITIONS
     prompt = build_prompt(name, current_price, context_sections, ticker=ticker, blind=is_blind)
 
-    # 4. Gemini API 호출 (최대 3회 재시도)
-    print(f"[{ticker}] LLM 호출 중 (cond={cond})...")
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    # 4. LLM 호출 (최대 3회 재시도)
+    print(f"[{ticker}] LLM 호출 중 (cond={cond}, model={model})...")
 
     for attempt in range(3):
         try:
-            signal, confidence, reasons = call_llm(client, prompt)
+            signal, confidence, reasons = call_llm(prompt, model)
             break
         except Exception as e:
             err_str = str(e)
@@ -145,6 +143,7 @@ def run_forward(ticker: str, cond: str = "cond4") -> dict:
         "confidence":   confidence,
         "reasons":      reasons,
         "cond":         cond,
+        "model":        model,
         "context_used": context_used,
     }
 
@@ -166,9 +165,10 @@ if __name__ == "__main__":
         choices=list(EXPERIMENTS.keys()),
         help="분석 조건 (기본값: cond4)",
     )
+    parser.add_argument("--model", type=str, default=MODEL, help=f"사용 모델 (기본값: {MODEL})")
     args = parser.parse_args()
 
-    result = run_forward(args.ticker, args.cond)
+    result = run_forward(args.ticker, args.cond, args.model)
     print(f"\n{'=' * 50}")
     print(f"종목: {result['name']} ({result['ticker']})")
     print(f"날짜: {result['date']}  현재가: {int(result['price']):,}원")

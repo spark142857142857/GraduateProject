@@ -31,9 +31,9 @@ MAIN_CONDS = ["cond1", "cond2", "cond3", "cond4", "cond4_no_reports"]
 REQ_DELAY  = 0.3
 
 
-def run_all(conds: list[str]) -> None:
+def run_all(conds: list[str], model: str = MODEL) -> None:
     total = len(TICKERS) * len(conds)
-    print(f"Forward 일괄 실행 | 모델={MODEL} | {len(TICKERS)}종목 × {len(conds)}조건 = {total}건\n")
+    print(f"Forward 일괄 실행 | 모델={model} | {len(TICKERS)}종목 × {len(conds)}조건 = {total}건\n")
 
     done = 0
     fails = []
@@ -41,7 +41,7 @@ def run_all(conds: list[str]) -> None:
         for cond in conds:
             done += 1
             try:
-                r = run_forward(ticker, cond)
+                r = run_forward(ticker, cond, model)
                 print(f"[{done:3d}/{total}] {name:<12} {cond:<16} → {r['signal']} ({r['confidence']}%)")
             except Exception as e:
                 fails.append((name, cond, str(e)))
@@ -61,5 +61,6 @@ if __name__ == "__main__":
         "--cond", choices=MAIN_CONDS,
         help="단일 조건만 실행 (기본값: 메인 5조건 전부)",
     )
+    parser.add_argument("--model", default=MODEL, help=f"사용 모델 (기본값: {MODEL})")
     args = parser.parse_args()
-    run_all([args.cond] if args.cond else MAIN_CONDS)
+    run_all([args.cond] if args.cond else MAIN_CONDS, args.model)

@@ -124,14 +124,53 @@ def save_checkpoint(df: pd.DataFrame, cond: str) -> None:
     df.to_csv(path, index=False, encoding="utf-8-sig")
 
 
-def call_llm(client: genai.Client, prompt: str) -> tuple[str, int, list[str]]:
-    """Gemini API 호출 후 (signal, confidence, reasons) 반환."""
-    resp = client.models.generate_content(
-        model=MODEL,
-        contents=prompt,
-        config=genai_types.GenerateContentConfig(temperature=0.0),
-    )
-    text = (resp.text or "").strip()
+# ── LLM 클라이언트 (provider별 lazy 캐시 — 쓰는 provider의 키만 필요) ──
+_clients: dict[str, object] = {}
+
+def _gemini_client():
+    if "gemini" not in _clients:
+        _clients["gemini"] = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    return _clients["gemini"]
+
+def _openai_client():
+    if "openai" not in _clients:
+        from openai import OpenAI
+        _clients["openai"] = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+    return _clients["openai"]
+
+def _anthropic_client():
+    if "anthropic" not in _clients:
+        from anthropic import Anthropic
+        _clients["anthropic"] = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    return _clients["anthropic"]
+
+
+def _raw_text(prompt: str, model: str) -> str:
+    """model 접두어로 provider 분기해 프롬프트 → 원문 응답 텍스트 (temperature=0.0)."""
+    if model.startswith(("gemini", "gemma")):
+        resp = _gemini_client().models.generate_content(
+            model=model, contents=prompt,
+            config=genai_types.GenerateContentConfig(temperature=0.0),
+        )
+        return resp.text or ""
+    if model.startswith("gpt"):
+        resp = _openai_client().chat.completions.create(
+            model=model, temperature=0.0,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return resp.choices[0].message.content or ""
+    if model.startswith("claude"):
+        resp = _anthropic_client().messages.create(
+            model=model, max_tokens=1024, temperature=0.0,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return resp.content[0].text or ""
+    raise ValueError(f"provider 미매핑 모델: {model}")
+
+
+def call_llm(prompt: str, model: str = MODEL) -> tuple[str, int, list[str]]:
+    """provider 분기 후 (signal, confidence, reasons) 반환. JSON 파싱·검증은 공용."""
+    text = _raw_text(prompt, model).strip()
 
     match = re.search(r'\{.*\}', text, re.DOTALL)
     if not match:
@@ -150,10 +189,9 @@ def call_llm(client: genai.Client, prompt: str) -> tuple[str, int, list[str]]:
 
 # ── 메인 ──────────────────────────────────────────────────
 
-def run(cond: str, test: bool = False):
+def run(cond: str, test: bool = False, model: str = MODEL):
     """전체 종목 × base_date LLM 실험 실행."""
     contexts = EXPERIMENTS[cond]
-    client   = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
     ckpt_df = load_checkpoint(cond)
     # 테스트 모드: 기존 체크포인트 무시하고 첫 1건만 실행
@@ -227,7 +265,7 @@ def run(cond: str, test: bool = False):
             # LLM 호출 (최대 3회 재시도)
             for attempt in range(3):
                 try:
-                    signal, confidence, reasons = call_llm(client, prompt)
+                    signal, confidence, reasons = call_llm(prompt, model)
                     break
                 except Exception as e:
                     err_str = str(e)
@@ -349,5 +387,9 @@ if __name__ == "__main__":
         "--test", action="store_true",
         help="삼성전자 첫 1건만 테스트 (프롬프트 출력 + API 호출 1건)",
     )
+    parser.add_argument(
+        "--model", default=MODEL,
+        help=f"사용 모델 (기본값: {MODEL}). gemini-*/gemma-*/gpt-*/claude-* 접두어로 provider 분기",
+    )
     args = parser.parse_args()
-    run(cond=args.cond, test=args.test)
+    run(cond=args.cond, test=args.test, model=args.model)
