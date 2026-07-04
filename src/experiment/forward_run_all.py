@@ -5,13 +5,14 @@ Forward Test 일괄 실행 — 전 종목 × 메인 5조건
 forward 신호를 생성한다. forward_test.run_forward를 반복 호출하며,
 당일·동일 ticker·동일 cond는 캐시 반환이라 중단 후 재실행해도 안전(멱등).
 
-앵커 모델은 llm_experiment.MODEL (백테스트와 동일 = gemini-2.5-flash-lite).
-멀티모델은 이후 call_llm에 provider 분기 추가 시 별도 처리.
+기본 모델은 llm_experiment.MODEL (백테스트와 동일 = gemini-2.5-flash-lite).
+--model로 다른 모델 지정 가능 (call_llm이 접두어로 provider 분기).
 
 사용법:
-  python src/experiment/forward_run_all.py            # 20종목 × 5조건
-  python src/experiment/forward_run_all.py --cond cond4   # 단일 조건만
-저장: results/forward/{오늘}/{ticker}_{cond}.json (run_forward가 처리)
+  python src/experiment/forward_run_all.py                    # 20종목 × 5조건 (앵커)
+  python src/experiment/forward_run_all.py --cond cond4       # 단일 조건만
+  python src/experiment/forward_run_all.py --model claude-haiku-4-5   # 다른 모델
+저장: results/forward/{오늘}/{ticker}_{cond}_{model}.json (run_forward가 처리)
 """
 
 import argparse
@@ -25,13 +26,14 @@ sys.path.insert(0, _here)                        # src/experiment — forward_te
 
 from utils import TICKERS
 from forward_test import run_forward
-from llm_experiment import MODEL
+from llm_experiment import MODEL, preflight
 
 MAIN_CONDS = ["cond1", "cond2", "cond3", "cond4", "cond4_no_reports"]
 REQ_DELAY  = 0.3
 
 
 def run_all(conds: list[str], model: str = MODEL) -> None:
+    preflight(model)  # 루프 밖 1회 — 모델·키 오류를 100콜 전에 즉시 (per-combo try/except 회피)
     total = len(TICKERS) * len(conds)
     print(f"Forward 일괄 실행 | 모델={model} | {len(TICKERS)}종목 × {len(conds)}조건 = {total}건\n")
 

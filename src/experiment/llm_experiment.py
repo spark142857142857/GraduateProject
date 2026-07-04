@@ -127,45 +127,67 @@ def save_checkpoint(df: pd.DataFrame, cond: str, model: str) -> None:
 # ── LLM 클라이언트 (provider별 lazy 캐시 — 쓰는 provider의 키만 필요) ──
 _clients: dict[str, object] = {}
 
+def _require_key(name: str) -> str:
+    val = os.environ.get(name)
+    if not val:
+        raise RuntimeError(f"{name} 환경변수가 없습니다. .env에 추가하세요.")
+    return val
+
 def _gemini_client():
     if "gemini" not in _clients:
-        _clients["gemini"] = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        _clients["gemini"] = genai.Client(api_key=_require_key("GEMINI_API_KEY"))
     return _clients["gemini"]
 
 def _openai_client():
     if "openai" not in _clients:
         from openai import OpenAI
-        _clients["openai"] = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+        _clients["openai"] = OpenAI(api_key=_require_key("OPENAI_API_KEY"))
     return _clients["openai"]
 
 def _anthropic_client():
     if "anthropic" not in _clients:
         from anthropic import Anthropic
-        _clients["anthropic"] = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+        _clients["anthropic"] = Anthropic(api_key=_require_key("ANTHROPIC_API_KEY"))
     return _clients["anthropic"]
 
 
+def _provider(model: str) -> str:
+    """model 접두어 → provider. 미매핑이면 즉시 에러 (지원: gemini/gemma/gpt/claude)."""
+    if model.startswith(("gemini", "gemma")): return "gemini"
+    if model.startswith("gpt"):                return "openai"
+    if model.startswith("claude"):             return "anthropic"
+    raise ValueError(f"지원하지 않는 모델명: {model} (gemini/gemma/gpt/claude 접두어만 지원)")
+
+
+def preflight(model: str) -> None:
+    """실행 전 1회 검증 (fail-fast): 모델명 매핑 + API 키 존재 확인.
+    720신호 루프 진입 전에 호출해 키 누락·오타를 즉시 잡는다 (재시도 낭비 방지)."""
+    {"gemini": _gemini_client, "openai": _openai_client,
+     "anthropic": _anthropic_client}[_provider(model)]()
+
+
 def _raw_text(prompt: str, model: str) -> str:
-    """model 접두어로 provider 분기해 프롬프트 → 원문 응답 텍스트 (temperature=0.0)."""
-    if model.startswith(("gemini", "gemma")):
+    """provider 분기해 프롬프트 → 원문 응답 텍스트 (temperature=0.0)."""
+    provider = _provider(model)
+    if provider == "gemini":
         resp = _gemini_client().models.generate_content(
             model=model, contents=prompt,
             config=genai_types.GenerateContentConfig(temperature=0.0),
         )
         return resp.text or ""
-    if model.startswith("gpt"):
+    if provider == "openai":
+        # 주의: 일부 gpt-5.x reasoning 모델은 temperature=0을 거부할 수 있음 → 스모크 때 확인
         resp = _openai_client().chat.completions.create(
             model=model, temperature=0.0,
             messages=[{"role": "user", "content": prompt}],
         )
         return resp.choices[0].message.content or ""
-    if model.startswith("claude"):
-        resp = _anthropic_client().messages.create(
-            model=model, max_tokens=1024, temperature=0.0,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        return resp.content[0].text or ""
-    raise ValueError(f"provider 미매핑 모델: {model}")
+    # anthropic
+    resp = _anthropic_client().messages.create(
+        model=model, max_tokens=1024, temperature=0.0,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return resp.content[0].text or ""
 
 
 def call_llm(prompt: str, model: str = MODEL) -> tuple[str, int, list[str]]:
@@ -179,7 +201,15 @@ def call_llm(prompt: str, model: str = MODEL) -> tuple[str, int, list[str]]:
 
     signal     = str(data["signal"]).strip()
     confidence = max(0, min(100, int(data["confidence"])))
-    reasons    = data.get("reasons") or []  # None 반환 시 빈 리스트로 대체
+
+    # reasons 타입 방어: 문자열/None/비리스트를 list[str]로 정규화
+    raw_reasons = data.get("reasons")
+    if isinstance(raw_reasons, str):
+        reasons = [raw_reasons]
+    elif isinstance(raw_reasons, list):
+        reasons = [str(r) for r in raw_reasons]
+    else:
+        reasons = []
 
     if signal not in ("Buy", "Sell", "Neutral"):
         raise ValueError(f"signal 값 오류: {signal}")
@@ -192,6 +222,7 @@ def call_llm(prompt: str, model: str = MODEL) -> tuple[str, int, list[str]]:
 def run(cond: str, test: bool = False, model: str = MODEL):
     """전체 종목 × base_date LLM 실험 실행."""
     contexts = EXPERIMENTS[cond]
+    preflight(model)  # 모델명·API키 즉시 검증 (720신호 루프 전 fail-fast)
 
     ckpt_df = load_checkpoint(cond, model)
     # 테스트 모드: 기존 체크포인트 무시하고 첫 1건만 실행

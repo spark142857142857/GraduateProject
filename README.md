@@ -127,6 +127,9 @@ uv sync
 ```
 DARTS_API_KEY=your_dart_api_key
 GEMINI_API_KEY=your_gemini_api_key
+# 멀티모델 비교 시에만 추가 (쓰는 provider의 키만 필요 — lazy)
+OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
 ### 2. 데이터 수집
@@ -246,9 +249,13 @@ streamlit run app.py
 ## 환경변수 (.env)
 
 ```
-DARTS_API_KEY=your_dart_api_key      # DART OpenAPI 키 (https://opendart.fss.or.kr)
-GEMINI_API_KEY=your_gemini_api_key   # Google Gemini API 키
+DARTS_API_KEY=your_dart_api_key           # DART OpenAPI 키 (https://opendart.fss.or.kr)
+GEMINI_API_KEY=your_gemini_api_key        # Google Gemini/Gemma API 키 (앵커 모델)
+OPENAI_API_KEY=your_openai_api_key        # (선택) gpt-* 모델 사용 시
+ANTHROPIC_API_KEY=your_anthropic_api_key  # (선택) claude-* 모델 사용 시
 ```
+
+> 모델명 접두어로 provider가 정해진다: `gemini-*`/`gemma-*`→Google, `gpt-*`→OpenAI, `claude-*`→Anthropic. 그 외 접두어는 지원하지 않는다(즉시 에러). 키는 **실제 사용하는 provider의 것만** 있으면 된다.
 
 ---
 

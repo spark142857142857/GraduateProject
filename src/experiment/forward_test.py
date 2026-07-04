@@ -37,7 +37,7 @@ from context_builders import (
     build_dart_fundamentals_from_dict,
 )
 from experiments import EXPERIMENTS, BLIND_CONDITIONS
-from llm_experiment import build_prompt, call_llm, MODEL
+from llm_experiment import build_prompt, call_llm, preflight, MODEL
 
 load_dotenv()
 
@@ -53,17 +53,17 @@ FORWARD_BUILDER_MAP = {
 def run_forward(ticker: str, cond: str = "cond4", model: str = MODEL) -> dict:
     """오늘 날짜 기준 단일 종목 LLM 신호 생성.
 
-    1. 캐시 확인 (당일 동일 ticker+cond → 즉시 반환)
+    1. 캐시 확인 (당일 동일 ticker+cond+model → 즉시 반환)
     2. get_today_context(ticker) → 실시간 지표 수집 (파일 비저장)
     3. dict 기반 context_builders로 프롬프트 생성
-    4. Gemini API 호출
+    4. LLM 호출 (call_llm — model 접두어로 provider 분기)
     5. JSON 저장 및 반환
 
     Returns:
         {
           "ticker", "name", "date", "price",
           "signal", "confidence", "reasons",
-          "cond", "context_used"
+          "cond", "model", "context_used"
         }
     """
     today_str  = datetime.today().strftime("%Y-%m-%d")
@@ -75,6 +75,8 @@ def run_forward(ticker: str, cond: str = "cond4", model: str = MODEL) -> dict:
         print(f"[{ticker}] 캐시 사용: {cache_path}")
         with open(cache_path, encoding="utf-8") as f:
             return json.load(f)
+
+    preflight(model)  # 캐시 미스 → 비싼 데이터 수집 전에 모델·키 검증
 
     # 2. 실시간 지표 수집
     print(f"[{ticker}] 실시간 데이터 수집 중...")

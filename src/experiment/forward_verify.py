@@ -9,7 +9,7 @@ context_used + price)가 생성 시점 기준으로 정확한지 확인한다.
   - 내부 정합성: ROE ≈ PBR/PER
   - 52주 위치: [0, 100] 범위
   - 리포트 신선도: recent_reports 전부 생성일 기준 30일 이내
-  - DART 신선도: data/dart_fundamentals/{ticker} 최신 행이 생성월로 갱신됐는지
+  - DART 값 유무: context_used에 DART 지표가 실렸는지 (forward는 인메모리 조회)
 
 컨텍스트는 조건과 무관하게 동일하므로 **종목당 1회** 검증한다.
 계산 로직(52주·모멘텀·ROE 등)은 백테스트 감사에서 이미 검증됨 —
@@ -31,7 +31,7 @@ from datetime import datetime
 import pandas as pd
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-from utils import FORWARD_DIR, DATA_DIR, get_price
+from utils import FORWARD_DIR, get_price
 
 REPORT_WINDOW = 30  # context_builders.WINDOW_DAYS와 동일
 PRICE_TOL     = 1.0  # 현재가 허용 오차(원)
@@ -41,14 +41,6 @@ def _latest_date_folder() -> str | None:
     dirs = [d for d in os.listdir(FORWARD_DIR)
             if os.path.isdir(os.path.join(FORWARD_DIR, d)) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", d)]
     return max(dirs) if dirs else None
-
-
-def _dart_latest_date(ticker: str) -> str | None:
-    path = os.path.join(DATA_DIR, "dart_fundamentals", f"{ticker}.csv")
-    if not os.path.exists(path):
-        return None
-    df = pd.read_csv(path, dtype={"ticker": str})
-    return str(df["date"].max()) if not df.empty else None
 
 
 def verify_ticker(d: dict) -> tuple[dict, list[str]]:
@@ -94,15 +86,18 @@ def verify_ticker(d: dict) -> tuple[dict, list[str]]:
         except ValueError:
             flags.append(f"리포트 날짜 파싱 실패 {rd}")
 
-    # 5. DART 신선도 (최신 행이 생성월로 갱신됐나)
-    dart_latest = _dart_latest_date(ticker)
-    if dart_latest and dart_latest[:7] != gen_date[:7]:
-        flags.append(f"DART 미갱신 (최신={dart_latest}, 생성월={gen_date[:7]})")
+    # 5. DART 값 유무 — forward는 DART를 인메모리로 조회(CSV 미기록)하므로
+    #    파일 날짜가 아닌 context_used에 DART 값이 실렸는지로 확인.
+    #    은행 등 일부 종목은 매출/이익률이 없어도 부채비율은 있으므로 any()로 판정.
+    dart_present = any(ctx.get(k) is not None for k in
+                       ("operating_margin", "debt_ratio", "revenue_growth"))
+    if not dart_present:
+        flags.append("DART 값 없음 (인메모리 조회 실패 의심)")
 
     summary = {
         "ticker": ticker, "name": d.get("name", ""),
         "price": price, "per": per, "pbr": pbr, "roe": roe,
-        "reports": len(reports), "dart_latest": dart_latest,
+        "reports": len(reports), "dart": "OK" if dart_present else "없음",
         "flags": len(flags),
     }
     return summary, flags
@@ -126,8 +121,8 @@ def main(date: str | None) -> None:
         by_ticker.setdefault(str(d["ticker"]).zfill(6), d)
 
     print(f"Forward 입력 검증 | 생성일 {folder} | 종목 {len(by_ticker)}개\n")
-    print(f"{'종목':<12}{'현재가':>10}{'PER':>7}{'PBR':>7}{'ROE':>7}{'리포트':>6}{'DART최신':>13}  판정")
-    print("-" * 78)
+    print(f"{'종목':<12}{'현재가':>10}{'PER':>7}{'PBR':>7}{'ROE':>7}{'리포트':>6}{'DART':>6}  판정")
+    print("-" * 72)
 
     all_flags = []
     total_reports = 0
@@ -139,7 +134,7 @@ def main(date: str | None) -> None:
         pbr = s["pbr"] if s["pbr"] is not None else "-"
         roe = s["roe"] if s["roe"] is not None else "-"
         print(f"{s['name']:<12}{s['price'] or 0:>10,.0f}{str(per):>7}{str(pbr):>7}{str(roe):>7}"
-              f"{s['reports']:>6}{str(s['dart_latest']):>13}  {verdict}")
+              f"{s['reports']:>6}{s['dart']:>6}  {verdict}")
         for fl in flags:
             all_flags.append(f"  [{s['name']}] {fl}")
 
@@ -152,7 +147,7 @@ def main(date: str | None) -> None:
         for fl in all_flags:
             print(fl)
     elif total_reports > 0:
-        print("\n✅ 전 종목 입력 정보 정상 (현재가·ROE정합성·52주·리포트·DART 신선도)")
+        print("\n✅ 전 종목 입력 정보 정상 (현재가·ROE정합성·52주·리포트·DART 값)")
 
 
 if __name__ == "__main__":
