@@ -3,6 +3,8 @@
 LLM을 활용해 한국 주식 종목의 **매수/매도 신호를 생성**하고, 백테스팅으로 그 유효성을 검증하는 시스템.  
 백테스팅 실험 외에 오늘 날짜 기준 실시간 신호를 생성하는 **Forward Test**와 **Streamlit 대시보드**를 포함한다.
 
+**목차**: [개요](#개요) · [실험 설계](#실험-설계) · [프로젝트 구조](#프로젝트-구조) · [실행 방법](#실행-방법) · [환경변수](#환경변수-env) · [실험 변수](#실험-변수)
+
 ---
 
 ## 개요
@@ -124,7 +126,7 @@ uv sync
 
 `.env` 파일을 생성하고 API 키를 입력한다.
 
-```
+```bash
 DARTS_API_KEY=your_dart_api_key
 GEMINI_API_KEY=your_gemini_api_key
 # 멀티모델 비교 시에만 추가 (쓰는 provider의 키만 필요 — lazy)
@@ -241,14 +243,14 @@ streamlit run app.py
 | 투자 근거 | 항상 | LLM이 생성한 판단 근거 |
 | 재무지표 | cond2 이상 | PER / PBR / ROE / 시가총액 / 52주 위치 등 |
 | 애널리스트 리포트 | cond3 이상 | 최근 30일 리포트 제목 / 목표주가 |
-| 연간 실적 | cond4 | 매출 성장률 / 영업이익률 / 부채비율 |
+| 분기 실적 | cond4 | 매출 성장률 / 영업이익률 / 부채비율 |
 | 백테스팅 성과 | 항상 | 해당 종목의 과거 신호 수익률 참고 |
 
 ---
 
 ## 환경변수 (.env)
 
-```
+```bash
 DARTS_API_KEY=your_dart_api_key           # DART OpenAPI 키 (https://opendart.fss.or.kr)
 GEMINI_API_KEY=your_gemini_api_key        # Google Gemini/Gemma API 키 (앵커 모델)
 OPENAI_API_KEY=your_openai_api_key        # (선택) gpt-* 모델 사용 시
