@@ -5,11 +5,11 @@
   "context_date": "2026-07-05",
   "price": 86200.0,
   "signal": "Sell",
-  "confidence": 95,
+  "confidence": 85,
   "reasons": [
-    "PER 653.0와 ROE 0.7%는 현재 수익성 대비 주가가 극도로 과평가되어 있음을 나타냅니다.",
-    "전년 대비 영업이익이 25.1% 감소하여 펀더멘털의 수익성이 악화되는 추세입니다.",
-    "최근 1개월 수익률 -13.10%와 거래량 변화율 -24.60%가 동시에 나타나며 하락 추세와 매수세 약화가 뚜렷합니다."
+    "PER 653.0와 ROE 0.7%는 기업의 수익성 대비 주가가 극도로 과평가되어 있으며 자본 효율성이 매우 낮음을 나타냅니다.",
+    "최근 1개월 수익률 -13.10%와 거래량 변화율 -24.60%는 단기 하락 추세와 시장 관심도 감소가 동시에 진행되고 있음을 보여줍니다.",
+    "분기 영업이익은 증가했으나 영업현금흐름이 -5,655억원으로 큰 폭의 음수를 기록하여 실제 현금 창출 능력에 심각한 결함이 있습니다."
   ],
   "cond": "cond4_no_reports",
   "model": "gemma-4-31b-it",
@@ -21,9 +21,9 @@
     "momentum_1m": -13.1048,
     "volume_change": -24.5953,
     "price_position_52w": 36.46,
-    "revenue_growth": 5.08,
-    "operating_margin": 4.47,
-    "debt_ratio": 129.1,
+    "revenue_growth": 13.67,
+    "operating_margin": 5.48,
+    "debt_ratio": 130.6,
     "dividend_yield": null,
     "recent_reports": []
   }

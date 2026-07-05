@@ -8,8 +8,8 @@
   "confidence": 75,
   "reasons": [
     "최근 1개월 수익률이 -14.10%로 하락세를 보이고 있으며, 거래량 변화율 또한 -28.82%로 감소하여 투자 심리가 위축된 것으로 판단됩니다.",
-    "PER이 '해당없음(적자)'으로 표시되어 있으며, 순이익이 808억원으로 영업이익 대비 매우 낮은 수준으로 수익성 개선에 대한 의문이 제기됩니다.",
-    "52주 최고가 대비 현재 위치가 33.0%로, 상승 여력보다는 하락 위험이 상대적으로 높아 보입니다."
+    "2026년 1분기 영업이익이 전년 동기 대비 -155.4% 감소한 -2,078억원을 기록하며 실적 부진이 지속되고 있습니다.",
+    "영업현금흐름 또한 -3,163억원으로 마이너스를 기록하며 재무 안정성에 대한 우려가 존재합니다."
   ],
   "cond": "cond4",
   "model": "gemini-2.5-flash-lite",
@@ -21,9 +21,9 @@
     "momentum_1m": -14.0995,
     "volume_change": -28.82,
     "price_position_52w": 32.96,
-    "revenue_growth": -7.6,
-    "operating_margin": 5.69,
-    "debt_ratio": 129.0,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 140.02,
     "dividend_yield": null,
     "recent_reports": [
       {

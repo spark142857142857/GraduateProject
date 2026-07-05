@@ -4,12 +4,12 @@
   "date": "2026-07-05",
   "context_date": "2026-07-05",
   "price": 309500.0,
-  "signal": "Sell",
-  "confidence": 75,
+  "signal": "Neutral",
+  "confidence": 85,
   "reasons": [
-    "최근 1개월 수익률이 -11.95%로 강한 하락 추세에 있으며 거래량 또한 -7.76% 감소하여 단기 모멘텀이 약화되었습니다.",
-    "PER 46.9와 PBR 4.15는 ROE 8.9% 대비 밸류에이션 부담이 매우 높은 수준입니다.",
-    "현재 주가가 52주 최고가 대비 82.5% 지점에 위치하여 단기적으로 추가 상승 여력보다 조정 가능성이 더 큽니다."
+    "2026년 1분기 영업이익이 전년 동기 대비 756.1% 증가하고 영업이익률이 42.8%를 기록하는 등 펀더멘털의 폭발적 성장세가 뚜렷함",
+    "PER 46.9와 PBR 4.15로 밸류에이션 부담이 매우 높으며, 최근 1개월 수익률이 -11.95%로 단기 하락 추세에 있음",
+    "거래량 변화율이 -7.76%로 감소하며 주가 상승을 견인할 단기 모멘텀이 약화된 상태임"
   ],
   "cond": "cond4_no_reports",
   "model": "gemma-4-31b-it",
@@ -21,9 +21,9 @@
     "momentum_1m": -11.9488,
     "volume_change": -7.7629,
     "price_position_52w": 82.49,
-    "revenue_growth": 10.88,
-    "operating_margin": 13.07,
-    "debt_ratio": 29.94,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
     "dividend_yield": 1.5,
     "recent_reports": [
       {

@@ -4,12 +4,12 @@
   "date": "2026-07-05",
   "context_date": "2026-07-05",
   "price": 183600.0,
-  "signal": "Neutral",
-  "confidence": 70,
+  "signal": "Buy",
+  "confidence": 85,
   "reasons": [
-    "영업이익이 전년 대비 137.5% 증가하고 영업이익률이 28.1%에 달하는 강력한 실적 성장세를 보임",
-    "PER(39.3)이 ROE(6.2%) 대비 매우 높아 현재 주가 수준에서 밸류에이션 부담이 존재함",
-    "거래량 변화율이 -19.24%로 감소하며 단기적인 주가 상승을 견인할 모멘텀이 부족함"
+    "2026년 1분기 영업이익이 전년 동기 대비 115.4% 증가하고 영업이익률 28.1%를 기록하며 강력한 성장세를 보이고 있습니다.",
+    "현재 주가가 52주 최고가 대비 37.1% 수준에 위치하여 가격 부담이 낮고 상승 여력이 존재합니다.",
+    "부채비율 30.0%의 매우 낮은 수준과 양호한 영업현금흐름을 통해 재무적 안정성이 확보되어 있습니다."
   ],
   "cond": "cond4",
   "model": "gemma-4-31b-it",
@@ -21,9 +21,9 @@
     "momentum_1m": 4.0227,
     "volume_change": -19.237,
     "price_position_52w": 37.14,
-    "revenue_growth": 17.01,
-    "operating_margin": 28.07,
-    "debt_ratio": 28.71,
+    "revenue_growth": 36.0,
+    "operating_margin": 28.11,
+    "debt_ratio": 29.99,
     "dividend_yield": null,
     "recent_reports": []
   }

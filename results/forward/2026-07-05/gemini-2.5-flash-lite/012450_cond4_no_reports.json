@@ -7,9 +7,9 @@
   "signal": "Buy",
   "confidence": 75,
   "reasons": [
-    "전년 대비 매출 및 영업이익이 큰 폭으로 증가하며 견조한 성장세를 보이고 있습니다.",
-    "최근 1개월 수익률이 10.02%로 긍정적인 단기 모멘텀을 보여주고 있습니다.",
-    "영업현금흐름이 +4.0조원으로 양호하며 재무 건전성을 뒷받침합니다."
+    "최근 1개월 수익률 10.02%로 단기 상승 모멘텀이 확인됩니다.",
+    "2026년 1분기 영업이익이 전년 동기 대비 20.6% 증가하며 견조한 실적 개선세를 보입니다.",
+    "현재가가 52주 최고가 대비 약 22% 하락한 수준으로, 추가 상승 여력이 존재할 수 있습니다."
   ],
   "cond": "cond4_no_reports",
   "model": "gemini-2.5-flash-lite",
@@ -21,9 +21,9 @@
     "momentum_1m": 10.0187,
     "volume_change": 0.4498,
     "price_position_52w": 52.24,
-    "revenue_growth": 137.57,
-    "operating_margin": 11.57,
-    "debt_ratio": null,
+    "revenue_growth": 4.86,
+    "operating_margin": 11.11,
+    "debt_ratio": 224.88,
     "dividend_yield": 0.7,
     "recent_reports": [
       {

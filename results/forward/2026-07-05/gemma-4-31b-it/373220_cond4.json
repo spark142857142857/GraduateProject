@@ -5,11 +5,11 @@
   "context_date": "2026-07-05",
   "price": 362500.0,
   "signal": "Sell",
-  "confidence": 75,
+  "confidence": 85,
   "reasons": [
-    "최근 1개월 수익률이 -14.10%이며 거래량 변화율이 -28.82%로 단기 하락 추세와 매수세 위축이 뚜렷함",
-    "연간 매출이 전년 대비 7.6% 감소하여 외형 성장세가 둔화되는 양상을 보임",
-    "52주 가격 범위 내 현재 위치가 33.0%로 낮아 기술적으로 하방 압력이 강한 구간에 위치함"
+    "1분기 영업이익(-2,078억원)과 순이익(-9,440억원) 모두 큰 폭의 적자를 기록하며 수익성이 심각하게 악화됨",
+    "영업현금흐름이 -3,163억원으로 음수를 기록하여 기업의 현금 창출 능력이 결여된 상태임",
+    "최근 1개월 수익률이 -14.10%로 강한 하락 추세에 있으며, 거래량 또한 -28.82% 감소하여 매수세가 위축됨"
   ],
   "cond": "cond4",
   "model": "gemma-4-31b-it",
@@ -21,9 +21,9 @@
     "momentum_1m": -14.0995,
     "volume_change": -28.82,
     "price_position_52w": 32.96,
-    "revenue_growth": -7.6,
-    "operating_margin": 5.69,
-    "debt_ratio": 129.0,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 140.02,
     "dividend_yield": null,
     "recent_reports": [
       {

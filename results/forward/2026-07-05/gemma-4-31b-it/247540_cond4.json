@@ -5,11 +5,11 @@
   "context_date": "2026-07-05",
   "price": 124400.0,
   "signal": "Sell",
-  "confidence": 85,
+  "confidence": 90,
   "reasons": [
     "1.2조원 규모의 유상증자로 인한 단기 주주가치 희석 우려가 리포트를 통해 반복적으로 언급됨",
-    "PER 308.7배, PBR 6.04배의 극심한 고평가 상태이나 ROE는 2.0%에 불과해 밸류에이션 부담이 매우 높음",
-    "최근 1개월 수익률 -36.98% 및 거래량 감소세로 보아 강력한 하락 추세가 지속되고 있음"
+    "PER 308.7배의 극심한 고평가 상태이며, ROE 2.0% 및 영업현금흐름 -889억원의 재무적 불균형이 심각함",
+    "최근 1개월 수익률 -36.98%의 강한 하락 추세와 52주 최저가 부근(16.6% 위치)에 머물러 있는 기술적 약세가 뚜렷함"
   ],
   "cond": "cond4",
   "model": "gemma-4-31b-it",
@@ -21,9 +21,9 @@
     "momentum_1m": -36.9807,
     "volume_change": -12.9931,
     "price_position_52w": 16.6,
-    "revenue_growth": -8.5,
-    "operating_margin": 5.66,
-    "debt_ratio": 142.16,
+    "revenue_growth": -3.88,
+    "operating_margin": 3.46,
+    "debt_ratio": 147.34,
     "dividend_yield": 0.05,
     "recent_reports": [
       {

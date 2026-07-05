@@ -4,12 +4,12 @@
   "date": "2026-07-05",
   "context_date": "2026-07-05",
   "price": 1175000.0,
-  "signal": "Neutral",
-  "confidence": 75,
+  "signal": "Sell",
+  "confidence": 82,
   "reasons": [
-    "매출액(+137.6%)과 영업이익(+78.4%)의 폭발적인 성장세 및 4조 원의 강력한 영업현금흐름은 매우 긍정적입니다.",
-    "ROE(8.8%) 대비 PER(41.2)과 PBR(3.61)이 상당히 높아 밸류에이션 부담이 존재하는 구간입니다.",
-    "최근 1개월 수익률은 10.02%로 상승세이나, 거래량 변화율이 0.45%로 매우 낮아 단기 추가 상승을 견인할 모멘텀이 불분명합니다."
+    "PER 41.2, PBR 3.61의 높은 밸류에이션 대비 ROE가 8.8%로 낮아 주가 고평가 상태로 판단됨",
+    "부채비율이 224.9%로 매우 높고 영업현금흐름이 -1.7조원으로 심각한 수준의 현금 유출이 발생하고 있음",
+    "최근 1개월 수익률은 상승했으나 거래량 변화율이 0.45%에 불과해 추가 상승을 견인할 거래 동력이 부족함"
   ],
   "cond": "cond4_no_reports",
   "model": "gemma-4-31b-it",
@@ -21,9 +21,9 @@
     "momentum_1m": 10.0187,
     "volume_change": 0.4498,
     "price_position_52w": 52.24,
-    "revenue_growth": 137.57,
-    "operating_margin": 11.57,
-    "debt_ratio": null,
+    "revenue_growth": 4.86,
+    "operating_margin": 11.11,
+    "debt_ratio": 224.88,
     "dividend_yield": 0.7,
     "recent_reports": [
       {

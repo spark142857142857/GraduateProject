@@ -5,11 +5,11 @@
   "context_date": "2026-07-05",
   "price": 577000.0,
   "signal": "Sell",
-  "confidence": 82,
+  "confidence": 80,
   "reasons": [
-    "PBR 6.48 및 PER 36.8은 업종 평균 대비 매우 높은 수준으로 밸류에이션 부담이 극심함",
-    "최근 1개월 수익률 -11.37%와 거래량 변화율 -38.38%가 동시에 나타나며 단기 하락 추세와 모멘텀 약화가 뚜렷함",
-    "영업이익의 성장세는 높으나 부채비율이 180.1%로 재무 안정성 리스크가 존재함"
+    "PBR 6.48 및 PER 36.8로 업종 평균 대비 밸류에이션 부담이 매우 높은 수준임",
+    "최근 1개월 수익률이 -11.37%를 기록하며 단기적인 주가 하락 추세가 뚜렷함",
+    "거래량 변화율이 -38.38%로 급감하며 주가 상승을 견인할 매수 모멘텀이 약화됨"
   ],
   "cond": "cond4",
   "model": "gemma-4-31b-it",
@@ -21,9 +21,9 @@
     "momentum_1m": -11.3671,
     "volume_change": -38.3843,
     "price_position_52w": 54.96,
-    "revenue_growth": 21.36,
-    "operating_margin": 11.59,
-    "debt_ratio": 180.07,
+    "revenue_growth": 54.78,
+    "operating_margin": 15.3,
+    "debt_ratio": 183.91,
     "dividend_yield": 1.08,
     "recent_reports": []
   }
