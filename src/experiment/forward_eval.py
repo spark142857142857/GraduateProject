@@ -1,7 +1,7 @@
 """
 Forward Test 성숙 신호 평가
 
-results/forward/{생성일}/{ticker}_{cond}[_{model}].json 신호들을 스캔해,
+results/forward/{생성일}/{model}/{ticker}_{cond}.json 신호들을 스캔해,
 신호 생성일 이후 실제 5/20거래일 수익률을 계산하고 적중 여부를 집계한다.
 20거래일이 아직 안 지난 신호(미성숙)는 pending으로 분류.
 
@@ -41,7 +41,7 @@ def _hit(ret: float | None, signal: str) -> bool | None:
 
 
 def evaluate() -> pd.DataFrame:
-    files = sorted(glob.glob(os.path.join(FORWARD_DIR, "*", "*.json")))
+    files = sorted(glob.glob(os.path.join(FORWARD_DIR, "*", "*", "*.json")))
     if not files:
         print("평가할 forward 신호가 없습니다. (results/forward/{날짜}/ 비어있음)")
         return pd.DataFrame()

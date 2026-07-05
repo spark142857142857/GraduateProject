@@ -108,7 +108,7 @@ def main(date: str | None) -> None:
     if folder is None:
         print("검증할 forward 생성일 폴더가 없습니다.")
         return
-    files = sorted(glob.glob(os.path.join(FORWARD_DIR, folder, "*.json")))
+    files = sorted(glob.glob(os.path.join(FORWARD_DIR, folder, "*", "*.json")))
     if not files:
         print(f"{folder} 폴더에 신호 JSON이 없습니다.")
         return

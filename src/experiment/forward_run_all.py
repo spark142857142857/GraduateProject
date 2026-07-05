@@ -12,7 +12,7 @@ forward 신호를 생성한다. forward_test.run_forward를 반복 호출하며,
   python src/experiment/forward_run_all.py                    # 20종목 × 5조건 (앵커)
   python src/experiment/forward_run_all.py --cond cond4       # 단일 조건만
   python src/experiment/forward_run_all.py --model claude-haiku-4-5   # 다른 모델
-저장: results/forward/{오늘}/{ticker}_{cond}_{model}.json (run_forward가 처리)
+저장: results/forward/{오늘}/{model}/{ticker}_{cond}.json (run_forward가 처리)
 """
 
 import argparse

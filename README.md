@@ -221,7 +221,7 @@ python src/experiment/forward_verify.py    # ③ 넣은 정보 신선도·정합
 
 단일 종목 테스트: `python src/experiment/forward_test.py --ticker 005930 --cond cond3`
 
-- 신호 저장: `results/forward/{날짜}/{ticker}_{cond}_{model}.json` (당일 동일 ticker+cond+model은 캐시 반환)
+- 신호 저장: `results/forward/{날짜}/{model}/{ticker}_{cond}.json` (당일 동일 ticker+cond+model은 캐시 반환)
 - 평가 저장: `results/forward/evaluation.csv` — 미성숙(20거래일 미경과) 신호는 pending
 - 주간 반복 시 20거래일 보유구간이 겹쳐 표본이 독립이 아니므로 **실전 참고용** (유의성 검정은 백테스트가 담당)
 - ⚠️ **리포트는 자동 갱신 안 됨** → forward 전 반드시 `crawl.py` 실행 (안 하면 cond3/4가 빈 리포트). `forward_verify.py`가 리포트 0건 시 경고.

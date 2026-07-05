@@ -5,8 +5,8 @@ Forward Test — 오늘 날짜 기준 단일 종목 LLM 신호 생성
   python src/forward_test.py --ticker 005930
   python src/forward_test.py --ticker 005930 --cond cond3
 
-결과 저장: results/forward/{날짜}/{ticker}_{cond}.json
-같은 날 · 같은 종목 · 같은 cond이면 캐시 반환.
+결과 저장: results/forward/{날짜}/{model}/{ticker}_{cond}.json
+같은 날 · 같은 종목 · 같은 cond · 같은 model이면 캐시 반환.
 
 설계 원칙:
   - get_today_context()로 오늘 기준 실시간 지표 수집
@@ -67,8 +67,8 @@ def run_forward(ticker: str, cond: str = "cond4", model: str = MODEL) -> dict:
         }
     """
     today_str  = datetime.today().strftime("%Y-%m-%d")
-    cache_dir  = os.path.join(FORWARD_DIR, today_str)
-    cache_path = os.path.join(cache_dir, f"{ticker}_{cond}_{model}.json")  # 당일 동일 ticker+cond+model 캐시 반환 — 중복 호출 방지
+    cache_dir  = os.path.join(FORWARD_DIR, today_str, model)
+    cache_path = os.path.join(cache_dir, f"{ticker}_{cond}.json")  # 당일 동일 ticker+cond+model 캐시 반환 — 중복 호출 방지
 
     # 1. 캐시
     if os.path.exists(cache_path):
