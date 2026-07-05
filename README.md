@@ -54,6 +54,7 @@ LLM에 제공하는 재무 컨텍스트 조합을 달리하며 최적 구성을 
 ### 결과
 
 실험 결과 및 분석 일지는 [docs/experiments_log.md](docs/experiments_log.md) 참고.
+Forward Test 운영 이력(실행 로그·이슈)은 [docs/forward_log.md](docs/forward_log.md) 참고.
 
 ---
 
@@ -97,7 +98,8 @@ stock_analysis/
 │   ├── analysis/                    # 비교 분석 CSV
 │   └── forward/                     # Forward Test 결과 JSON
 ├── docs/
-│   └── experiments_log.md           # 실험 일지
+│   ├── experiments_log.md           # 실험 일지 (백테스트)
+│   └── forward_log.md               # Forward Test 운영 일지
 ├── docs_cache/                      # DART API 법인코드 캐시 (gitignore)
 ├── EXPERIMENT_VARS.md               # 실험 변수 정리
 ├── pyproject.toml                   # 의존성 정의 (uv)
