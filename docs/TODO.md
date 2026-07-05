@@ -1,7 +1,7 @@
 # 논문 한계 · 보고서 포인트 · 남은 작업
 
-> 정리일: 2026-06-29. 코드 동결(app.py 제외) 시점 기준.
-> 실험 일지는 [experiments_log.md](experiments_log.md) 참고.
+> 정리일: 2026-06-29 (2026-07-05 갱신: 분기 DART 전환·3.5차 실험·멀티모델 forward 반영). 코드 동결(app.py 제외) 시점 기준.
+> 실험 일지는 [experiments_log.md](experiments_log.md), Forward 운영 이력은 [forward_log.md](forward_log.md) 참고.
 
 ---
 
@@ -31,6 +31,7 @@
 - **단일 보유기간**: 20거래일 기준(+5거래일 보조).
 - **거래비용 미반영**: 한국 주식 왕복 ~0.25%(세금+수수료). Buy 평균수익률이 작으면 결론에 영향 가능 → 명시 또는 반영.
 - **온도 고정**: temperature=0.0 (졸업작품 재현성). 모델 다양성은 멀티모델 비교에서 별도 검토.
+- **Gemma는 백테스트 미포함, forward만 적용**: 무료 tier rate-limit으로 대규모 백테스트(5조건×720콜=3,600콜)는 비현실적. 주간 forward(100콜)는 문제없이 수행 → 멀티모델 백테스트는 Gemini/GPT/Claude 3종, forward는 4종(Gemma 포함)으로 비대칭.
 
 ---
 
@@ -78,16 +79,16 @@
     - Anthropic 검증: **Claude Haiku 4.5** (~$7.8)
   - **전략**: 앵커(Flash-Lite+Gemma)로 개발·반복은 공짜에 가깝게 → 유료 2종은 **최종 프롬프트에서 각 1회만**. 예상 총합 ~$26.5 (여유). 빡빡하면 유료 1종으로 축소($15 안쪽)
   - **제외**: Sonnet 4.6/Opus 4.8/Gemini Pro/3.5 Flash — 1회 $23~$39로 예산 초과. (1주 내 실행 예정; 가격 인하 시 상위 모델 재검토)
-  - ⚠️ Gemma 무료 tier rate-limit → 3,600콜 풀 백테스트는 분할/여러 날 or 3rd-party(~$1). forward test 위주 대안
+  - [x] **결정 (2026-07-05): Gemma는 백테스트 제외, forward 전용** — 무료 tier rate-limit으로 3,600콜(5조건×720) 풀 백테스트는 비현실적(관찰상 forward 100콜도 지연 발생). Groq 등 3rd-party 유료 전환은 기각(무료라는 이유 자체가 채택 근거). forward(주간 100콜)는 문제없이 충분히 감당 가능 → **백테스트 대상은 GPT-5.4-mini·Claude Haiku 4.5 2종만**으로 축소. 보고서에 사유 한 줄 명시 필요(A-3 한계 또는 방법론 섹션).
   - [x] **provider 분기 + 저장 분리(C1) 구현 완료** — `call_llm(prompt, model)` 접두어 분기(lazy client), `--model` 스레딩, `experiment/{cond}/{model}/`·`analysis/{model}/` 하위폴더, 앵커 결과 이전. Gemini 검증됨
-  - [ ] `.env`에 `OPENAI_API_KEY`·`ANTHROPIC_API_KEY` 추가 → GPT·Claude 1콜 스모크
-  - [ ] 실제 실행: 각 모델 `llm_experiment --model X` (5조건) → `compare/breakdown/significance --model X`
+  - [x] `.env`에 `OPENAI_API_KEY`·`ANTHROPIC_API_KEY` 추가 (2026-07-05) → forward에서 4모델 스모크 성공 확인
+  - [ ] **미완료 — 핵심 남은 작업**: 백테스트는 아직 앵커(flash-lite)만 실행됨 (3차·3.5차 전부). **GPT-5.4-mini·Claude Haiku 4.5** 2모델로 5조건(720콜×2모델=1,440콜) `llm_experiment --model X` 실행 → `compare/breakdown/significance --model X`로 모델별 분석
   - 정확한 모델 ID는 실행 시점 재확인 (GPT-5.x·Gemini 3.x 빠르게 변동; Claude만 확정 `claude-haiku-4-5`)
 - [ ] Forward Test 검증: 오늘 기준 신호 생성 → **한 달 후 실제 결과 추적** (실전 유효성). 백테스트와 **동일 4모델**로 일관성 유지 (콜 수 적어 비용 무관)
   - [x] 성숙 신호 평가 스크립트 `forward_eval.py` — 신호일 이후 실제 5/20d 수익률·방향/초과 적중 집계 (calc_return 재사용, 미성숙은 pending)
   - [x] 일괄 실행 래퍼 `forward_run_all.py` — 20종목 × 5조건, 앵커(flash-lite), 당일캐시 멱등
   - [x] 입력 검증 `forward_verify.py` — 현재가=FDR최신·ROE정합성·52주·리포트30일·DART신선도 (종목당 1회). 리포트 0건 시 crawl 경고
-  - **모델 계획**: 이번 일요일 앵커(flash-lite) 단독 → 다음 주 provider 분기 후 4모델. forward 앵커는 **반드시 백테스트와 동일 모델(flash-lite)**
+  - [x] **모델 계획 완료**: 2026-07-05 4모델(flash-lite/gemma-4-31b-it/gpt-5.4-mini/claude-haiku-4-5) forward 실행 완료 — 상세는 [forward_log.md](forward_log.md)
   - [x] `forward_test.py`에 **model 필드 + 파일명(`{ticker}_{cond}_{model}.json`)** 추가 — 멀티모델 forward 파일 충돌 방지 (provider 분기 커밋에서 완료)
   - [x] **forward DART 인메모리 fetch 전환** — `_build_dart_row` 추출 후 `get_today_context`가 CSV 미기록·현재 FY 직접 조회. `data/dart_fundamentals/`는 2023-2025 순수 36행 유지(스모크로 CSV 불변 확인), write 경로(_update_dart_one) 동작 불변. reports는 라이브 유지.
   - **주간 리듬(일요일 저녁)**: ① `crawl.py`(리포트 최신화) ② `forward_run_all.py`(생성) ③ `forward_verify.py`(입력 점검) ④(4주 뒤~) `forward_eval.py`(성숙 평가). ⚠️ **리포트 자동갱신 안 됨 → ① 필수**. 20d 보유 겹쳐 표본 비독립 → 실전 참고용(유의성은 백테스트)
