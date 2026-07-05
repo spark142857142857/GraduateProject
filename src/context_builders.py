@@ -121,11 +121,25 @@ def _fmt_amount(val) -> str:
     return f"{sign}{eok:,.0f}억원"
 
 
-def _fmt_yoy(val) -> str:
-    """전년比 변화율 포맷. None/NaN → 빈 문자열."""
+def _fmt_yoy(val, label: str = "전년比") -> str:
+    """전년(동기)比 변화율 포맷. None/NaN → 빈 문자열."""
     if val is None or pd.isna(val):
         return ""
-    return f" (전년比 {float(val):+.1f}%)"
+    return f" ({label} {float(val):+.1f}%)"
+
+
+def _dart_header_and_yoy(fiscal_period, report_name) -> tuple[str, str]:
+    """dart_fundamentals 행의 기간 정보 → (섹션 헤더, YoY 라벨).
+
+    분기/반기는 단일분기 기준이라 전년 '동기'比, 사업보고서는 전년比.
+    fiscal_period가 없으면(구 연간 데이터 하위호환) 연간 표기로 폴백.
+    """
+    if fiscal_period and not pd.isna(fiscal_period) and report_name and not pd.isna(report_name):
+        header    = f"[{fiscal_period} 실적 (DART {report_name})]"
+        yoy_label = "전년동기比" if "분기" in str(fiscal_period) else "전년比"
+    else:
+        header, yoy_label = "[연간 실적 (DART 사업보고서)]", "전년比"
+    return header, yoy_label
 
 
 # ── dict 기반 빌더 (forward_test 전용) ────────────────────
@@ -166,11 +180,12 @@ def build_reports_from_dict(ctx: dict) -> str:
 
 
 def build_dart_fundamentals_from_dict(ctx: dict) -> str:
-    """ctx['revenue'/'operating_income'/...] → [분기 실적] 섹션 텍스트."""
+    """ctx['revenue'/'operating_income'/...] → [실적] 섹션 텍스트 (단일분기/연간)."""
+    header, yoy_label = _dart_header_and_yoy(ctx.get("fiscal_period"), ctx.get("report_name"))
     return "\n".join([
-        "[연간 실적 (DART 사업보고서)]",
-        f"매출: {_fmt_amount(ctx.get('revenue'))}{_fmt_yoy(ctx.get('revenue_yoy'))}",
-        f"영업이익: {_fmt_amount(ctx.get('operating_income'))}{_fmt_yoy(ctx.get('operating_income_yoy'))}",
+        header,
+        f"매출: {_fmt_amount(ctx.get('revenue'))}{_fmt_yoy(ctx.get('revenue_yoy'), yoy_label)}",
+        f"영업이익: {_fmt_amount(ctx.get('operating_income'))}{_fmt_yoy(ctx.get('operating_income_yoy'), yoy_label)}",
         f"영업이익률: {_fmt(ctx.get('operating_margin'), 1)}%",
         f"순이익: {_fmt_amount(ctx.get('net_income'))}",
         "",
@@ -205,10 +220,11 @@ def build_dart_fundamentals(ticker: str, date: str) -> str:
     rev_yoy    = row.get("revenue_yoy")
     op_yoy     = row.get("operating_income_yoy")
 
+    header, yoy_label = _dart_header_and_yoy(row.get("fiscal_period"), row.get("report_name"))
     return "\n".join([
-        "[연간 실적 (DART 사업보고서)]",
-        f"매출: {_fmt_amount(revenue)}{_fmt_yoy(rev_yoy)}",
-        f"영업이익: {_fmt_amount(oper_inc)}{_fmt_yoy(op_yoy)}",
+        header,
+        f"매출: {_fmt_amount(revenue)}{_fmt_yoy(rev_yoy, yoy_label)}",
+        f"영업이익: {_fmt_amount(oper_inc)}{_fmt_yoy(op_yoy, yoy_label)}",
         f"영업이익률: {_fmt(oper_mgn, 1)}%",
         f"순이익: {_fmt_amount(net_inc)}",
         "",

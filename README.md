@@ -31,7 +31,7 @@ LLM에 제공하는 재무 컨텍스트 조합을 달리하며 최적 구성을 
 | **cond1** | 없음 | 종목명 + 현재가만 제공 (No Context) |
 | **cond2** | 재무 + 기술지표 | PER / PBR / ROE / 시가총액 / 52주 위치 / 1개월 수익률 / 거래량 변화율 |
 | **cond3** | + 애널리스트 리포트 | 리포트 제목 / 목표주가 (최근 30일, 최대 5건) |
-| **cond4** | + DART 연간 실적 | 매출 / 영업이익 / 영업이익률 / 순이익 (전년比) / 부채비율 / 영업현금흐름 |
+| **cond4** | + DART 분기 실적 | 매출 / 영업이익 / 영업이익률 / 순이익 (전년동기比) / 부채비율 / 영업현금흐름 (최근 정기보고서 = 단일분기, 4~5월만 연간) |
 | cond4_no_reports | cond4에서 리포트 제거 (LOO ablation) | 재무지표 + DART 실적. 리포트의 marginal effect 측정용 |
 | cond4_blind | 재무지표 + DART (종목명 익명화) | LLM 사전학습 편향 측정 |
 
@@ -69,7 +69,7 @@ stock_analysis/
 │   ├── collect/                     # 데이터 수집
 │   │   ├── crawl.py                 # 네이버금융 애널리스트 리포트 크롤링 (증분)
 │   │   ├── collect_financials.py    # DART + FDR 재무/기술지표 수집
-│   │   ├── collect_dart_fundamentals.py  # DART 사업보고서 연간 실적 수집
+│   │   ├── collect_dart_fundamentals.py  # DART 정기보고서 분기 실적 수집 (최근 공시)
 │   │   └── update.py               # Forward Test용 실시간 데이터 수집
 │   │
 │   └── experiment/                  # 실험 실행 및 분석
@@ -88,7 +88,7 @@ stock_analysis/
 │   ├── financials/                  # 재무 + 기술지표 CSV
 │   ├── price/                       # 주가 캐시 CSV
 │   ├── reports/                     # 애널리스트 리포트 CSV
-│   └── dart_fundamentals/           # DART 연간 실적 CSV
+│   └── dart_fundamentals/           # DART 분기 실적 CSV (최근 정기보고서)
 ├── results/                         # 실험 결과
 │   ├── baseline/                    # 대조군 수익률
 │   ├── experiment/cond{1-4}/        # LLM 실험 결과 (체크포인트 포함)
@@ -141,7 +141,7 @@ python src/collect/crawl.py
 # 재무/기술지표 수집 (DART + FinanceDataReader)
 python src/collect/collect_financials.py
 
-# DART 연간 실적 수집 (cond4용)
+# DART 분기 실적 수집 (cond4용, 최근 정기보고서)
 python src/collect/collect_dart_fundamentals.py
 ```
 

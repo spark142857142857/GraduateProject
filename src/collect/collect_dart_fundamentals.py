@@ -1,17 +1,21 @@
 """
 DART 기본 재무 데이터 수집 스크립트 (cond4용)
 
-DART 연간 사업보고서에서 핵심 재무 지표를 수집한다.
+DART 정기보고서(분기/반기/사업)에서 핵심 재무 지표를 수집한다.
+신호일 기준 "가장 최근 공시된 보고서"를 사용하며, 손익 지표는 **단일분기**
+기준(그 분기 3개월치 + 전년 동분기比 YoY)이다. 사업보고서 구간(4~5월)만
+연간 실적을 쓴다 (사업보고서는 분기 분해가 없으므로).
 
 수집 항목:
-  - 손익계산서 : 매출, 영업이익, 순이익
-  - 재무상태표 : 부채총계, 자본총계 → 부채비율
-  - 현금흐름표 : 영업활동현금흐름
-  - 배당       : 배당수익률 (현재 NaN, 추후 구현)
+  - 손익계산서 : 매출, 영업이익, 순이익 (단일분기, 연간 구간은 연간)
+  - 재무상태표 : 부채총계, 자본총계 → 부채비율 (분기말 스냅샷)
+  - 현금흐름표 : 영업활동현금흐름 (분기 보고서는 누적치)
+  - 배당       : 배당수익률 (연간 기준 — 배당은 연 단위 개념)
 
-Look-ahead Bias 방지 (collect_financials.py 와 동일):
-  - 1~3월 → 전전년도 사업보고서 (3/31 이전은 전년도 미공시)
-  - 4~12월 → 전년도 사업보고서
+Look-ahead Bias 방지 (applicable_dart_period, 자본시장법 §160 제출기한):
+  - 분기·반기보고서: 기간 경과 후 45일 이내 공시
+  - 사업보고서: 사업연도 종료 후 90일 이내 (3/31)
+  - 신호일 기준 제출기한이 지난(경계일 당일 제외) 가장 최근 보고서만 사용
 
 금액 단위: DART 원본 그대로 저장 (원/full KRW)
   → 조원·억원 환산은 context_builders.py 에서 처리
@@ -58,11 +62,56 @@ except Exception:
 # ── 계정과목명 후보 (우선순위 순) ─────────────────────────
 # DART 보고서마다 계정명이 상이해 fallback 목록 사용
 REVENUE_NAMES      = ["매출액", "수익(매출액)", "영업수익", "매출"]
-OPER_INC_NAMES     = ["영업이익", "영업이익(손실)"]
-NET_INC_NAMES      = ["당기순이익", "당기순이익(손실)", "연결당기순이익"]   # 현대차 등 연결재무제표는 "연결당기순이익" 사용
-TOTAL_LIAB_NAMES   = ["부채총계"]
-TOTAL_EQUITY_NAMES = ["자본총계", "자본 총계", "기말자본"]   # 공백 포함 표기 및 은행("기말자본") 대응
-OPER_CF_NAMES      = ["영업활동 현금흐름", "영업활동현금흐름", "영업활동으로 인한 현금흐름"]
+# 영업이익: 분기 보고서는 공백·손익 변형 다수 (전 종목 스캔으로 수집)
+OPER_INC_NAMES     = ["영업이익", "영업이익(손실)", "영업이익 (손실)", "영업손익"]
+# 순이익: 보고서 유형(당기/반기/분기)×표기(이익/손실/손익) 변형 다수 (전 종목 스캔으로 수집)
+NET_INC_NAMES      = [
+    "당기순이익", "당기순이익(손실)", "당기순손익", "당기순손실", "연결당기순이익",
+    "반기순이익", "반기순이익(손실)", "반기순손익", "반기순손실", "연결반기순이익",
+    "분기순이익", "분기순이익(손실)", "분기순손익", "분기순손실", "연결분기순이익",
+]
+TOTAL_LIAB_NAMES   = ["부채총계", "부채 총계"]   # 분기 보고서는 공백 포함 "부채 총계" 사용하는 종목 있음
+# 자본총계: 공백 표기 및 "OO말자본"(기말/당기말/반기말/분기말) 변형 대응
+TOTAL_EQUITY_NAMES = ["자본총계", "자본 총계", "기말자본", "당기말자본", "반기말자본", "분기말자본"]
+# (부채+자본) 총계 — 자본총계 라인이 없는 보고서에서 자본 폴백(총계−부채)에 사용
+GRAND_TOTAL_NAMES  = ["부채와자본총계", "부채와 자본총계", "자본과부채총계", "자본 및 부채 총계",
+                      "부채 및 자본총계", "부채및자본총계", "자본및부채총계"]
+OPER_CF_NAMES      = ["영업활동 현금흐름", "영업활동현금흐름", "영업활동으로 인한 현금흐름",
+                      "영업활동 순현금흐름", "영업활동으로 인한 순현금흐름",
+                      "영업활동에서 창출된 현금흐름", "영업활동으로부터 창출된 현금흐름"]
+
+# reprt_code → 단일분기 표시 정보. DART 정기보고서 코드:
+#   11013=1분기, 11012=반기(손익 thstrm=Q2 단일), 11014=3분기, 11011=사업(연간)
+REPRT_INFO = {
+    "11013": {"quarter_label": "1분기", "report_name": "분기보고서"},
+    "11012": {"quarter_label": "2분기", "report_name": "반기보고서"},
+    "11014": {"quarter_label": "3분기", "report_name": "분기보고서"},
+    "11011": {"quarter_label": "연간",  "report_name": "사업보고서"},
+}
+
+
+def applicable_dart_period(date: pd.Timestamp) -> tuple[int, str]:
+    """date 기준 가장 최근 공시된 정기보고서의 (회계연도, reprt_code) 반환.
+
+    제출기한(자본시장법 §160): 분기·반기 45일, 사업보고서 90일(3/31).
+    경계일 당일은 미공시로 간주(제출기한 경과 후에만 사용) — 연간 로직과 동일.
+    구간(연 Y 기준):
+      ~ 3/31   → 전년 3분기보고서 (11014, 공시 Y-1.11.14)
+      ~ 5/15   → 전년 사업보고서   (11011, 공시 Y.3.31)
+      ~ 8/14   → 당해 1분기보고서  (11013, 공시 Y.5.15)
+      ~ 11/14  → 당해 반기보고서   (11012, 공시 Y.8.14)
+      그 외     → 당해 3분기보고서 (11014, 공시 Y.11.14)
+    """
+    y = date.year
+    if date <= pd.Timestamp(y, 3, 31):
+        return y - 1, "11014"
+    if date <= pd.Timestamp(y, 5, 15):
+        return y - 1, "11011"
+    if date <= pd.Timestamp(y, 8, 14):
+        return y, "11013"
+    if date <= pd.Timestamp(y, 11, 14):
+        return y, "11012"
+    return y, "11014"
 
 # ── DART 조회 캐시 ────────────────────────────────────────
 _cache: dict[tuple, dict] = {}
@@ -71,6 +120,8 @@ _cache: dict[tuple, dict] = {}
 def _get_amount(df: pd.DataFrame, names: list[str],
                 col: str = "thstrm_amount") -> float:
     """계정과목명 우선순위에 따라 금액 추출. 없으면 np.nan."""
+    if col not in df.columns:   # 분기 보고서는 연간과 컬럼 구성이 달라(frmtrm_q_amount 등) 방어
+        return np.nan
     for name in names:
         rows = df[df["account_nm"] == name]
         if not rows.empty:
@@ -90,12 +141,18 @@ def _yoy(curr: float, prev: float) -> float:
     return round((curr - prev) / abs(prev) * 100, 2)  # 전년 손실(음수) 분모의 부호 오류 방지
 
 
-def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
+def get_dart_annual(ticker: str, fiscal_year: int, reprt_code: str = "11011") -> dict:
     """
-    DART 사업보고서(연간)에서 핵심 재무 지표 추출.
-    결과를 캐시해 동일 (ticker, fiscal_year) 재호출 시 API 생략.
+    DART 정기보고서에서 핵심 재무 지표 추출. (이름은 하위호환 유지 — 분기/반기도 처리)
+    결과를 캐시해 동일 (ticker, fiscal_year, reprt_code) 재호출 시 API 생략.
+
+    손익(IS)은 당기(thstrm)를 사용하되, 전기 컬럼이 보고서 유형마다 다르다:
+      - 사업보고서(11011): thstrm=연간, 전기=frmtrm_amount(전년 연간)
+      - 분기/반기(11013/12/14): thstrm=단일분기(그 분기 3개월),
+        전기=frmtrm_q_amount(전년 동분기 3개월). frmtrm_amount는 비어있음.
+    재무상태표(BS)는 분기말 스냅샷이라 thstrm_amount로 동일하게 처리.
     """
-    key = (ticker, fiscal_year)
+    key = (ticker, fiscal_year, reprt_code)
     if key in _cache:
         return _cache[key]
 
@@ -110,9 +167,12 @@ def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
         "operating_cashflow":    np.nan,
     }
 
+    # 손익 전기 컬럼: 연간은 전년 연간, 분기/반기는 전년 동분기(frmtrm_q_amount)
+    prev_col = "frmtrm_amount" if reprt_code == "11011" else "frmtrm_q_amount"
+
     try:
         time.sleep(REQ_DELAY)
-        df = dart.finstate_all(ticker, fiscal_year, "11011")   # 사업보고서. DART 보고서 코드: 11011=사업보고서 (분기·반기 제외)
+        df = dart.finstate_all(ticker, fiscal_year, reprt_code)
         if df is None or df.empty:
             _cache[key] = result
             return result
@@ -122,14 +182,19 @@ def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
         bs_df = df[df["sj_div"] == "BS"]                # 재무상태표
         cf_df = df[df["sj_div"] == "CF"]                # 현금흐름표
 
-        # 당기(thstrm) + 전기(frmtrm) 함께 추출 → YoY 계산용
+        # 당기(thstrm) + 전기(prev_col) 함께 추출 → YoY 계산용
         result["revenue"]               = _get_amount(is_df, REVENUE_NAMES,      "thstrm_amount")
-        result["revenue_prev"]          = _get_amount(is_df, REVENUE_NAMES,      "frmtrm_amount")
+        result["revenue_prev"]          = _get_amount(is_df, REVENUE_NAMES,      prev_col)
         result["operating_income"]      = _get_amount(is_df, OPER_INC_NAMES,     "thstrm_amount")
-        result["operating_income_prev"] = _get_amount(is_df, OPER_INC_NAMES,     "frmtrm_amount")
+        result["operating_income_prev"] = _get_amount(is_df, OPER_INC_NAMES,     prev_col)
         result["net_income"]            = _get_amount(is_df, NET_INC_NAMES,      "thstrm_amount")
         result["total_liabilities"]     = _get_amount(bs_df, TOTAL_LIAB_NAMES)
         result["total_equity"]          = _get_amount(bs_df, TOTAL_EQUITY_NAMES)
+        # 자본총계 라인이 없고 (부채+자본)총계만 있는 보고서 폴백: 자본 = 총계 − 부채 (회계 항등식)
+        if np.isnan(result["total_equity"]) and not np.isnan(result["total_liabilities"]):
+            grand = _get_amount(bs_df, GRAND_TOTAL_NAMES)
+            if not np.isnan(grand):
+                result["total_equity"] = grand - result["total_liabilities"]
         result["operating_cashflow"]    = _get_amount(cf_df, OPER_CF_NAMES)
 
     except Exception:
@@ -167,8 +232,9 @@ def process_ticker(name: str, ticker: str) -> pd.DataFrame | None:
 
     rows = []
     for date in tqdm(missing, desc=f"  {name}({ticker})", leave=False):
-        fy   = applicable_fiscal_year(date)
-        data = get_dart_annual(ticker, fy)
+        fy, reprt = applicable_dart_period(date)
+        data      = get_dart_annual(ticker, fy, reprt)
+        info      = REPRT_INFO[reprt]
 
         revenue    = data["revenue"]
         oper_inc   = data["operating_income"]
@@ -192,13 +258,16 @@ def process_ticker(name: str, ticker: str) -> pd.DataFrame | None:
             "date":                 date.strftime("%Y-%m-%d"),
             "ticker":               str(ticker).zfill(6),
             "name":                 name,
+            "fiscal_period":        f"{fy} {info['quarter_label']}",  # 예: "2024 2분기" / "2024 연간"
+            "report_name":          info["report_name"],
             "revenue":              revenue,
             "operating_income":     oper_inc,
             "net_income":           net_inc,
             "operating_margin":     oper_margin,
             "debt_ratio":           debt_ratio,
             "operating_cashflow":   oper_cf,
-            "dividend_yield":       np.nan,  # 배당수익률은 LLM 프롬프트 미사용. Streamlit 표시용으로만 수집하며 update_missing_columns()에서 사후 수집
+            # 배당수익률은 연 단위 개념 → 손익의 분기 회계연도가 아닌 연간 기준(applicable_fiscal_year)으로 조회
+            "dividend_yield":       get_dividend_yield(ticker, applicable_fiscal_year(date)),
             "revenue_yoy":          _yoy(revenue,  data["revenue_prev"]),
             "operating_income_yoy": _yoy(oper_inc, data["operating_income_prev"]),
         })
@@ -335,8 +404,8 @@ def update_missing_columns() -> None:
 def run():
     for name, ticker in tqdm(TICKERS.items(), desc="전체 종목"):
         process_ticker(name, ticker)
-    print("\n누락 컬럼(CF·배당) 업데이트 중...")
-    update_missing_columns()
+    # CF·배당은 process_ticker에서 인라인으로 채움 (분기 기준). update_missing_columns는
+    # 연간 기준 백필이라 분기 데이터와 불일치 → 호출하지 않음 (함수는 하위호환용으로 정의만 유지).
     print("collect_dart_fundamentals 완료")
 
 

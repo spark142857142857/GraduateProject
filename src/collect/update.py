@@ -53,6 +53,8 @@ from collect_dart_fundamentals import (
     get_dart_annual as get_dart_fund_annual,
     get_dividend_yield,
     applicable_fiscal_year as dart_applicable_fy,
+    applicable_dart_period,
+    REPRT_INFO,
     DART_FUND_DIR,
 )
 
@@ -245,14 +247,17 @@ def _update_reports_one(ticker: str, name: str) -> int:
     return len(records)
 
 
-def _build_dart_row(ticker: str, name: str, fy: int) -> dict:
-    """DART 회계연도(fy) 실적을 조회해 dart_fundamentals 한 행(dict)을 계산.
+def _build_dart_row(ticker: str, name: str, fy: int, reprt_code: str, div_fy: int) -> dict:
+    """DART (회계연도 fy, reprt_code) 보고서 실적을 조회해 dart_fundamentals 한 행(dict)을 계산.
 
     파일 쓰기 없이 매출·이익·영업이익률·부채비율·YoY·배당수익률까지 산출한다.
+    손익은 단일분기(사업보고서 구간은 연간) 기준. 배당은 연 단위 개념이라
+    별도 연간 회계연도(div_fy)로 조회한다.
     forward 인메모리 경로(get_today_context)와 백테스트 write 경로
     (_update_dart_one)가 공용한다.
     """
-    data = get_dart_fund_annual(ticker, fy)
+    data = get_dart_fund_annual(ticker, fy, reprt_code)
+    info = REPRT_INFO[reprt_code]
 
     revenue    = data["revenue"]
     oper_inc   = data["operating_income"]
@@ -281,13 +286,15 @@ def _build_dart_row(ticker: str, name: str, fy: int) -> dict:
     return {
         "ticker":               str(ticker).zfill(6),
         "name":                 name,
+        "fiscal_period":        f"{fy} {info['quarter_label']}",  # 예: "2024 2분기" / "2024 연간"
+        "report_name":          info["report_name"],
         "revenue":              revenue,
         "operating_income":     oper_inc,
         "net_income":           net_inc,
         "operating_margin":     oper_margin,
         "debt_ratio":           debt_ratio,
         "operating_cashflow":   oper_cf,
-        "dividend_yield":       get_dividend_yield(ticker, fy),
+        "dividend_yield":       get_dividend_yield(ticker, div_fy),
         "revenue_yoy":          _yoy(revenue,  data["revenue_prev"]),
         "operating_income_yoy": _yoy(oper_inc, data["operating_income_prev"]),
     }
@@ -310,8 +317,9 @@ def _update_dart_one(ticker: str, name: str, base_date: pd.Timestamp) -> bool:
     else:
         df_existing = pd.DataFrame()
 
-    fy      = dart_applicable_fy(base_date)
-    new_row = pd.DataFrame([{"date": base_date_str, **_build_dart_row(ticker, name, fy)}])
+    fy, reprt = applicable_dart_period(base_date)
+    div_fy    = dart_applicable_fy(base_date)   # 배당은 연간 기준
+    new_row = pd.DataFrame([{"date": base_date_str, **_build_dart_row(ticker, name, fy, reprt, div_fy)}])
 
     df_out = pd.concat([df_existing, new_row], ignore_index=True)
     df_out = df_out.sort_values("date").reset_index(drop=True)
@@ -377,11 +385,12 @@ def get_today_context(ticker: str) -> dict:
         pos52 = np.nan
     momentum, vol_change = calc_momentum_volume(full_price, today_ts)
 
-    # ── dart_fundamentals: 현재 회계연도 실적을 인메모리로 조회 (CSV 미기록) ──
+    # ── dart_fundamentals: 최근 공시 정기보고서 실적을 인메모리로 조회 (CSV 미기록) ──
     # 백테스트 데이터(data/dart_fundamentals/, 2023-2025)를 오염시키지 않도록
-    # forward는 파일에 쓰지 않고 오늘 기준 회계연도 연간 실적을 직접 계산한다.
-    fy_now   = dart_applicable_fy(pd.Timestamp(today_str))
-    dart_row = _build_dart_row(ticker, name, fy_now)
+    # forward는 파일에 쓰지 않고 오늘 기준 가장 최근 보고서(분기/반기/사업)를 직접 계산한다.
+    fy_now, reprt_now = applicable_dart_period(pd.Timestamp(today_str))
+    div_fy_now        = dart_applicable_fy(pd.Timestamp(today_str))   # 배당은 연간 기준
+    dart_row          = _build_dart_row(ticker, name, fy_now, reprt_now, div_fy_now)
 
     # ── 최근 리포트 (CSV 직접 읽기, 오늘 기준 30일) ─────
     # forward test는 오늘 포함, backtest(build_reports)는 전일까지 — 의도적 차이
@@ -424,7 +433,9 @@ def get_today_context(ticker: str) -> dict:
         "price_position_52w":   _v(pos52),
         "momentum_1m":          _v(momentum),
         "volume_change":        _v(vol_change),
-        # dart_fundamentals (최신 사업연도)
+        # dart_fundamentals (최근 공시 정기보고서 — 단일분기/연간)
+        "fiscal_period":        dart_row.get("fiscal_period"),
+        "report_name":          dart_row.get("report_name"),
         "revenue":              _v(dart_row.get("revenue")),
         "operating_income":     _v(dart_row.get("operating_income")),
         "net_income":           _v(dart_row.get("net_income")),
