@@ -1,0 +1,30 @@
+{
+  "ticker": "196170",
+  "name": "알테오젠",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 341500.0,
+  "signal": "Neutral",
+  "confidence": 61,
+  "reasons": [
+    "현재 주가는 52주 최고가 대비 19.3% 수준으로 고점 대비 크게 조정된 상태라 단기 반등 여지는 있으나, 이것만으로 상승 추세 전환을 확정하기는 어렵습니다.",
+    "최근 1개월 수익률이 -1.44%로 약세이고 거래량 변화율도 -11.43%로 수급이 둔화되어 있어 20거래일 내 강한 상승 신호는 부족합니다.",
+    "PER 128.7, PBR 40.27로 밸류에이션 부담이 매우 큰 반면 ROE 31.3%는 양호해, 펀더멘털과 가격 부담이 상충하여 방향성을 단정하기 어렵습니다."
+  ],
+  "cond": "cond2",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 128.72,
+    "pbr": 40.27,
+    "roe": 31.28,
+    "market_cap": 18.3,
+    "momentum_1m": -1.443,
+    "volume_change": -11.4299,
+    "price_position_52w": 19.29,
+    "revenue_growth": 109.87,
+    "operating_margin": 49.52,
+    "debt_ratio": 53.76,
+    "dividend_yield": 0.1,
+    "recent_reports": []
+  }
+}

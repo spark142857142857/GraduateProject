@@ -1,0 +1,30 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 577000.0,
+  "signal": "Neutral",
+  "confidence": 50,
+  "reasons": [
+    "현재가 577,000원만 제공되어 추세, 변동성, 거래량, 수급 등 20거래일 방향성을 판단할 핵심 데이터가 부족합니다.",
+    "상승 또는 하락을 지지하는 기술적·펀더멘털 근거가 제시되지 않아 Buy와 Sell 중 우위를 둘 수 없습니다.",
+    "제공된 정보만으로는 향후 20거래일 내 주가 방향을 확신할 수 없어 Neutral이 가장 적절합니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 36.75,
+    "pbr": 6.48,
+    "roe": 17.63,
+    "market_cap": 60.6,
+    "momentum_1m": -11.3671,
+    "volume_change": -38.3843,
+    "price_position_52w": 54.96,
+    "revenue_growth": 21.36,
+    "operating_margin": 11.59,
+    "debt_ratio": 180.07,
+    "dividend_yield": 1.08,
+    "recent_reports": []
+  }
+}

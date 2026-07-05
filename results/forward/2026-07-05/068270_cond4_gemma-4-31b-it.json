@@ -1,0 +1,30 @@
+{
+  "ticker": "068270",
+  "name": "셀트리온",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 183600.0,
+  "signal": "Neutral",
+  "confidence": 70,
+  "reasons": [
+    "영업이익이 전년 대비 137.5% 증가하고 영업이익률이 28.1%에 달하는 강력한 실적 성장세를 보임",
+    "PER(39.3)이 ROE(6.2%) 대비 매우 높아 현재 주가 수준에서 밸류에이션 부담이 존재함",
+    "거래량 변화율이 -19.24%로 감소하며 단기적인 주가 상승을 견인할 모멘텀이 부족함"
+  ],
+  "cond": "cond4",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 39.33,
+    "pbr": 2.46,
+    "roe": 6.25,
+    "market_cap": 42.7,
+    "momentum_1m": 4.0227,
+    "volume_change": -19.237,
+    "price_position_52w": 37.14,
+    "revenue_growth": 17.01,
+    "operating_margin": 28.07,
+    "debt_ratio": 28.71,
+    "dividend_yield": null,
+    "recent_reports": []
+  }
+}

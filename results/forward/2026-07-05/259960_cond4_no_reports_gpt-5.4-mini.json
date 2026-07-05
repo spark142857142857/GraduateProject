@@ -1,0 +1,46 @@
+{
+  "ticker": "259960",
+  "name": "크래프톤",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 235500.0,
+  "signal": "Neutral",
+  "confidence": 61,
+  "reasons": [
+    "PER 14.3, PBR 1.51, ROE 10.6%는 밸류에이션과 수익성이 극단적으로 나쁘지 않아 중립적이지만, 강한 저평가 신호로 보기에는 부족합니다.",
+    "최근 1개월 수익률이 -7.47%이고 거래량 변화율도 -26.35%로 단기 모멘텀과 수급이 약해 20거래일 내 상승 근거가 강하지 않습니다.",
+    "연간 매출은 +22.8% 증가했지만 영업이익은 -10.8% 감소했고, 현재 주가가 52주 최고가 대비 낮은 위치에 있어 방향성은 있으나 상승·하락 근거가 혼재합니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 14.31,
+    "pbr": 1.51,
+    "roe": 10.55,
+    "market_cap": 10.9,
+    "momentum_1m": -7.4656,
+    "volume_change": -26.3481,
+    "price_position_52w": 19.5,
+    "revenue_growth": 22.76,
+    "operating_margin": 31.7,
+    "debt_ratio": 31.31,
+    "dividend_yield": 0.9,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "맺어지는 투자의 결실들",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "매력적인 가격대, 매수 기회",
+        "target_price": 460000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "PUBG는 다시 성장하는 중",
+        "target_price": 380000
+      }
+    ]
+  }
+}

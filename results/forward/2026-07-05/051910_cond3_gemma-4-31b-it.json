@@ -1,0 +1,30 @@
+{
+  "ticker": "051910",
+  "name": "LG화학",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 281500.0,
+  "signal": "Sell",
+  "confidence": 85,
+  "reasons": [
+    "현재 적자 상태로 PER 산출이 불가능하여 단기적인 펀더멘털 악화가 확인됩니다.",
+    "최근 1개월 수익률이 -20.03%로 매우 강한 하락 추세에 진입해 있습니다.",
+    "거래량 변화율이 -31.78%로 감소하며 하락 추세를 반전시킬 매수세가 부족한 상황입니다."
+  ],
+  "cond": "cond3",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": null,
+    "pbr": 0.42,
+    "roe": null,
+    "market_cap": 19.9,
+    "momentum_1m": -20.0284,
+    "volume_change": -31.7821,
+    "price_position_52w": 32.88,
+    "revenue_growth": -5.68,
+    "operating_margin": 2.57,
+    "debt_ratio": null,
+    "dividend_yield": 0.6,
+    "recent_reports": []
+  }
+}

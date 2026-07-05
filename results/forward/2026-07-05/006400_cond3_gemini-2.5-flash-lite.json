@@ -1,0 +1,41 @@
+{
+  "ticker": "006400",
+  "name": "삼성SDI",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 467500.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월 수익률이 -22.98%로 하락했으나, 52주 최저가 대비 현재 위치가 54.9%로 상승 여력이 존재합니다.",
+    "애널리스트 리포트에서 2026년 6월 29일 자 리포트가 7개 분기 만의 영업 흑자 전환을 예상하며 목표주가를 1,000,000원으로 제시했습니다.",
+    "애널리스트 리포트에서 2026년 6월 30일 자 리포트가 밸류에이션 부담 완화를 언급하며 비중 확대와 목표주가 700,000원을 제시하여 긍정적인 전망을 나타냅니다."
+  ],
+  "cond": "cond3",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 1.6,
+    "roe": null,
+    "market_cap": 37.7,
+    "momentum_1m": -22.9819,
+    "volume_change": -34.7112,
+    "price_position_52w": 54.91,
+    "revenue_growth": -20.04,
+    "operating_margin": null,
+    "debt_ratio": null,
+    "dividend_yield": null,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "밸류에이션 부담 완화, 비중 확대 시점",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "2Q26, 7개 분기만의 영업흑자 전환 예상",
+        "target_price": 1000000
+      }
+    ]
+  }
+}

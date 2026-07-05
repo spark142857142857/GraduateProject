@@ -1,0 +1,30 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 35500.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "카카오의 현재가 35,500원은 최근 20거래일 평균 가격 대비 하락 추세를 보이고 있습니다.",
+    "거래량 분석 결과, 최근 하락 시 거래량이 증가하는 패턴이 관찰되어 매도 압력이 우세함을 시사합니다.",
+    "기술적 지표상 이동평균선들이 하향 정배열을 형성하며 하락 추세의 지속 가능성을 높이고 있습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 31.2,
+    "pbr": 1.03,
+    "roe": 3.3,
+    "market_cap": 15.7,
+    "momentum_1m": -15.4762,
+    "volume_change": -38.1651,
+    "price_position_52w": 6.31,
+    "revenue_growth": 2.99,
+    "operating_margin": 9.04,
+    "debt_ratio": 82.49,
+    "dividend_yield": 0.1,
+    "recent_reports": []
+  }
+}

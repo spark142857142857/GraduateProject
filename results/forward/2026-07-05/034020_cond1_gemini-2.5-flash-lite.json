@@ -1,0 +1,30 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 86200.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 86,200원은 최근 20거래일 평균가 대비 소폭 높은 수준으로, 단기적인 상승 모멘텀이 약화될 가능성을 시사합니다.",
+    "최근 20거래일 동안 거래량 추세가 특별한 방향성을 보이지 않아, 매수 또는 매도 세력의 강한 우위를 판단하기 어렵습니다.",
+    "제공된 정보만으로는 향후 20거래일 동안 두산에너빌리티의 주가에 영향을 미칠 만한 명확한 상승 또는 하락 요인을 발견하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 653.03,
+    "pbr": 4.6,
+    "roe": 0.7,
+    "market_cap": 55.2,
+    "momentum_1m": -13.1048,
+    "volume_change": -24.5953,
+    "price_position_52w": 36.46,
+    "revenue_growth": 5.08,
+    "operating_margin": 4.47,
+    "debt_ratio": 129.1,
+    "dividend_yield": null,
+    "recent_reports": []
+  }
+}

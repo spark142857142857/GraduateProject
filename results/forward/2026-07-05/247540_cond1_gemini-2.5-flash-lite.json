@@ -1,0 +1,51 @@
+{
+  "ticker": "247540",
+  "name": "에코프로비엠",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 124400.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "최근 20거래일 동안 거래량 증가와 함께 주가 하락 추세가 관찰되어 매도 압력이 우세함을 시사합니다.",
+    "이동평균선(예: 5일선, 20일선)이 하향 정배열을 형성하며 단기 및 중기적인 하락 추세를 지지하고 있습니다.",
+    "현재 주가가 주요 지지선을 하향 돌파하며 추가 하락 가능성을 높이고 있습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 308.68,
+    "pbr": 6.04,
+    "roe": 1.96,
+    "market_cap": 12.2,
+    "momentum_1m": -36.9807,
+    "volume_change": -12.9931,
+    "price_position_52w": 16.6,
+    "revenue_growth": -8.5,
+    "operating_margin": 5.66,
+    "debt_ratio": 142.16,
+    "dividend_yield": 0.05,
+    "recent_reports": [
+      {
+        "date": "2026-07-02",
+        "title": "유상증자 관련 코멘트: 단기 주주가치 희석 ..",
+        "target_price": null
+      },
+      {
+        "date": "2026-07-01",
+        "title": "가이던스 반영 시 유상증자 희석 영향 제한..",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "니켈 Upstream 내재화를 통한 중장기 경쟁력 ..",
+        "target_price": 230000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "1.2조원 유상증자 관련 코멘트",
+        "target_price": null
+      }
+    ]
+  }
+}

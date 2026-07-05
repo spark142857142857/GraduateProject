@@ -1,0 +1,57 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 2425000.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "PER 39.1배, PBR 14.32배로 현재 주가가 실적 대비 과도하게 높게 평가되어 있으며, 특히 ROE 36.6%에 비해 PBR이 비정상적으로 높음",
+    "52주 최고가 2,919,000원 대비 현재가 2,425,000원으로 이미 16.9% 하락했으며, 52주 내 81.5% 위치에서 고점 근처에 위치하여 추가 상승 여력이 제한적",
+    "최근 1개월 수익률 5.53% 상승 후 거래량 변화율 -1.02%로 하락하여 상승 모멘텀이 약화되고 있는 신호",
+    "반도체 산업의 사이클적 특성상 현재의 높은 영업이익률(48.6%)과 실적 성장이 지속되기 어려울 가능성이 높으며, 밸류에이션 조정 압력 존재"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 39.09,
+    "pbr": 14.32,
+    "roe": 36.63,
+    "market_cap": 1728.3,
+    "momentum_1m": 5.5265,
+    "volume_change": -1.0235,
+    "price_position_52w": 81.53,
+    "revenue_growth": 46.76,
+    "operating_margin": 48.59,
+    "debt_ratio": 45.95,
+    "dividend_yield": 0.4,
+    "recent_reports": [
+      {
+        "date": "2026-07-02",
+        "title": "Agent AI Ecosystem 중심에 서다",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "2Q26 Preview 컨센서스 부합",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "경쟁사 본진으로 침투하는 주도주",
+        "target_price": 4200000
+      },
+      {
+        "date": "2026-06-26",
+        "title": "실적과 멀티플 둘 다 열려 있다",
+        "target_price": 3600000
+      },
+      {
+        "date": "2026-06-25",
+        "title": "출격 SKHY US",
+        "target_price": 4200000
+      }
+    ]
+  }
+}

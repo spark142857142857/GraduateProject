@@ -1,0 +1,41 @@
+{
+  "ticker": "000270",
+  "name": "기아",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 152000.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "PER 7.8과 PBR 0.97은 저평가 신호이나, 최근 1개월 수익률 -7.49%와 거래량 감소 -33.28%는 약세 모멘텀을 시사한다.",
+    "52주 내 현재 위치 50.5%는 중간값으로 추세 방향성이 불명확하며, 52주 최고가 206,000원 대비 26% 하락한 상태에서 반등 근거와 추가 하락 근거가 동시에 존재한다.",
+    "ROE 12.4%는 양호하나 저평가 지표들이 시장의 부정적 심리(거래량 감소)를 반영하고 있어 향후 20거래일 방향성을 확신할 수 없다."
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 7.84,
+    "pbr": 0.97,
+    "roe": 12.37,
+    "market_cap": 59.3,
+    "momentum_1m": -7.4863,
+    "volume_change": -33.2828,
+    "price_position_52w": 50.5,
+    "revenue_growth": 6.23,
+    "operating_margin": 7.95,
+    "debt_ratio": 61.76,
+    "dividend_yield": 4.2,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "실적이 끌고, 현대모비스가 밀고",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-06-18",
+        "title": "실적에서 기대감으로",
+        "target_price": 290000
+      }
+    ]
+  }
+}

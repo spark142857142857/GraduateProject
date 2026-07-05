@@ -1,0 +1,41 @@
+{
+  "ticker": "006400",
+  "name": "삼성SDI",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 467500.0,
+  "signal": "Neutral",
+  "confidence": 52,
+  "reasons": [
+    "제공된 정보가 종목명, 현재가, 시장 구분뿐이라 20거래일 방향성을 판단할 수 있는 가격·거래량·실적·수급 데이터가 없다.",
+    "상승과 하락을 가늠할 수 있는 기술적 지표나 추세 정보가 전혀 없어 Buy 또는 Sell 근거를 만들 수 없다.",
+    "주어진 데이터만으로는 방향성이 불명확하므로 적극적 판단으로는 Neutral이 가장 타당하다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": null,
+    "pbr": 1.6,
+    "roe": null,
+    "market_cap": 37.7,
+    "momentum_1m": -22.9819,
+    "volume_change": -34.7112,
+    "price_position_52w": 54.91,
+    "revenue_growth": -20.04,
+    "operating_margin": null,
+    "debt_ratio": null,
+    "dividend_yield": null,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "밸류에이션 부담 완화, 비중 확대 시점",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "2Q26, 7개 분기만의 영업흑자 전환 예상",
+        "target_price": 1000000
+      }
+    ]
+  }
+}

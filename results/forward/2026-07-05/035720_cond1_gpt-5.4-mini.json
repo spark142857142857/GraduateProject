@@ -1,0 +1,30 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 35500.0,
+  "signal": "Neutral",
+  "confidence": 41,
+  "reasons": [
+    "제공된 정보가 종목명과 현재가뿐이라 20거래일 방향을 판단할 수 있는 가격·거래량·실적·수급 데이터가 없다.",
+    "상승과 하락을 가늠할 기술적 지표나 추세 정보가 전혀 없어 Buy 또는 Sell 근거가 부족하다.",
+    "주어진 데이터만으로는 방향성이 불명확하므로 적극적 판단으로는 Neutral이 가장 적절하다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 31.2,
+    "pbr": 1.03,
+    "roe": 3.3,
+    "market_cap": 15.7,
+    "momentum_1m": -15.4762,
+    "volume_change": -38.1651,
+    "price_position_52w": 6.31,
+    "revenue_growth": 2.99,
+    "operating_margin": 9.04,
+    "debt_ratio": 82.49,
+    "dividend_yield": 0.1,
+    "recent_reports": []
+  }
+}

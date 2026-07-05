@@ -1,0 +1,46 @@
+{
+  "ticker": "105560",
+  "name": "KB금융",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 170100.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "현재가 170,100원이 52주 최고가 172,000원의 97.1% 수준으로 이미 고점권에 근접해 있어, 향후 20거래일 내 추가 상승 여력보다 되돌림 위험이 더 크게 보입니다.",
+    "최근 1개월 수익률이 3.59%로 단기 상승이 있었고 거래량 변화율도 6.61%로 과열은 아니지만, 고점 부근에서의 추세 연장은 제한적일 가능성이 있습니다.",
+    "PER 11.0, PBR 0.99, ROE 9.0%는 무난하지만 강한 재평가 근거로 보기 어렵고, 제공된 데이터만으로는 추가 상승을 뒷받침할 촉매가 부족합니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 11.04,
+    "pbr": 0.99,
+    "roe": 8.97,
+    "market_cap": 60.3,
+    "momentum_1m": 3.5932,
+    "volume_change": 6.612,
+    "price_position_52w": 97.12,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1211.73,
+    "dividend_yield": 3.2,
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "단기 변동성 확대 예상",
+        "target_price": 225000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "적극 매수 구간",
+        "target_price": 190000
+      },
+      {
+        "date": "2026-06-12",
+        "title": "2분기 순익은 컨센서스 대폭 상회하는 2조원 ..",
+        "target_price": 220000
+      }
+    ]
+  }
+}

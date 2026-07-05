@@ -1,0 +1,41 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 1421000.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "제공된 데이터가 현재가와 상장 시장 정보에 국한되어 있어 주가 추세 분석이 불가능함",
+    "재무 지표, 거래량, 기술적 분석 데이터 등 방향성을 판단할 근거 자료가 전혀 제공되지 않음",
+    "분석 가능한 데이터의 부재로 인해 향후 20거래일간의 상승 또는 하락 가능성을 산출할 수 없음"
+  ],
+  "cond": "cond1",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 58.98,
+    "pbr": 8.83,
+    "roe": 14.97,
+    "market_cap": 65.8,
+    "momentum_1m": 5.2593,
+    "volume_change": -2.5985,
+    "price_position_52w": 24.65,
+    "revenue_growth": 30.31,
+    "operating_margin": 45.41,
+    "debt_ratio": 48.44,
+    "dividend_yield": null,
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "하반기 불확실성 해소 기대",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

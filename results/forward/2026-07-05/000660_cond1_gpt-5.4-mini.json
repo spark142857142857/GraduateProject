@@ -1,0 +1,56 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 2425000.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "판단에 필요한 재무·실적·밸류에이션·수급·기술적 지표 데이터가 제공되지 않아 20거래일 방향성을 근거 있게 추정할 수 없습니다.",
+    "현재가와 종목명, 시장 정보만으로는 상승 또는 하락 우위를 뒷받침하는 객관적 신호를 확인할 수 없습니다.",
+    "제공된 데이터만을 근거로 해야 하므로, 확신 가능한 매수·매도 판단이 불가능해 Neutral이 적절합니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 39.09,
+    "pbr": 14.32,
+    "roe": 36.63,
+    "market_cap": 1728.3,
+    "momentum_1m": 5.5265,
+    "volume_change": -1.0235,
+    "price_position_52w": 81.53,
+    "revenue_growth": 46.76,
+    "operating_margin": 48.59,
+    "debt_ratio": 45.95,
+    "dividend_yield": 0.4,
+    "recent_reports": [
+      {
+        "date": "2026-07-02",
+        "title": "Agent AI Ecosystem 중심에 서다",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "2Q26 Preview 컨센서스 부합",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "경쟁사 본진으로 침투하는 주도주",
+        "target_price": 4200000
+      },
+      {
+        "date": "2026-06-26",
+        "title": "실적과 멀티플 둘 다 열려 있다",
+        "target_price": 3600000
+      },
+      {
+        "date": "2026-06-25",
+        "title": "출격 SKHY US",
+        "target_price": 4200000
+      }
+    ]
+  }
+}

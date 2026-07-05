@@ -1,0 +1,41 @@
+{
+  "ticker": "006400",
+  "name": "삼성SDI",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 467500.0,
+  "signal": "Neutral",
+  "confidence": 61,
+  "reasons": [
+    "최근 1개월 수익률이 -22.98%로 단기 추세가 매우 약하고, 거래량 변화율도 -34.71%로 수급 모멘텀이 둔화되어 있어 20거래일 내 즉각적인 반등을 강하게 확신하기 어렵습니다.",
+    "PER은 적자로 산출 불가하고 ROE도 N/A이며, 연간 매출이 전년 대비 -20.0% 감소해 펀더멘털 개선이 아직 숫자로 충분히 확인되지 않습니다.",
+    "다만 2건의 최근 애널리스트 리포트가 모두 목표주가 상향/긍정적 코멘트이며, 2Q26 영업흑자 전환 예상과 밸류에이션 부담 완화가 제시되어 있어 하방만 일방적으로 보기도 어렵습니다."
+  ],
+  "cond": "cond4",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": null,
+    "pbr": 1.6,
+    "roe": null,
+    "market_cap": 37.7,
+    "momentum_1m": -22.9819,
+    "volume_change": -34.7112,
+    "price_position_52w": 54.91,
+    "revenue_growth": -20.04,
+    "operating_margin": null,
+    "debt_ratio": null,
+    "dividend_yield": null,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "밸류에이션 부담 완화, 비중 확대 시점",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "2Q26, 7개 분기만의 영업흑자 전환 예상",
+        "target_price": 1000000
+      }
+    ]
+  }
+}

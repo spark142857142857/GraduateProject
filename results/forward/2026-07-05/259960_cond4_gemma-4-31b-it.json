@@ -1,0 +1,46 @@
+{
+  "ticker": "259960",
+  "name": "크래프톤",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 235500.0,
+  "signal": "Buy",
+  "confidence": 80,
+  "reasons": [
+    "현재 주가가 52주 가격 범위 내 하단(19.5%)에 위치하며, 애널리스트 목표 주가(380,000원~460,000원)와 현재가 사이의 상승 여력이 매우 큼",
+    "매출액이 전년 대비 22.8% 성장하였고, 31.7%의 높은 영업이익률과 1조 원의 영업현금흐름을 통해 강력한 수익 창출 능력을 입증함",
+    "PER 14.3배와 PBR 1.51배의 낮은 밸류에이션 및 31.3%의 낮은 부채비율로 재무적 안정성과 가격 매력도를 동시에 갖춤"
+  ],
+  "cond": "cond4",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 14.31,
+    "pbr": 1.51,
+    "roe": 10.55,
+    "market_cap": 10.9,
+    "momentum_1m": -7.4656,
+    "volume_change": -26.3481,
+    "price_position_52w": 19.5,
+    "revenue_growth": 22.76,
+    "operating_margin": 31.7,
+    "debt_ratio": 31.31,
+    "dividend_yield": 0.9,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "맺어지는 투자의 결실들",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "매력적인 가격대, 매수 기회",
+        "target_price": 460000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "PUBG는 다시 성장하는 중",
+        "target_price": 380000
+      }
+    ]
+  }
+}

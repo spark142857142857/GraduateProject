@@ -129,7 +129,7 @@ def main(date: str | None) -> None:
     for tk in sorted(by_ticker):
         s, flags = verify_ticker(by_ticker[tk])
         total_reports += s["reports"]
-        verdict = "OK" if not flags else f"⚠ {len(flags)}"
+        verdict = "OK" if not flags else f"[!] {len(flags)}"
         per = s["per"] if s["per"] is not None else "-"
         pbr = s["pbr"] if s["pbr"] is not None else "-"
         roe = s["roe"] if s["roe"] is not None else "-"
@@ -140,14 +140,14 @@ def main(date: str | None) -> None:
 
     print("-" * 78)
     if total_reports == 0 and len(by_ticker) > 1:
-        print("\n⚠ 전 종목 최근 30일 리포트 0건 — reports 데이터가 오래됐을 가능성.")
+        print("\n[!] 전 종목 최근 30일 리포트 0건 — reports 데이터가 오래됐을 가능성.")
         print("  forward 전에 `python src/collect/crawl.py`로 리포트를 갱신하세요 (cond3/4 컨텍스트에 필요).")
     if all_flags:
-        print(f"\n⚠ 플래그 {len(all_flags)}건:")
+        print(f"\n[!] 플래그 {len(all_flags)}건:")
         for fl in all_flags:
             print(fl)
     elif total_reports > 0:
-        print("\n✅ 전 종목 입력 정보 정상 (현재가·ROE정합성·52주·리포트·DART 값)")
+        print("\n[OK] 전 종목 입력 정보 정상 (현재가·ROE정합성·52주·리포트·DART 값)")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,30 @@
+{
+  "ticker": "068270",
+  "name": "셀트리온",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 183600.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 183,600원은 최근 20거래일 평균가 대비 큰 변동성을 보이지 않아 상승 또는 하락을 단정하기 어렵습니다.",
+    "제공된 데이터만으로는 향후 20거래일 동안 셀트리온의 주가에 영향을 미칠 만한 명확한 상승 또는 하락 모멘텀을 파악하기 어렵습니다.",
+    "기술적 지표나 시장 심리를 나타내는 추가 데이터가 없어 명확한 투자 방향을 설정하기에는 근거가 제한적입니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 39.33,
+    "pbr": 2.46,
+    "roe": 6.25,
+    "market_cap": 42.7,
+    "momentum_1m": 4.0227,
+    "volume_change": -19.237,
+    "price_position_52w": 37.14,
+    "revenue_growth": 17.01,
+    "operating_margin": 28.07,
+    "debt_ratio": 28.71,
+    "dividend_yield": null,
+    "recent_reports": []
+  }
+}

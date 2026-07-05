@@ -1,0 +1,41 @@
+{
+  "ticker": "055550",
+  "name": "신한지주",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 107300.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "현재가 52주 최고가에 근접하며 최근 1개월 수익률이 긍정적인 흐름을 보이고 있습니다.",
+    "애널리스트 리포트에서 목표주가를 현재가 대비 상향 제시하며 긍정적인 전망을 내놓고 있습니다.",
+    "영업이익이 전년 대비 증가하는 등 견조한 실적 성장세를 보이고 있습니다."
+  ],
+  "cond": "cond4",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 10.94,
+    "pbr": 0.84,
+    "roe": 7.68,
+    "market_cap": 50.9,
+    "momentum_1m": 7.1928,
+    "volume_change": 6.1489,
+    "price_position_52w": 99.58,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1201.94,
+    "dividend_yield": 3.01,
+    "recent_reports": [
+      {
+        "date": "2026-07-03",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-06-15",
+        "title": "CET 1 비율 상승은 RWA 재배분을 통해 ROE와 ..",
+        "target_price": 135000
+      }
+    ]
+  }
+}

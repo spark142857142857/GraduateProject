@@ -1,0 +1,46 @@
+{
+  "ticker": "105560",
+  "name": "KB금융",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 170100.0,
+  "signal": "Neutral",
+  "confidence": 52,
+  "reasons": [
+    "52주 최고가 172,000원 대비 현재가 170,100원으로 이미 97.1% 수준에 위치하여 단기 상승 여력이 제한적",
+    "애널리스트 목표주가(190,000~225,000원)는 현재가 대비 11.7~32.2% 상승을 시사하나, 최근 1개월 수익률 3.59%와 거래량 변화율 6.61%는 모멘텀이 약함을 나타냄",
+    "PER 11.0, PBR 0.99의 저평가 지표와 영업이익 전년비 5.9% 증가는 긍정적이나, 부채비율 1211.7%의 극도로 높은 재무 레버리지는 금리 상승 시 리스크 요인으로 작용"
+  ],
+  "cond": "cond4",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 11.04,
+    "pbr": 0.99,
+    "roe": 8.97,
+    "market_cap": 60.3,
+    "momentum_1m": 3.5932,
+    "volume_change": 6.612,
+    "price_position_52w": 97.12,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1211.73,
+    "dividend_yield": 3.2,
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "단기 변동성 확대 예상",
+        "target_price": 225000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "적극 매수 구간",
+        "target_price": 190000
+      },
+      {
+        "date": "2026-06-12",
+        "title": "2분기 순익은 컨센서스 대폭 상회하는 2조원 ..",
+        "target_price": 220000
+      }
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "ticker": "035420",
+  "name": "네이버",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 195800.0,
+  "signal": "Sell",
+  "confidence": 65,
+  "reasons": [
+    "최근 1개월 수익률이 -26.80%로 크게 하락했으며, 이는 단기적인 하락 추세가 지속될 가능성을 시사합니다.",
+    "52주 최고가 대비 현재 위치가 4.3%로, 52주 내에서 상대적으로 낮은 수준에 머물러 있어 추가적인 하락 압력이 존재할 수 있습니다.",
+    "거래량 변화율이 -8.83%로 감소한 것은 투자자들의 관심이 줄어들고 있음을 나타내며, 이는 주가 상승 동력 약화로 이어질 수 있습니다."
+  ],
+  "cond": "cond2",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 15.05,
+    "pbr": 1.06,
+    "roe": 7.04,
+    "market_cap": 30.7,
+    "momentum_1m": -26.8037,
+    "volume_change": -8.8335,
+    "price_position_52w": 4.34,
+    "revenue_growth": 12.08,
+    "operating_margin": 18.35,
+    "debt_ratio": 41.9,
+    "dividend_yield": 1.0,
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "3분기까지 마진 압박 불가피",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "평이한 실적, 결국 트리거는 신사업",
+        "target_price": 400000
+      },
+      {
+        "date": "2026-06-17",
+        "title": "네이버 기관투자자 NDR 후기",
+        "target_price": null
+      },
+      {
+        "date": "2026-06-09",
+        "title": "AI 팩토리, 보수적으로 추정해도 현재가치 19..",
+        "target_price": 450000
+      },
+      {
+        "date": "2026-06-09",
+        "title": "AI 팩토리 사업 진출을 통한 신성장 전략 공..",
+        "target_price": 390000
+      }
+    ]
+  }
+}

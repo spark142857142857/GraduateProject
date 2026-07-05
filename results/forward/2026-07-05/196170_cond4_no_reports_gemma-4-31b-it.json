@@ -1,0 +1,30 @@
+{
+  "ticker": "196170",
+  "name": "알테오젠",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 341500.0,
+  "signal": "Neutral",
+  "confidence": 75,
+  "reasons": [
+    "매출액 109.9% 증가 및 영업이익 320.8% 증가라는 폭발적인 실적 성장세와 49.5%의 높은 영업이익률이 강력한 펀더멘털을 지지합니다.",
+    "PER 128.7배와 PBR 40.27배라는 극도로 높은 밸류에이션 지표는 주가 상승에 상당한 부담으로 작용할 가능성이 큽니다.",
+    "최근 1개월 수익률이 -1.44%로 정체되어 있고 거래량 변화율이 -11.43%로 감소하며 단기적인 상승 모멘텀이 부족한 상태입니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 128.72,
+    "pbr": 40.27,
+    "roe": 31.28,
+    "market_cap": 18.3,
+    "momentum_1m": -1.443,
+    "volume_change": -11.4299,
+    "price_position_52w": 19.29,
+    "revenue_growth": 109.87,
+    "operating_margin": 49.52,
+    "debt_ratio": 53.76,
+    "dividend_yield": 0.1,
+    "recent_reports": []
+  }
+}

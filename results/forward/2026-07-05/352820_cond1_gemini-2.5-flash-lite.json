@@ -1,0 +1,30 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 205000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "제공된 데이터만으로는 향후 20거래일 내 HYBE의 주가 상승 또는 하락을 명확하게 예측할 수 있는 지표가 부족합니다.",
+    "최근 주가 추세는 횡보세를 보이고 있으며, 뚜렷한 상승 또는 하락 모멘텀이 관찰되지 않습니다.",
+    "향후 20거래일 동안 주가에 영향을 미칠 만한 새로운 정보나 이벤트가 현재 데이터에 반영되어 있지 않아 방향성 판단에 불확실성이 존재합니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 2.49,
+    "roe": null,
+    "market_cap": 8.8,
+    "momentum_1m": -4.6512,
+    "volume_change": -10.1619,
+    "price_position_52w": 12.0,
+    "revenue_growth": 17.48,
+    "operating_margin": 1.86,
+    "debt_ratio": 54.46,
+    "dividend_yield": 0.13,
+    "recent_reports": []
+  }
+}

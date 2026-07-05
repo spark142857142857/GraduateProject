@@ -1,0 +1,31 @@
+{
+  "ticker": "051910",
+  "name": "LG화학",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 281500.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "PER 적자 상태로 수익성 평가 불가능하며, ROE 미제시로 자본효율성 판단 근거 부족",
+    "PBR 0.42는 저평가 신호이나, 적자 상태에서의 저PBR은 구조적 문제 반영 가능성",
+    "최근 1개월 -20.03% 낙폭과 거래량 -31.78% 감소로 약세 추세 명확하나, 52주 최저가 대비 34.6% 상승으로 단기 반등 가능성도 존재",
+    "현재 52주 내 32.9% 위치로 저점 근처이나, 적자 상태 해소 시점과 실적 개선 근거가 제공 데이터에 부재"
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 0.42,
+    "roe": null,
+    "market_cap": 19.9,
+    "momentum_1m": -20.0284,
+    "volume_change": -31.7821,
+    "price_position_52w": 32.88,
+    "revenue_growth": -5.68,
+    "operating_margin": 2.57,
+    "debt_ratio": null,
+    "dividend_yield": 0.6,
+    "recent_reports": []
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 309500.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월 수익률이 -11.95%로 하락세를 보이고 있으며, 거래량 변화율 또한 -7.76%로 감소하는 추세입니다.",
+    "PER 46.9, PBR 4.15는 현재 시장에서 삼성전자의 밸류에이션이 다소 높게 형성되어 있음을 시사합니다.",
+    "애널리스트 리포트의 목표주가들이 현재가(309,500원) 대비 상승 여력을 제시하고 있으나, 최근 1개월의 주가 하락 추세와 거래량 감소는 단기적인 하락 압력을 시사합니다."
+  ],
+  "cond": "cond3",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 46.86,
+    "pbr": 4.15,
+    "roe": 8.86,
+    "market_cap": 1809.4,
+    "momentum_1m": -11.9488,
+    "volume_change": -7.7629,
+    "price_position_52w": 82.49,
+    "revenue_growth": 10.88,
+    "operating_margin": 13.07,
+    "debt_ratio": 29.94,
+    "dividend_yield": 1.5,
+    "recent_reports": [
+      {
+        "date": "2026-07-03",
+        "title": "실적 전망치 상향 조정 지속",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "2Q26 Preview 그럼에도 불구하고 믿음의 실적",
+        "target_price": 500000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "충당금 반영 후에도 높아질 눈높이",
+        "target_price": 590000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "난기류 지대에 진입했다고 목적지가 변경되는..",
+        "target_price": 440000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "2Q26 영업이익 89조원",
+        "target_price": 430000
+      }
+    ]
+  }
+}

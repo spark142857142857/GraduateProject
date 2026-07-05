@@ -1,0 +1,56 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 309500.0,
+  "signal": "Neutral",
+  "confidence": 42,
+  "reasons": [
+    "현재가 309,500원만으로는 20거래일 내 상승·하락 방향을 판단할 수 있는 추세 정보가 제공되지 않았습니다.",
+    "거래량, 실적, 밸류에이션, 수급, 기술적 지표 등 방향성을 뒷받침할 추가 데이터가 없어 매수·매도 우위를 가리기 어렵습니다.",
+    "제공된 정보가 종목명과 현재가뿐이므로, 확신 가능한 상승 또는 하락 근거가 부족해 Neutral이 가장 적절합니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 46.86,
+    "pbr": 4.15,
+    "roe": 8.86,
+    "market_cap": 1809.4,
+    "momentum_1m": -11.9488,
+    "volume_change": -7.7629,
+    "price_position_52w": 82.49,
+    "revenue_growth": 10.88,
+    "operating_margin": 13.07,
+    "debt_ratio": 29.94,
+    "dividend_yield": 1.5,
+    "recent_reports": [
+      {
+        "date": "2026-07-03",
+        "title": "실적 전망치 상향 조정 지속",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "2Q26 Preview 그럼에도 불구하고 믿음의 실적",
+        "target_price": 500000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "충당금 반영 후에도 높아질 눈높이",
+        "target_price": 590000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "난기류 지대에 진입했다고 목적지가 변경되는..",
+        "target_price": 440000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "2Q26 영업이익 89조원",
+        "target_price": 430000
+      }
+    ]
+  }
+}

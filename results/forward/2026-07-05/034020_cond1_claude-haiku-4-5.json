@@ -1,0 +1,30 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 86200.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "투자 판단에 필요한 기술적·펀더멘탈 데이터가 제공되지 않음",
+    "현재가 정보만으로는 향후 20거래일 주가 방향을 예측할 수 없음",
+    "신뢰할 수 있는 근거 없이 매매 신호를 제시할 수 없음"
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 653.03,
+    "pbr": 4.6,
+    "roe": 0.7,
+    "market_cap": 55.2,
+    "momentum_1m": -13.1048,
+    "volume_change": -24.5953,
+    "price_position_52w": 36.46,
+    "revenue_growth": 5.08,
+    "operating_margin": 4.47,
+    "debt_ratio": 129.1,
+    "dividend_yield": null,
+    "recent_reports": []
+  }
+}

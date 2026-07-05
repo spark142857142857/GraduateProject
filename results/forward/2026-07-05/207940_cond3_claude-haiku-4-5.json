@@ -1,0 +1,42 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 1421000.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "PER 59.0은 매우 높은 수준으로 현재 주가가 과도하게 평가되어 있을 가능성을 시사한다.",
+    "52주 최저가 대비 현재가가 14.3% 상승했으나 최고가 대비 27.6% 하락한 상태로 상승 모멘텀이 약하다.",
+    "애널리스트 목표주가(1,800,000~2,090,000원)는 현재가 대비 26.7~47.1% 상승을 암시하나, 높은 PBR(8.83)과 거래량 감소(-2.60%)는 상승 실현 가능성에 의문을 제기한다.",
+    "최근 1개월 수익률 5.26%는 긍정적이나 거래량 감소와 함께 나타나 지속성이 불확실하다."
+  ],
+  "cond": "cond3",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 58.98,
+    "pbr": 8.83,
+    "roe": 14.97,
+    "market_cap": 65.8,
+    "momentum_1m": 5.2593,
+    "volume_change": -2.5985,
+    "price_position_52w": 24.65,
+    "revenue_growth": 30.31,
+    "operating_margin": 45.41,
+    "debt_ratio": 48.44,
+    "dividend_yield": null,
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "하반기 불확실성 해소 기대",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

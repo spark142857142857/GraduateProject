@@ -1,0 +1,30 @@
+{
+  "ticker": "068270",
+  "name": "셀트리온",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 183600.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "전년 대비 매출 및 영업이익이 크게 증가하며 견조한 실적 성장을 보여주고 있습니다.",
+    "높은 영업이익률과 안정적인 부채비율은 기업의 재무 건전성을 시사합니다.",
+    "최근 1개월 수익률이 긍정적이며, 52주 최저가 대비 현재 위치가 상승 추세에 있음을 나타냅니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 39.33,
+    "pbr": 2.46,
+    "roe": 6.25,
+    "market_cap": 42.7,
+    "momentum_1m": 4.0227,
+    "volume_change": -19.237,
+    "price_position_52w": 37.14,
+    "revenue_growth": 17.01,
+    "operating_margin": 28.07,
+    "debt_ratio": 28.71,
+    "dividend_yield": null,
+    "recent_reports": []
+  }
+}

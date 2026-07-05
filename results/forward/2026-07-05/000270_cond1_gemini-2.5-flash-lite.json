@@ -1,0 +1,41 @@
+{
+  "ticker": "000270",
+  "name": "기아",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 152000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "기아의 최근 20거래일 주가 추세는 뚜렷한 상승 또는 하락 모멘텀을 보여주지 않고 횡보하는 경향을 보입니다.",
+    "현재가 152,000원은 최근 20거래일 동안의 고점과 저점 범위 내에 위치하여 추가적인 상승 또는 하락을 강하게 시사하는 가격대는 아닙니다.",
+    "제공된 정보만으로는 향후 20거래일 동안 기아의 주가에 영향을 미칠 만한 명확한 상승 또는 하락 요인을 파악하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 7.84,
+    "pbr": 0.97,
+    "roe": 12.37,
+    "market_cap": 59.3,
+    "momentum_1m": -7.4863,
+    "volume_change": -33.2828,
+    "price_position_52w": 50.5,
+    "revenue_growth": 6.23,
+    "operating_margin": 7.95,
+    "debt_ratio": 61.76,
+    "dividend_yield": 4.2,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "실적이 끌고, 현대모비스가 밀고",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-06-18",
+        "title": "실적에서 기대감으로",
+        "target_price": 290000
+      }
+    ]
+  }
+}

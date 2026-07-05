@@ -1,0 +1,30 @@
+{
+  "ticker": "051910",
+  "name": "LG화학",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 281500.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "제공된 데이터에 재무제표 등 펀더멘털 분석을 위한 정량적 수치가 포함되어 있지 않습니다.",
+    "이동평균선, 거래량 등 기술적 분석을 수행할 수 있는 가격 변동 데이터가 제공되지 않았습니다.",
+    "주가 상승 또는 하락을 예측할 수 있는 어떠한 근거 데이터도 제공되지 않아 방향성 확신이 불가능합니다."
+  ],
+  "cond": "cond1",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": null,
+    "pbr": 0.42,
+    "roe": null,
+    "market_cap": 19.9,
+    "momentum_1m": -20.0284,
+    "volume_change": -31.7821,
+    "price_position_52w": 32.88,
+    "revenue_growth": -5.68,
+    "operating_margin": 2.57,
+    "debt_ratio": null,
+    "dividend_yield": 0.6,
+    "recent_reports": []
+  }
+}

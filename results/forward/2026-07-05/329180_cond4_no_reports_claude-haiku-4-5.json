@@ -1,0 +1,30 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 577000.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "PER 36.8배, PBR 6.48배로 높은 밸류에이션 수준에서 최근 1개월 -11.37% 하락세를 보이고 있어 조정 압력이 지속될 가능성이 높음",
+    "52주 최고가 745,000원 대비 현재가 577,000원으로 22.5% 하락했으며, 52주 내 위치 55%에서 고점 근처 조정 후 추가 하락 가능성 존재",
+    "거래량 변화율 -38.38%로 급격히 감소하여 상승 모멘텀 약화를 시사하며, 부채비율 180.1%의 높은 재무 레버리지는 경기 둔화 시 위험 요소로 작용"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 36.75,
+    "pbr": 6.48,
+    "roe": 17.63,
+    "market_cap": 60.6,
+    "momentum_1m": -11.3671,
+    "volume_change": -38.3843,
+    "price_position_52w": 54.96,
+    "revenue_growth": 21.36,
+    "operating_margin": 11.59,
+    "debt_ratio": 180.07,
+    "dividend_yield": 1.08,
+    "recent_reports": []
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 205000.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월 수익률이 -4.65%로 하락세를 보이고 있으며, 거래량 변화율 또한 -10.16%로 감소하여 투자 심리가 위축된 것으로 판단됩니다.",
+    "연간 영업이익이 전년 대비 73.2% 감소하였고, 순이익이 적자를 기록하는 등 수익성이 크게 악화된 점은 부정적인 요인입니다.",
+    "현재가가 52주 최고가 대비 상당 부분 하락한 위치에 있으나, 실적 부진을 감안할 때 단기적인 반등 모멘텀이 약하다고 판단됩니다."
+  ],
+  "cond": "cond4",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 2.49,
+    "roe": null,
+    "market_cap": 8.8,
+    "momentum_1m": -4.6512,
+    "volume_change": -10.1619,
+    "price_position_52w": 12.0,
+    "revenue_growth": 17.48,
+    "operating_margin": 1.86,
+    "debt_ratio": 54.46,
+    "dividend_yield": 0.13,
+    "recent_reports": []
+  }
+}

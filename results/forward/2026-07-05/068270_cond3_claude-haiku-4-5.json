@@ -1,0 +1,31 @@
+{
+  "ticker": "068270",
+  "name": "셀트리온",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 183600.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "PER 39.3은 고평가 수준으로, 현재 주가가 이미 높은 기대감을 반영하고 있어 추가 상승 여력이 제한적",
+    "52주 내 현재 위치 37.1%는 저점에서 회복 중인 상태이나, 최고가 236,861원 대비 22.5% 하락한 수준으로 저항선 재도달 가능성 낮음",
+    "거래량 변화율 -19.24%는 투자자 관심도 감소를 의미하며, 상승 모멘텀 약화를 시사",
+    "ROE 6.2%는 낮은 수익성을 나타내며, PBR 2.46과 함께 고평가 대비 실적 부진 상황을 반영"
+  ],
+  "cond": "cond3",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 39.33,
+    "pbr": 2.46,
+    "roe": 6.25,
+    "market_cap": 42.7,
+    "momentum_1m": 4.0227,
+    "volume_change": -19.237,
+    "price_position_52w": 37.14,
+    "revenue_growth": 17.01,
+    "operating_margin": 28.07,
+    "debt_ratio": 28.71,
+    "dividend_yield": null,
+    "recent_reports": []
+  }
+}

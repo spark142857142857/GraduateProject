@@ -1,0 +1,41 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 1421000.0,
+  "signal": "Buy",
+  "confidence": 82,
+  "reasons": [
+    "매출액 30.3% 증가 및 영업이익 56.6% 증가라는 강력한 실적 성장세가 확인됨",
+    "영업이익률 45.4%와 2.2조원의 영업현금흐름을 통해 매우 높은 수익성과 현금 창출 능력을 보유함",
+    "현재 주가가 52주 최고가 대비 낮은 24.6% 위치에 있어, 펀더멘털 성장 대비 가격 부담이 완화된 구간임"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 58.98,
+    "pbr": 8.83,
+    "roe": 14.97,
+    "market_cap": 65.8,
+    "momentum_1m": 5.2593,
+    "volume_change": -2.5985,
+    "price_position_52w": 24.65,
+    "revenue_growth": 30.31,
+    "operating_margin": 45.41,
+    "debt_ratio": 48.44,
+    "dividend_yield": null,
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "하반기 불확실성 해소 기대",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

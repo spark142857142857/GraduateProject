@@ -1,0 +1,30 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 577000.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월 수익률이 -11.37%로 하락세를 보이고 있으며, 거래량 변화율 또한 -38.38%로 감소하여 투자 심리가 위축된 것으로 판단됩니다.",
+    "PER 36.8배, PBR 6.48배는 동종 업계 평균 대비 높은 수준으로 밸류에이션 부담이 존재합니다.",
+    "부채비율 180.1%는 재무 안정성 측면에서 다소 높은 수준으로, 추가적인 하락 압력으로 작용할 수 있습니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 36.75,
+    "pbr": 6.48,
+    "roe": 17.63,
+    "market_cap": 60.6,
+    "momentum_1m": -11.3671,
+    "volume_change": -38.3843,
+    "price_position_52w": 54.96,
+    "revenue_growth": 21.36,
+    "operating_margin": 11.59,
+    "debt_ratio": 180.07,
+    "dividend_yield": 1.08,
+    "recent_reports": []
+  }
+}

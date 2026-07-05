@@ -1,0 +1,46 @@
+{
+  "ticker": "259960",
+  "name": "크래프톤",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 235500.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "크래프톤의 최근 20거래일 주가 추세는 뚜렷한 상승 또는 하락 방향성을 보이지 않고 횡보하는 모습을 나타내고 있습니다.",
+    "거래량 또한 특정 방향성을 강하게 지지할 만큼 유의미한 변화를 보이지 않아 향후 주가 방향에 대한 확신을 갖기 어렵습니다.",
+    "현재 주가 수준에서 매수 또는 매도 우위를 점할 만한 명확한 기술적 지표나 모멘텀이 부재하여 중립적인 판단이 합리적입니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 14.31,
+    "pbr": 1.51,
+    "roe": 10.55,
+    "market_cap": 10.9,
+    "momentum_1m": -7.4656,
+    "volume_change": -26.3481,
+    "price_position_52w": 19.5,
+    "revenue_growth": 22.76,
+    "operating_margin": 31.7,
+    "debt_ratio": 31.31,
+    "dividend_yield": 0.9,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "맺어지는 투자의 결실들",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "매력적인 가격대, 매수 기회",
+        "target_price": 460000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "PUBG는 다시 성장하는 중",
+        "target_price": 380000
+      }
+    ]
+  }
+}

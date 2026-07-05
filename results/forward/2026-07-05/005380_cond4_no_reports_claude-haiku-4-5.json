@@ -1,0 +1,43 @@
+{
+  "ticker": "005380",
+  "name": "현대차",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 492000.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "영업이익이 전년 대비 -19.5% 감소하며 수익성 악화 추세가 명확함",
+    "영업현금흐름이 -6.0조원으로 음수이며 현금 창출 능력이 심각하게 저하됨",
+    "최근 1개월 수익률 -29.71%와 거래량 -50.55% 감소로 약세 모멘텀이 강함",
+    "부채비율 188.9%로 높은 재무 레버리지 상태에서 수익성 악화는 추가 하락 압력으로 작용",
+    "52주 최저가 대비 현재가가 2.4배 상승한 상태로 기술적 조정 가능성 존재"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 13.0,
+    "pbr": 0.79,
+    "roe": 6.08,
+    "market_cap": 100.7,
+    "momentum_1m": -29.7143,
+    "volume_change": -50.5486,
+    "price_position_52w": 52.79,
+    "revenue_growth": 6.29,
+    "operating_margin": 6.16,
+    "debt_ratio": 188.95,
+    "dividend_yield": 1.9,
+    "recent_reports": [
+      {
+        "date": "2026-06-18",
+        "title": "기대감에서 실적으로",
+        "target_price": 760000
+      },
+      {
+        "date": "2026-06-16",
+        "title": "속성이 다른 이익에 기반한 밸류에이션 할증",
+        "target_price": 690000
+      }
+    ]
+  }
+}

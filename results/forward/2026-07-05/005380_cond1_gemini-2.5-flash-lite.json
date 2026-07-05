@@ -1,0 +1,41 @@
+{
+  "ticker": "005380",
+  "name": "현대차",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 492000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 492,000원은 최근 20거래일 평균가 대비 큰 변동성을 보이지 않아 상승 또는 하락을 단정하기 어렵습니다.",
+    "제공된 데이터만으로는 향후 20거래일 동안 현대차의 주가에 영향을 미칠 만한 명확한 상승 또는 하락 모멘텀을 파악하기 어렵습니다.",
+    "기술적 지표나 시장 센티먼트에 대한 추가 정보가 없어 방향성을 확신하기에는 근거가 제한적입니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 13.0,
+    "pbr": 0.79,
+    "roe": 6.08,
+    "market_cap": 100.7,
+    "momentum_1m": -29.7143,
+    "volume_change": -50.5486,
+    "price_position_52w": 52.79,
+    "revenue_growth": 6.29,
+    "operating_margin": 6.16,
+    "debt_ratio": 188.95,
+    "dividend_yield": 1.9,
+    "recent_reports": [
+      {
+        "date": "2026-06-18",
+        "title": "기대감에서 실적으로",
+        "target_price": 760000
+      },
+      {
+        "date": "2026-06-16",
+        "title": "속성이 다른 이익에 기반한 밸류에이션 할증",
+        "target_price": 690000
+      }
+    ]
+  }
+}

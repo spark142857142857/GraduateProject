@@ -1,0 +1,30 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 205000.0,
+  "signal": "Sell",
+  "confidence": 74,
+  "reasons": [
+    "현재 주가는 52주 최고가 404,500원 대비 크게 낮고 52주 내 현재 위치가 12.0%에 불과해 중기 추세가 약한 편입니다.",
+    "최근 1개월 수익률이 -4.65%로 단기 모멘텀이 부정적이며, 거래량 변화율도 -10.16%로 수급 개선 신호가 약합니다.",
+    "PER이 적자로 산출되지 않고 ROE도 N/A인 반면 PBR은 2.49로, 실적 기반의 저평가 매력보다 주가 하방 압력이 더 크게 보입니다."
+  ],
+  "cond": "cond2",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": null,
+    "pbr": 2.49,
+    "roe": null,
+    "market_cap": 8.8,
+    "momentum_1m": -4.6512,
+    "volume_change": -10.1619,
+    "price_position_52w": 12.0,
+    "revenue_growth": 17.48,
+    "operating_margin": 1.86,
+    "debt_ratio": 54.46,
+    "dividend_yield": 0.13,
+    "recent_reports": []
+  }
+}

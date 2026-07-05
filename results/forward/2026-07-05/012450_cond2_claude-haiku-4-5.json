@@ -1,0 +1,37 @@
+{
+  "ticker": "012450",
+  "name": "한화에어로스페이스",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 1175000.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "PER 41.2는 시장 평균 대비 과도하게 높아 현재 주가가 과도하게 평가되어 있음을 시사한다.",
+    "PBR 3.61과 ROE 8.8%의 불일치는 자본 효율성이 낮은데 주가는 고평가되어 있음을 의미한다.",
+    "52주 최고가 1,537,000원 대비 현재가 1,175,000원으로 23.5% 하락했으며, 최근 1개월 10% 상승 후 고평가 상태에서 조정 압력이 존재한다.",
+    "거래량 변화율 0.45%로 극히 낮아 상승 모멘텀을 뒷받침할 수급 강도가 부족하다."
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 41.18,
+    "pbr": 3.61,
+    "roe": 8.77,
+    "market_cap": 60.6,
+    "momentum_1m": 10.0187,
+    "volume_change": 0.4498,
+    "price_position_52w": 52.24,
+    "revenue_growth": 137.57,
+    "operating_margin": 11.57,
+    "debt_ratio": null,
+    "dividend_yield": 0.7,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "든든한 수주 파이프라인",
+        "target_price": 1780000
+      }
+    ]
+  }
+}

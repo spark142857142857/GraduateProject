@@ -1,0 +1,30 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 35500.0,
+  "signal": "Sell",
+  "confidence": 85,
+  "reasons": [
+    "최근 1개월 수익률이 -15.48%이며 현재가가 52주 최저가 대비 6.3% 수준에 머물러 있어 하락 추세가 매우 강함",
+    "거래량 변화율이 -38.17%로 급감하며 주가 하락 구간에서 반등을 이끌 매수세가 부족한 상황임",
+    "ROE가 3.3%로 매우 낮은 수준임에도 PER은 31.2배로 형성되어 있어 밸류에이션 매력이 낮음"
+  ],
+  "cond": "cond2",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 31.2,
+    "pbr": 1.03,
+    "roe": 3.3,
+    "market_cap": 15.7,
+    "momentum_1m": -15.4762,
+    "volume_change": -38.1651,
+    "price_position_52w": 6.31,
+    "revenue_growth": 2.99,
+    "operating_margin": 9.04,
+    "debt_ratio": 82.49,
+    "dividend_yield": 0.1,
+    "recent_reports": []
+  }
+}

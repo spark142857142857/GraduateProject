@@ -1,0 +1,36 @@
+{
+  "ticker": "373220",
+  "name": "LG에너지솔루션",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 362500.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "최근 1개월 수익률 -14.10%로 단기 하락 추세가 명확하며, 52주 최저가 대비 현재가가 25.8% 상승한 수준으로 반등 여력이 제한적",
+    "거래량 변화율 -28.82%로 거래량이 급감하여 상승 모멘텀 부재를 시사하고, 적자 상태(PER 해당없음)로 실적 개선 근거 부족",
+    "PBR 2.89로 순자산 대비 고평가 상태이며, 52주 내 현재 위치 33.0%는 최근 강한 하락세 이후 저점 근처에 위치하여 추가 하락 위험 존재"
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 2.89,
+    "roe": null,
+    "market_cap": 84.8,
+    "momentum_1m": -14.0995,
+    "volume_change": -28.82,
+    "price_position_52w": 32.96,
+    "revenue_growth": -7.6,
+    "operating_margin": 5.69,
+    "debt_ratio": 129.0,
+    "dividend_yield": null,
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "ESS의 가파른 성장세 본격화",
+        "target_price": 620000
+      }
+    ]
+  }
+}

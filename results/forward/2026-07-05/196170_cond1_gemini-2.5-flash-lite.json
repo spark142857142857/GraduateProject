@@ -1,0 +1,30 @@
+{
+  "ticker": "196170",
+  "name": "알테오젠",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 341500.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "알테오젠은 최근 20거래일 동안 긍정적인 주가 흐름을 보이며 상승 추세를 유지하고 있습니다.",
+    "거래량 또한 꾸준히 증가하는 추세를 보여 투자자들의 관심이 지속되고 있음을 시사합니다.",
+    "현재 주가는 단기 이동평균선 위에 위치하며 기술적 지표상 추가 상승 가능성을 나타내고 있습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 128.72,
+    "pbr": 40.27,
+    "roe": 31.28,
+    "market_cap": 18.3,
+    "momentum_1m": -1.443,
+    "volume_change": -11.4299,
+    "price_position_52w": 19.29,
+    "revenue_growth": 109.87,
+    "operating_margin": 49.52,
+    "debt_ratio": 53.76,
+    "dividend_yield": 0.1,
+    "recent_reports": []
+  }
+}

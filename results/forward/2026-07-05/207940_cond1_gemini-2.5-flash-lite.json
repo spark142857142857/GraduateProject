@@ -1,0 +1,41 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 1421000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "삼성바이오로직스의 최근 20거래일 주가 추세는 뚜렷한 상승 또는 하락 방향성을 보이지 않고 횡보하는 모습을 나타내고 있습니다.",
+    "현재가 1,421,000원은 최근 20거래일 동안의 고점과 저점 사이에서 중간 지점에 위치하여 추가적인 상승 또는 하락을 예측하기 어렵습니다.",
+    "제공된 정보만으로는 향후 20거래일 동안 주가에 영향을 미칠 만한 명확한 상승 또는 하락 모멘텀을 파악하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 58.98,
+    "pbr": 8.83,
+    "roe": 14.97,
+    "market_cap": 65.8,
+    "momentum_1m": 5.2593,
+    "volume_change": -2.5985,
+    "price_position_52w": 24.65,
+    "revenue_growth": 30.31,
+    "operating_margin": 45.41,
+    "debt_ratio": 48.44,
+    "dividend_yield": null,
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "하반기 불확실성 해소 기대",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

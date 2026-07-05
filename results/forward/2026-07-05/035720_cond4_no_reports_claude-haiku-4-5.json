@@ -1,0 +1,30 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-05",
+  "context_date": "2026-07-05",
+  "price": 35500.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "52주 내 현재 위치 6.3%로 저점 근처에 있으나, 최근 1개월 수익률 -15.48%와 거래량 -38.17%는 강한 하락 모멘텀과 투자자 관심 급감을 시사한다.",
+    "PER 31.2배는 영업이익 성장률 47.8%에 비해 과도하며, ROE 3.3%는 극히 낮아 자본 효율성이 심각하게 악화되었음을 의미한다.",
+    "부채비율 82.5%로 높은 재무 레버리지 상태에서 주가 하락 시 추가 하락 압력이 가중될 수 있으며, 단기 기술적 약세가 지속될 가능성이 높다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 31.2,
+    "pbr": 1.03,
+    "roe": 3.3,
+    "market_cap": 15.7,
+    "momentum_1m": -15.4762,
+    "volume_change": -38.1651,
+    "price_position_52w": 6.31,
+    "revenue_growth": 2.99,
+    "operating_margin": 9.04,
+    "debt_ratio": 82.49,
+    "dividend_yield": 0.1,
+    "recent_reports": []
+  }
+}
