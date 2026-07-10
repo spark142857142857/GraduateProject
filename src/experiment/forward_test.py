@@ -132,6 +132,8 @@ def run_forward(ticker: str, cond: str = "cond4", model: str = MODEL) -> dict:
         "operating_margin":  ctx.get("operating_margin"),
         "debt_ratio":        ctx.get("debt_ratio"),
         "dividend_yield":    ctx.get("dividend_yield"),
+        "fiscal_period":     ctx.get("fiscal_period"),
+        "report_name":       ctx.get("report_name"),
         "recent_reports":    ctx.get("recent_reports", []),
     }
 
