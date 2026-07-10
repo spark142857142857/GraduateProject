@@ -1,0 +1,13 @@
+﻿category,group_a,group_b,n_a,n_b,metric,metric_type,mean_a,mean_b,mean_diff,test,statistic,p_value,effect_size,effect_size_type,significance
+core,cond4,GoldenCross,252,471,return_20d,absolute,3.3216,2.3741,0.9475,mann_whitney,64011.0,0.0813,0.0786,cliffs_delta,.
+core,cond4,GoldenCross,252,471,return_20d,absolute,3.3216,2.3741,0.9475,welch_ttest,0.9808,0.3271,0.0716,cohens_d,ns
+core,cond4,GoldenCross,252,471,excess_return_20d,excess,1.2841,0.7982,0.4859,mann_whitney,63402.0,0.1296,0.0683,cliffs_delta,ns
+core,cond4,GoldenCross,252,471,excess_return_20d,excess,1.2841,0.7982,0.4859,welch_ttest,0.5547,0.5793,0.0407,cohens_d,ns
+core,cond4,Consensus,252,2752,return_20d,absolute,3.3216,1.6787,1.6429,mann_whitney,388965.5,0.0014,0.1217,cliffs_delta,**
+core,cond4,Consensus,252,2752,return_20d,absolute,3.3216,1.6787,1.6429,welch_ttest,2.1898,0.0293,0.1359,cohens_d,*
+core,cond4,Consensus,252,2752,excess_return_20d,excess,1.2841,0.3535,0.9306,mann_whitney,380242.0,0.011,0.0966,cliffs_delta,*
+core,cond4,Consensus,252,2752,excess_return_20d,excess,1.2841,0.3535,0.9306,welch_ttest,1.3624,0.1741,0.0853,cohens_d,ns
+auxiliary,cond4,cond4_no_reports,252,109,return_20d,absolute,3.3216,3.2922,0.0294,mann_whitney,13742.5,0.993,0.0006,cliffs_delta,ns
+auxiliary,cond4,cond4_no_reports,252,109,return_20d,absolute,3.3216,3.2922,0.0294,welch_ttest,0.0239,0.981,0.0027,cohens_d,ns
+auxiliary,cond4,cond4_no_reports,252,109,excess_return_20d,excess,1.2841,1.4507,-0.1666,mann_whitney,13475.0,0.7764,-0.0189,cliffs_delta,ns
+auxiliary,cond4,cond4_no_reports,252,109,excess_return_20d,excess,1.2841,1.4507,-0.1666,welch_ttest,-0.1521,0.8792,-0.0167,cohens_d,ns
