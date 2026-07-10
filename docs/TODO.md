@@ -68,10 +68,15 @@
 - **look-ahead**: 신호일 기준 공시된 보고서만 사용 (기존 `applicable_dart_period` 로직 재활용).
 - **영향 범위**: `collect_financials.py`(get_dart_annual→TTM 변형), `update.py`(forward 경로) 수정 → **백테스트 financials 재수집 + 5차 실험(5조건×2모델) 재실행**(PER/PBR/ROE가 cond2+ 컨텍스트). 재실행 부담 없음 확인(flash-lite·Gemma 비용 0, Gemma만 시간).
 - **ROE/PBR**: PBR은 자본총계(분기말 스냅샷)라 무영향. ROE=PBR/PER 역산이라 PER 바뀌면 자동으로 TTM ROE가 됨(더 정확). 순이익 정의는 **당기순이익(연결 전체) vs 지배주주순이익** 중 토스와 맞는 쪽 확인 필요(삼성 소폭 차이).
-- **작업 순서 (검증 우선 — 풀 재실행 전 계산식 확정)**:
+- **★ 최우선 = 전 데이터 필드 audit (PER만이 아니라 우리가 뽑는 모든 값이 증권사와 일치하는지)**:
+  - **price**: FDR raw — 문제 없을 것 (삼성 285,000≈토스 286,500 확인). 그래도 스팟 확인.
+  - **dart_fundamentals** (매출/영업이익/순이익/영업이익률/부채비율/영업현금흐름/YoY): 단일분기 기준. **증권사가 분기·연간·TTM 중 무엇을 보여주는지 기준 정렬**부터 맞추고 값 대조.
+  - **financials** (PER/PBR/ROE/시가총액): 핵심 문제 구간. PBR·ROE도 **지배주주 vs 연결전체 정의 차이**로 어긋날 수 있음.
+  - **방법**: 대표 종목 — 대형주(삼성전자) + 금융(신한지주, 매출 N/A 엣지) + 적자 바이오(알테오젠) — 로 **필드 하나하나 증권사와 대조**, 불일치는 원인(정의 차이 vs 버그)까지 규명. 이게 5차 재실행보다 먼저.
+- **작업 순서 (검증 우선 — 풀 재실행 전 계산식·데이터 확정)**:
   1. DART 분기 순이익(누적) 신뢰성 검증 + TTM 계산식 구현
-  2. 삼성전자 등 2~3종목으로 **토스/증권사 API PER과 대조** → 일치 확인 (지배주주 vs 연결 정의도 여기서 확정). 토스 API는 **검증용**이지 live 소스 아님
-  3. 일치하면 → financials 재수집 + 5차 실험 재실행 → compare/breakdown/significance
+  2. **전 필드 audit**(위) — 삼성/신한/알테오젠으로 토스·증권사 API와 대조, 지배주주 vs 연결 정의 확정. 토스 API는 **검증용**이지 live 소스 아님
+  3. 전 필드 일치 확인되면 → financials 재수집 + 5차 실험 재실행 → compare/breakdown/significance
 
 ### C-1. 3차 실험 (완료 2026-06-29)
 - [x] 5조건 실행(cond1~4 + cond4_no_reports) → compare + significance
