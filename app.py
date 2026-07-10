@@ -18,6 +18,11 @@ from datetime import datetime
 
 import pandas as pd
 import streamlit as st
+from dotenv import load_dotenv
+
+# .env를 앱 시작 시점에 로드 — forward_test는 버튼 클릭 시 lazy import되므로
+# _check_dart_cache()가 실행되는 시점엔 아직 키가 환경에 없어 경고가 뜬다
+load_dotenv()
 
 _src = os.path.join(os.path.dirname(__file__), "src")
 sys.path.insert(0, os.path.join(_src, "collect"))
