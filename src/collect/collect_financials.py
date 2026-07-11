@@ -77,41 +77,73 @@ def get_monthly_first_days(ticker: str, end_ym: str | None = None) -> list[pd.Ti
     return first_days
 
 
-# ── DART 연간보고서 EPS·자본총계 캐시 ──────────────────────
-_dart_cache: dict[tuple, dict] = {}
+# ── DART 조회 캐시 ────────────────────────────────────────
+_dart_cache: dict[tuple, dict] = {}              # (ticker, fy) → {eps, equity} 결과
+_finstate_cache: dict[tuple, pd.DataFrame] = {}  # (ticker, fy, reprt) → finstate_all 원본
+
+
+def _dart_finstate(ticker: str, fiscal_year: int, reprt_code: str):
+    """finstate_all 원본을 (ticker, fy, reprt)별로 캐시해 재조회 방지. 실패 시 None."""
+    key = (ticker, fiscal_year, reprt_code)
+    if key in _finstate_cache:
+        return _finstate_cache[key]
+    df = None
+    if dart is not None:
+        try:
+            time.sleep(REQ_DELAY)
+            df = dart.finstate_all(ticker, fiscal_year, reprt_code)
+        except Exception:
+            df = None
+    _finstate_cache[key] = df
+    return df
+
+
+def _extract_eps(df) -> float:
+    """finstate_all 결과에서 기본주당이익 thstrm_amount 추출. 계정명 fallback.
+
+    계정과목명이 회사/연도마다 다름 → 우선순위 순서로 fallback:
+      1) 기본주당이익  2) 연속영업기본주당손익  3) 기본주당이익(넓은 검색)
+      4) 기본주당(손실 등 접미)  5) 주당이익(가장 넓은 검색)
+    """
+    if df is None or df.empty:
+        return np.nan
+    eps_candidates = [
+        df[df["account_nm"] == "기본주당이익"],
+        df[df["account_nm"].str.contains("연속영업기본주당손익", na=False)],
+        df[df["account_nm"].str.contains("기본주당이익", na=False)],
+        df[df["account_nm"].str.contains("기본주당", na=False)],
+        df[df["account_nm"].str.contains("주당이익", na=False)],
+    ]
+    eps_row = next((c for c in eps_candidates if not c.empty), pd.DataFrame())
+    if eps_row.empty:
+        return np.nan
+    val = eps_row["thstrm_amount"].iloc[0]
+    if val and str(val).strip() not in ("", "-", "−"):
+        try:
+            return float(str(val).replace(",", ""))
+        except ValueError:
+            pass
+    return np.nan
+
 
 def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
-    """EPS, 자본총계를 DART 사업보고서에서 가져옴. 결과 캐시."""
+    """연간 EPS·자본총계를 DART 사업보고서(11011)에서 가져옴. 결과 캐시.
+
+    PER은 forward/backtest 모두 get_ttm_eps(TTM)로 산출하므로, 이 함수의 eps는
+    TTM 연간 구간용·fallback이고 주 용도는 자본총계(PBR용) 제공이다.
+    """
     key = (ticker, fiscal_year)
     if key in _dart_cache:
         return _dart_cache[key]
 
     result = {"eps": np.nan, "equity": np.nan}
     try:
-        time.sleep(REQ_DELAY)
-        df = dart.finstate_all(ticker, fiscal_year, "11011")  # 사업보고서
+        df = _dart_finstate(ticker, fiscal_year, "11011")  # 사업보고서
         if df is None or df.empty:
             _dart_cache[key] = result
             return result
 
-        # EPS: 계정과목명이 회사/연도마다 다름 → 우선순위 순서로 fallback
-        # 1) 기본주당이익  2) 연속영업기본주당손익  3) 기본주당(넓은 검색)
-        # 4) 보통주 기본 및 희석주당이익(손실)  5) 주당이익(가장 넓은 검색)
-        eps_candidates = [
-            df[df["account_nm"] == "기본주당이익"],
-            df[df["account_nm"].str.contains("연속영업기본주당손익", na=False)],
-            df[df["account_nm"].str.contains("기본주당이익", na=False)],
-            df[df["account_nm"].str.contains("기본주당", na=False)],
-            df[df["account_nm"].str.contains("주당이익", na=False)],
-        ]
-        eps_row = next((c for c in eps_candidates if not c.empty), pd.DataFrame())
-        if not eps_row.empty:
-            val = eps_row["thstrm_amount"].iloc[0]
-            if val and str(val).strip() not in ("", "-", "−"):
-                try:
-                    result["eps"] = float(str(val).replace(",", ""))
-                except ValueError:
-                    pass
+        result["eps"] = _extract_eps(df)
 
         # 자본총계 (연결 재무상태표). 계정명이 회사·업종마다 상이:
         # "자본총계" / "자본 총계"(공백) / "기말자본"(은행) 순으로 fallback
@@ -123,7 +155,7 @@ def get_dart_annual(ticker: str, fiscal_year: int) -> dict:
             if val and str(val).strip() not in ("", "-", "−"):
                 result["equity"] = float(str(val).replace(",", ""))
 
-    except Exception as e:
+    except Exception:
         pass  # 조회 실패 → NaN 유지
 
     _dart_cache[key] = result
@@ -143,6 +175,54 @@ def applicable_fiscal_year(date: pd.Timestamp) -> int:
     if date <= cutoff:
         return date.year - 2
     return date.year - 1
+
+
+# ── TTM(최근 4분기) EPS ────────────────────────────────────
+# 단일분기 EPS 조회용 보고서 코드 (DART 분기/반기 thstrm = 단일분기 3개월)
+_Q_REPRT = {1: "11013", 2: "11012", 3: "11014"}
+
+
+def _single_q_eps(ticker: str, fiscal_year: int, quarter: int) -> float:
+    """fiscal_year년 quarter분기(1~3)의 단일분기 기본주당이익."""
+    return _extract_eps(_dart_finstate(ticker, fiscal_year, _Q_REPRT[quarter]))
+
+
+def get_ttm_eps(ticker: str, date: pd.Timestamp) -> float:
+    """date 시점 가장 최근 공시 기준 최근 4개 분기(TTM) 기본주당이익 합.
+
+    시장(네이버·토스 등) PER과 정합하도록 연간 EPS 대신 TTM EPS를 사용한다.
+    DART 분기/반기 thstrm은 단일분기(3개월)이므로 누적은 단일분기 합산으로 구한다.
+
+      (fy, reprt) = applicable_dart_period(date)
+      - 사업보고서(11011)      → TTM = 연간 EPS(fy)
+      - 분기/반기(11013/12/14) → TTM = 연간(fy-1)
+                                       + Σ(fy년 단일 Q1..q)
+                                       − Σ(fy-1년 단일 Q1..q)
+
+    한 분기라도 결측이면 np.nan 반환(연간 fallback은 호출부 판단).
+    """
+    # 지연 import: collect_dart_fundamentals ↔ collect_financials 순환 회피
+    from collect_dart_fundamentals import applicable_dart_period
+
+    fy, reprt = applicable_dart_period(pd.Timestamp(date))
+    if reprt == "11011":                       # 사업보고서 구간 → 연간 EPS가 곧 TTM
+        return get_dart_annual(ticker, fy)["eps"]
+
+    q = {"11013": 1, "11012": 2, "11014": 3}[reprt]
+    prev_annual = get_dart_annual(ticker, fy - 1)["eps"]
+    if np.isnan(prev_annual):
+        return np.nan
+
+    cur_ytd = prev_ytd = 0.0
+    for qq in range(1, q + 1):
+        cur  = _single_q_eps(ticker, fy,     qq)
+        prev = _single_q_eps(ticker, fy - 1, qq)
+        if np.isnan(cur) or np.isnan(prev):
+            return np.nan
+        cur_ytd  += cur
+        prev_ytd += prev
+
+    return prev_annual + cur_ytd - prev_ytd
 
 
 # ── 52주 고저가 계산 ──────────────────────────────────────
@@ -198,9 +278,9 @@ def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | N
             continue
         price = float(day_data["Close"].iloc[0])
 
-        # DART 재무 데이터
+        # DART 재무 데이터 — PER은 TTM EPS(시장 통용), 자본(PBR)은 연간 유지
         dart_data = get_dart_annual(ticker, fy)
-        eps    = dart_data["eps"]
+        eps    = get_ttm_eps(ticker, date)
         equity = dart_data["equity"]
 
         # PER / PBR / ROE
