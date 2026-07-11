@@ -36,9 +36,8 @@ from utils import TICKERS, get_price, REPORTS_DIR, START_DATE
 
 # collect_financials 핵심 함수·상수 재사용
 from collect_financials import (
-    get_dart_annual,
     get_per_eps,
-    applicable_fiscal_year,
+    get_pbr,
     calc_52w,
     calc_momentum_volume,
     FINANCIALS_DIR,
@@ -152,19 +151,11 @@ def _update_financials_one(
         return False
     price = float(day_data["Close"].iloc[0])
 
-    fy        = applicable_fiscal_year(base_date)
-    dart_data = get_dart_annual(ticker, fy)   # equity(PBR용, 연간) 유지
     eps       = get_per_eps(ticker, base_date)  # PER용 TTM EPS(공백 시 연간 대체)
-    equity    = dart_data["equity"]
     shares    = shares_map.get(ticker, np.nan)
 
     per = round(price / eps, 2) if (not np.isnan(eps) and eps > 0) else np.nan
-    bps = (
-        equity / shares
-        if (not np.isnan(equity) and not np.isnan(shares) and shares > 0)
-        else np.nan
-    )
-    pbr = round(price / bps, 2) if (not np.isnan(bps) and bps > 0) else np.nan
+    pbr = get_pbr(ticker, base_date, price, shares)  # 지배주주지분/총발행주식수(우선주 포함)
     roe = (
         round(pbr / per * 100, 2)
         if (not np.isnan(per) and not np.isnan(pbr) and per > 0)
@@ -357,22 +348,17 @@ def get_today_context(ticker: str) -> dict:
     current_price = float(full_price["Close"].iloc[-1])
     today_ts = full_price.index[-1]
 
-    # ── DART 재무 (PER/PBR/ROE용 EPS·자본) ──────────────
-    fy        = applicable_fiscal_year(pd.Timestamp(today_str))
-    dart_data = get_dart_annual(ticker, fy)   # equity(PBR용, 연간) 유지
+    # ── DART 재무 (PER용 TTM EPS) ───────────────────────
     eps       = get_per_eps(ticker, pd.Timestamp(today_str))  # PER용 TTM EPS(공백 시 연간 대체)
-    equity    = dart_data["equity"]
 
     # ── 발행주식수 (KRX 전체 목록 로드 - 단일 종목용으로는 과도하나
     #    발행주식수를 제공하는 다른 무료 API가 없어 불가피. ~2-3초 소요) ──
-    shares = _load_shares_map().get(ticker, np.nan)
+    shares = _load_shares_map().get(ticker, np.nan)   # 보통주 (시가총액용)
 
     # ── PER / PBR / ROE / 시가총액 ──────────────────────
+    #   PBR = 지배주주지분 / 총발행주식수(우선주 포함), 시가총액은 보통주 기준
     per    = round(current_price / eps, 2) if (not np.isnan(eps) and eps > 0) else np.nan
-    bps    = (equity / shares
-              if (not np.isnan(equity) and not np.isnan(shares) and shares > 0)
-              else np.nan)
-    pbr    = round(current_price / bps, 2) if (not np.isnan(bps) and bps > 0) else np.nan
+    pbr    = get_pbr(ticker, pd.Timestamp(today_str), current_price, shares)
     roe    = (round(pbr / per * 100, 2)
               if (not np.isnan(per) and not np.isnan(pbr) and per > 0)
               else np.nan)

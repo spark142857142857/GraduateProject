@@ -23,6 +23,7 @@ import os
 import sys
 import time
 import warnings
+import requests
 import pandas as pd
 import numpy as np
 import FinanceDataReader as fdr
@@ -239,6 +240,106 @@ def get_per_eps(ticker: str, date: pd.Timestamp) -> float:
     return eps
 
 
+# ── PBR용 지배주주지분 · 총발행주식수 ──────────────────────
+def _extract_ctrl_equity(df) -> float:
+    """finstate BS에서 지배기업 소유주지분(지배주주지분) 추출.
+
+    계정명이 회사마다 상이('지배기업의 소유주에게 귀속되는 자본' / '지배기업소유주지분' /
+    '지배회사 소유주지분' / '지배기업의 소유지분' 등) → '지배'(비지배 제외) + 소유/귀속 조합.
+    없으면 자본총계(연결 전체)로 fallback, 그것도 없으면 np.nan.
+    """
+    if df is None or df.empty or "account_nm" not in df.columns:
+        return np.nan
+    bs = df[df["sj_div"] == "BS"] if "sj_div" in df.columns else df
+    nm = bs["account_nm"].str.replace(" ", "", regex=False)
+    mask = (nm.str.contains("지배", na=False) & ~nm.str.contains("비지배", na=False) &
+            (nm.str.contains("소유주지분", na=False) | nm.str.contains("소유지분", na=False)
+             | nm.str.contains("귀속되는자본", na=False)))
+    cand = bs[mask]
+    if not cand.empty:
+        try:
+            return float(str(cand.iloc[0]["thstrm_amount"]).replace(",", ""))
+        except ValueError:
+            pass
+    # fallback: 자본총계(연결 전체) — 지배주주지분 라인이 없는 단일지배 기업 등
+    for en in ("자본총계", "자본 총계", "기말자본"):
+        r = bs[bs["account_nm"].str.replace(" ", "", regex=False) == en.replace(" ", "")]
+        if not r.empty:
+            try:
+                return float(str(r.iloc[0]["thstrm_amount"]).replace(",", ""))
+            except ValueError:
+                pass
+    return np.nan
+
+
+def get_pbr_equity(ticker: str, date: pd.Timestamp) -> float:
+    """PBR용 지배주주지분. 최근 분기(applicable_dart_period) 우선, 없으면 최근 사업보고서 연간."""
+    from collect_dart_fundamentals import applicable_dart_period  # 지연 import(순환 회피)
+
+    fy, reprt = applicable_dart_period(pd.Timestamp(date))
+    eq = _extract_ctrl_equity(_dart_finstate(ticker, fy, reprt))
+    if np.isnan(eq):
+        fy_a = applicable_fiscal_year(pd.Timestamp(date))
+        eq = _extract_ctrl_equity(_dart_finstate(ticker, fy_a, "11011"))
+    return eq
+
+
+_totshares_cache: dict[tuple, float] = {}
+
+def _dart_total_shares(ticker: str, year: int) -> float:
+    """DART 주식총수현황(stockTotqySttus) 발행주식총수 합계(보통주+우선주). 실패 시 np.nan."""
+    key = (ticker, year)
+    if key in _totshares_cache:
+        return _totshares_cache[key]
+    total = np.nan
+    if dart is not None and DART_API_KEY:
+        try:
+            corp = dart.find_corp_code(ticker)
+            if corp:
+                time.sleep(REQ_DELAY)
+                resp = requests.get(
+                    "https://opendart.fss.or.kr/api/stockTotqySttus.json",
+                    params={"crtfc_key": DART_API_KEY, "corp_code": corp,
+                            "bsns_year": str(year), "reprt_code": "11011"},
+                    timeout=10)
+                data = resp.json()
+                if data.get("status") == "000":
+                    for row in data.get("list", []):
+                        if "합계" in str(row.get("se", "")):
+                            try:
+                                s = int(str(row.get("istc_totqy", "")).replace(",", ""))
+                                if s > 0:
+                                    total = float(s)
+                            except ValueError:
+                                pass
+                            break
+        except Exception:
+            pass
+    _totshares_cache[key] = total
+    return total
+
+
+def get_total_shares(ticker: str, date: pd.Timestamp) -> float:
+    """PBR용 총발행주식수(보통+우선). 가장 최근 공시된 사업연도 기준."""
+    return _dart_total_shares(ticker, applicable_fiscal_year(pd.Timestamp(date)))
+
+
+def get_pbr(ticker: str, date: pd.Timestamp, price: float, common_shares: float) -> float:
+    """PBR = 주가 / (지배주주지분 / 총발행주식수[보통+우선]).
+
+    증권사(네이버·토스) 통용 방식. 지배주주지분은 최근 분기 우선(공백 시 연간/자본총계),
+    총발행주식수는 DART 주식총수(실패 시 보통주 common_shares로 대체).
+    """
+    equity = get_pbr_equity(ticker, date)
+    shares = get_total_shares(ticker, date)
+    if np.isnan(shares) or shares <= 0:
+        shares = common_shares
+    if np.isnan(equity) or np.isnan(shares) or shares <= 0:
+        return np.nan
+    bps = equity / shares
+    return round(price / bps, 2) if bps > 0 else np.nan
+
+
 # ── 52주 고저가 계산 ──────────────────────────────────────
 def calc_52w(price_df: pd.DataFrame, date: pd.Timestamp) -> tuple:
     """date 포함 과거 252 거래일의 종가 최고·최저 반환."""
@@ -284,25 +385,18 @@ def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | N
 
     rows = []
     for date in tqdm(missing, desc=f"  {name}({ticker})", leave=False):
-        fy = applicable_fiscal_year(date)
-
         # 종가
         day_data = price_df.loc[price_df.index == date]
         if day_data.empty:
             continue
         price = float(day_data["Close"].iloc[0])
 
-        # DART 재무 데이터 — PER은 TTM EPS(공백 시 연간 대체), 자본(PBR)은 연간 유지
-        dart_data = get_dart_annual(ticker, fy)
-        eps    = get_per_eps(ticker, date)
-        equity = dart_data["equity"]
-
-        # PER / PBR / ROE
-        per = round(price / eps, 2)  if (not np.isnan(eps)    and eps > 0) else np.nan
-        bps = equity / shares        if (not np.isnan(equity) and not np.isnan(shares)
-                                         and shares > 0) else np.nan
-        pbr = round(price / bps, 2)  if (not np.isnan(bps)   and bps > 0) else np.nan
-        roe = round(pbr / per * 100, 2) if (not np.isnan(per) and not np.isnan(pbr)  # ROE = PBR/PER × 100 (DuPont identity). DART에서 직접 미제공하므로 산출
+        # PER / PBR / ROE — PER은 TTM EPS(공백 시 연간),
+        #   PBR은 지배주주지분/총발행주식수(우선주 포함), ROE는 DuPont 역산
+        eps = get_per_eps(ticker, date)
+        per = round(price / eps, 2) if (not np.isnan(eps) and eps > 0) else np.nan
+        pbr = get_pbr(ticker, date, price, shares)
+        roe = round(pbr / per * 100, 2) if (not np.isnan(per) and not np.isnan(pbr)
                                              and per > 0) else np.nan
 
         # 시가총액
