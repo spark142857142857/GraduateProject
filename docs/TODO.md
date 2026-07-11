@@ -66,7 +66,8 @@
 - [x] **PBR C방식 전환**: 지배주주지분(분기)÷총발행주식수(우선주 포함). 비지배 큰 지주·복합기업 편향 제거(현대차 −27%→+2%). 커밋 2b26c61/056d3c6.
 - [x] **TTM PER 구현**: `get_ttm_eps`(단일분기 기본주당이익 합산 — 계획의 순이익재계산 대신, 분기 thstrm이 단일분기임을 실증) + `get_per_eps`(분기 XBRL 미비 시 연간 fallback). forward·백테스트·월별갱신 3경로 적용. 커밋 cd142c2/aa8b866/12308a5.
 - [x] **financials 재수집** (720행): PER 결측 189→200(트레일링 적자 32건 왜곡 고PER 정상 제거 + fallback 21건 복구). PBR/자본은 연간 유지.
-- [ ] **5차 실험 재실행** (TTM financials 입력, 5조건×2모델) — LLM 비용 발생, 별도 착수. 1~4차(연간)와 robustness 대조.
+- [x] **5차 실험 (flash-lite) 완료** (2026-07-11) — TTM+C방식 financials로 cond2/3/4/no_reports 재실행(cond1 재사용). 핵심 결론(cond4 Buy 절대수익 컨센서스 우위) 연간·TTM 양쪽 유의 유지. 상세는 [experiments_log.md](experiments_log.md) 5차 섹션. **Gemma 5차만 보류(다음).**
+- [x] **데이터 검증 문서 [prove.md](prove.md) 신설** — 3각도(라이브 20종목·저장 CSV·독립 재계산)로 전 항목 증권사 정합 증명.
 
 **원래 계획 (2026-07-11 착수 전 기록, 참고용):**
 
