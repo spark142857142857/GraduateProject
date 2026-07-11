@@ -225,6 +225,20 @@ def get_ttm_eps(ticker: str, date: pd.Timestamp) -> float:
     return prev_annual + cur_ytd - prev_ytd
 
 
+def get_per_eps(ticker: str, date: pd.Timestamp) -> float:
+    """PER용 EPS: TTM 우선, 분기 XBRL 미비로 TTM 산출 불가 시 연간 EPS로 대체.
+
+    - get_ttm_eps가 유한값(음수 포함)을 반환 → 그대로 사용
+      (트레일링 적자 TTM≤0은 대체하지 않음; 호출부 eps>0 아니면 PER=NaN)
+    - np.nan(분기 데이터 공백) → 최근 사업보고서 연간 EPS로 대체
+      (은행 등 오래된 분기보고서가 DART finstate_all에 없는 구간 커버)
+    """
+    eps = get_ttm_eps(ticker, date)
+    if np.isnan(eps):
+        eps = get_dart_annual(ticker, applicable_fiscal_year(date))["eps"]
+    return eps
+
+
 # ── 52주 고저가 계산 ──────────────────────────────────────
 def calc_52w(price_df: pd.DataFrame, date: pd.Timestamp) -> tuple:
     """date 포함 과거 252 거래일의 종가 최고·최저 반환."""
@@ -278,9 +292,9 @@ def process_ticker(name: str, ticker: str, shares_map: dict) -> pd.DataFrame | N
             continue
         price = float(day_data["Close"].iloc[0])
 
-        # DART 재무 데이터 — PER은 TTM EPS(시장 통용), 자본(PBR)은 연간 유지
+        # DART 재무 데이터 — PER은 TTM EPS(공백 시 연간 대체), 자본(PBR)은 연간 유지
         dart_data = get_dart_annual(ticker, fy)
-        eps    = get_ttm_eps(ticker, date)
+        eps    = get_per_eps(ticker, date)
         equity = dart_data["equity"]
 
         # PER / PBR / ROE

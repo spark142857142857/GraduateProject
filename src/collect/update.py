@@ -37,7 +37,7 @@ from utils import TICKERS, get_price, REPORTS_DIR, START_DATE
 # collect_financials 핵심 함수·상수 재사용
 from collect_financials import (
     get_dart_annual,
-    get_ttm_eps,
+    get_per_eps,
     applicable_fiscal_year,
     calc_52w,
     calc_momentum_volume,
@@ -154,7 +154,7 @@ def _update_financials_one(
 
     fy        = applicable_fiscal_year(base_date)
     dart_data = get_dart_annual(ticker, fy)   # equity(PBR용, 연간) 유지
-    eps       = get_ttm_eps(ticker, base_date)  # PER용 TTM EPS(시장 통용)
+    eps       = get_per_eps(ticker, base_date)  # PER용 TTM EPS(공백 시 연간 대체)
     equity    = dart_data["equity"]
     shares    = shares_map.get(ticker, np.nan)
 
@@ -360,7 +360,7 @@ def get_today_context(ticker: str) -> dict:
     # ── DART 재무 (PER/PBR/ROE용 EPS·자본) ──────────────
     fy        = applicable_fiscal_year(pd.Timestamp(today_str))
     dart_data = get_dart_annual(ticker, fy)   # equity(PBR용, 연간) 유지
-    eps       = get_ttm_eps(ticker, pd.Timestamp(today_str))  # PER용 TTM EPS(시장 통용)
+    eps       = get_per_eps(ticker, pd.Timestamp(today_str))  # PER용 TTM EPS(공백 시 연간 대체)
     equity    = dart_data["equity"]
 
     # ── 발행주식수 (KRX 전체 목록 로드 - 단일 종목용으로는 과도하나
