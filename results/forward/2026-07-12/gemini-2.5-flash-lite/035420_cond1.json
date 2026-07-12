@@ -1,0 +1,58 @@
+{
+  "ticker": "035420",
+  "name": "네이버",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 191300.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 191,300원은 최근 20거래일 평균가 대비 큰 변동성을 보이지 않아 방향성 판단이 어렵습니다.",
+    "제공된 데이터만으로는 향후 20거래일 동안 네이버의 주가 상승 또는 하락을 강하게 지지할 만한 명확한 모멘텀을 찾기 어렵습니다.",
+    "기술적 지표나 시장 참여자들의 심리를 파악할 수 있는 추가 정보가 없어 상승 및 하락 근거가 균형을 이루는 상황입니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 15.79,
+    "pbr": 1.02,
+    "roe": 6.46,
+    "market_cap": 30.0,
+    "momentum_1m": -14.5982,
+    "volume_change": -66.5369,
+    "price_position_52w": 6.73,
+    "revenue_growth": 16.3,
+    "operating_margin": 16.72,
+    "debt_ratio": 45.21,
+    "dividend_yield": 1.0,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "3분기까지 마진 압박 불가피",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "평이한 실적, 결국 트리거는 신사업",
+        "target_price": 400000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "3분기까지 마진 압박 불가피",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "평이한 실적, 결국 트리거는 신사업",
+        "target_price": 400000
+      }
+    ]
+  }
+}

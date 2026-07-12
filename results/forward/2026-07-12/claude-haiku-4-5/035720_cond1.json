@@ -1,0 +1,43 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 35350.0,
+  "signal": "Neutral",
+  "confidence": 45,
+  "reasons": [
+    "향후 20거래일 주가 방향을 판단할 수 있는 구체적인 재무 데이터, 기술적 지표, 시장 데이터가 제공되지 않았습니다.",
+    "현재가 35,350원이라는 단일 정보만으로는 상승 또는 하락의 근거를 도출할 수 없습니다.",
+    "기업의 실적, 밸류에이션, 차트 패턴, 시장 심리 등 투자 판단에 필요한 데이터가 부재합니다."
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 29.24,
+    "pbr": 1.36,
+    "roe": 4.65,
+    "market_cap": 15.7,
+    "momentum_1m": -10.0509,
+    "volume_change": -42.3881,
+    "price_position_52w": 6.37,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

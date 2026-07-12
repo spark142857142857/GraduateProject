@@ -1,0 +1,53 @@
+{
+  "ticker": "055550",
+  "name": "신한지주",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 109200.0,
+  "signal": "Sell",
+  "confidence": 74,
+  "reasons": [
+    "현재가가 52주 최고가 109,200원과 동일해 52주 내 위치가 100.0%로, 단기적으로는 추가 상승 여력이 제한되고 차익실현 압력이 커질 수 있습니다.",
+    "최근 1개월 수익률이 12.69%로 이미 단기간에 강하게 상승했지만 거래량 변화율이 -7.97%로 수급 확장이 동반되지 않아 상승 지속성에 대한 신뢰도가 낮습니다.",
+    "1분기 영업이익과 순이익은 증가했지만 PER 10.7, PBR 0.90, ROE 8.4%는 강한 재평가를 정당화할 만큼 압도적이지 않고, 최근 리포트의 목표주가(130,000~135,000원)는 현재가 대비 상승 여력이 크지 않습니다."
+  ],
+  "cond": "cond4",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 10.68,
+    "pbr": 0.9,
+    "roe": 8.43,
+    "market_cap": 51.8,
+    "momentum_1m": 12.6935,
+    "volume_change": -7.967,
+    "price_position_52w": 100.0,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1228.55,
+    "dividend_yield": 3.01,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-07",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-07-03",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-07-03",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-06-15",
+        "title": "CET 1 비율 상승은 RWA 재배분을 통해 ROE와 ..",
+        "target_price": 135000
+      }
+    ]
+  }
+}

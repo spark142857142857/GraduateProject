@@ -1,0 +1,48 @@
+{
+  "ticker": "006400",
+  "name": "삼성SDI",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 434000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 434,000원은 최근 20거래일 평균가 대비 소폭 상승한 수준으로, 명확한 추세 전환 신호는 포착되지 않습니다.",
+    "제공된 데이터만으로는 향후 20거래일 내 주가 상승 또는 하락을 강하게 지지할 만한 명확한 모멘텀 지표나 기술적 분석 신호가 부족합니다.",
+    "삼성SDI의 펀더멘털이나 거시 경제 지표에 대한 정보가 없어, 현재 주가 수준에서 향후 방향성을 단정하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 1.43,
+    "roe": null,
+    "market_cap": 35.0,
+    "momentum_1m": -12.9388,
+    "volume_change": -32.3213,
+    "price_position_52w": 48.7,
+    "revenue_growth": 12.58,
+    "operating_margin": null,
+    "debt_ratio": null,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "밸류에이션 부담 완화, 비중 확대 시점",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "밸류에이션 부담 완화, 비중 확대 시점",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "2Q26, 7개 분기만의 영업흑자 전환 예상",
+        "target_price": 1000000
+      }
+    ]
+  }
+}

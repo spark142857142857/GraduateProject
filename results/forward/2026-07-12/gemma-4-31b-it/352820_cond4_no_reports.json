@@ -1,0 +1,38 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 220500.0,
+  "signal": "Sell",
+  "confidence": 82,
+  "reasons": [
+    "전년 동기 대비 영업이익이 -1009.1% 급감하며 1,966억원의 적자를 기록했고, 영업이익률 또한 -28.1%로 매우 저조함",
+    "현재 주가가 52주 최고가 대비 최하단 영역인 18.8% 지점에 위치해 있으며, 최근 1개월 수익률(1.15%)과 거래량 변화율(-0.80%)에서 반등 모멘텀이 확인되지 않음",
+    "매출액은 39.5% 증가했으나 이를 수익으로 연결하지 못해 PER 산출이 불가능한 적자 상태이며, 이는 단기 주가에 부정적인 영향을 미칠 가능성이 높음"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": null,
+    "pbr": 2.83,
+    "roe": null,
+    "market_cap": 9.5,
+    "momentum_1m": 1.1468,
+    "volume_change": -0.8028,
+    "price_position_52w": 18.84,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      }
+    ]
+  }
+}

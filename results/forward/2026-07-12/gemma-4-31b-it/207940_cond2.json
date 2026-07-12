@@ -1,0 +1,48 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 1395000.0,
+  "signal": "Neutral",
+  "confidence": 45,
+  "reasons": [
+    "PER 48.2 및 PBR 8.15로 밸류에이션 지표가 매우 높아 주가 상승에 부담이 되는 수준임",
+    "최근 1개월 수익률은 8.48%로 상승 추세이나, 거래량 변화율이 -4.16%로 감소하며 상승 동력이 약화됨",
+    "52주 내 현재 위치가 21.1%로 저점 부근에 있어 기술적 반등 가능성과 하락 추세 지속 가능성이 팽팽하게 대립함"
+  ],
+  "cond": "cond2",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 48.17,
+    "pbr": 8.15,
+    "roe": 16.92,
+    "market_cap": 64.6,
+    "momentum_1m": 8.4759,
+    "volume_change": -4.1595,
+    "price_position_52w": 21.05,
+    "revenue_growth": 25.77,
+    "operating_margin": 46.2,
+    "debt_ratio": 51.4,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "하반기 불확실성 해소 기대",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "ticker": "012450",
+  "name": "한화에어로스페이스",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 967000.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "제공된 데이터가 현재가와 상장 시장 정보뿐으로, 주가 방향성을 판단할 수 있는 기술적·기본적 지표가 전혀 없음",
+    "재무 상태, 거래량, 가격 추이 등 퀀트 분석에 필요한 정량적 데이터가 제공되지 않음",
+    "판단 근거가 전무하여 신뢰도 기준에 따라 방향성을 확신할 수 없으므로 Neutral을 선택함"
+  ],
+  "cond": "cond1",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 30.56,
+    "pbr": 5.01,
+    "roe": 16.39,
+    "market_cap": 49.9,
+    "momentum_1m": -4.6351,
+    "volume_change": 0.7756,
+    "price_position_52w": 24.8,
+    "revenue_growth": 4.86,
+    "operating_margin": 11.11,
+    "debt_ratio": 224.88,
+    "dividend_yield": 0.7,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-09",
+        "title": "2Q26 Preview: 조용한 지금이 기회",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "든든한 수주 파이프라인",
+        "target_price": 1780000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "든든한 수주 파이프라인",
+        "target_price": 1780000
+      }
+    ]
+  }
+}

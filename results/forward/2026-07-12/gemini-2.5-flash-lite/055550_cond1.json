@@ -1,0 +1,53 @@
+{
+  "ticker": "055550",
+  "name": "신한지주",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 109200.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "제공된 데이터만으로는 신한지주의 향후 20거래일 주가 방향성을 명확히 판단할 근거가 부족합니다.",
+    "현재가 109,200원이라는 정보만으로는 상승 또는 하락을 예측하기 어렵습니다.",
+    "추가적인 기술적 지표, 거시 경제 지표, 시장 심리 등 다양한 데이터를 종합적으로 분석해야 정확한 판단이 가능합니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 10.68,
+    "pbr": 0.9,
+    "roe": 8.43,
+    "market_cap": 51.8,
+    "momentum_1m": 12.6935,
+    "volume_change": -7.967,
+    "price_position_52w": 100.0,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1228.55,
+    "dividend_yield": 3.01,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-07",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-07-03",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-07-03",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-06-15",
+        "title": "CET 1 비율 상승은 RWA 재배분을 통해 ROE와 ..",
+        "target_price": 135000
+      }
+    ]
+  }
+}

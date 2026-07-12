@@ -1,0 +1,48 @@
+{
+  "ticker": "012450",
+  "name": "한화에어로스페이스",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 967000.0,
+  "signal": "Sell",
+  "confidence": 85,
+  "reasons": [
+    "영업이익은 증가했으나 영업현금흐름이 -1.7조원으로 매우 큰 폭의 마이너스를 기록하여 수익의 질이 낮음",
+    "PBR 5.01 및 PER 30.6으로 기업 가치 대비 주가가 과도하게 고평가된 상태임",
+    "부채비율이 224.9%로 재무 안정성이 취약하며 최근 1개월 수익률이 -4.64%로 하락 추세에 있음"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 30.56,
+    "pbr": 5.01,
+    "roe": 16.39,
+    "market_cap": 49.9,
+    "momentum_1m": -4.6351,
+    "volume_change": 0.7756,
+    "price_position_52w": 24.8,
+    "revenue_growth": 4.86,
+    "operating_margin": 11.11,
+    "debt_ratio": 224.88,
+    "dividend_yield": 0.7,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-09",
+        "title": "2Q26 Preview: 조용한 지금이 기회",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "든든한 수주 파이프라인",
+        "target_price": 1780000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "든든한 수주 파이프라인",
+        "target_price": 1780000
+      }
+    ]
+  }
+}

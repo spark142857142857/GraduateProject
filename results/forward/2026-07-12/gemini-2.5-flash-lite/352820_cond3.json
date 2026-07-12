@@ -1,0 +1,38 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 220500.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "최근 30일 내 애널리스트 리포트에서 2분기 실적 개선 및 목표주가 상향이 제시되어 긍정적인 주가 흐름을 예상할 수 있습니다.",
+    "현재가는 52주 최저가 대비 24.0% 상승한 수준으로, 52주 최고가 대비로는 45.3% 하락한 상태이며, 이는 추가적인 상승 여력이 있음을 시사합니다.",
+    "최근 1개월 수익률이 1.15%로 소폭 상승세를 보이고 있으며, 거래량 변화율이 크지 않아 급격한 하락보다는 완만한 상승을 기대해 볼 수 있습니다."
+  ],
+  "cond": "cond3",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 2.83,
+    "roe": null,
+    "market_cap": 9.5,
+    "momentum_1m": 1.1468,
+    "volume_change": -0.8028,
+    "price_position_52w": 18.84,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      }
+    ]
+  }
+}

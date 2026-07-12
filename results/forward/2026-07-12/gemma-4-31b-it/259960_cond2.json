@@ -1,0 +1,58 @@
+{
+  "ticker": "259960",
+  "name": "크래프톤",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 238000.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "거래량 변화율이 -25.78%로 크게 감소하여 단기적인 매수 동력이 매우 약화된 상태임",
+    "52주 가격 범위 내 현재 위치가 21.1%로 최저가에 근접해 있어 강한 하락 추세가 지속되고 있음",
+    "최근 1개월 수익률이 2.15%에 불과하여 하락 추세를 반전시킬 만한 유의미한 모멘텀이 확인되지 않음"
+  ],
+  "cond": "cond2",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 11.92,
+    "pbr": 1.54,
+    "roe": 12.92,
+    "market_cap": 11.0,
+    "momentum_1m": 2.1459,
+    "volume_change": -25.777,
+    "price_position_52w": 21.05,
+    "revenue_growth": 56.88,
+    "operating_margin": 40.95,
+    "debt_ratio": 31.8,
+    "dividend_yield": 0.9,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-09",
+        "title": "여전히 견조한 PUBG 성과",
+        "target_price": 360000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "맺어지는 투자의 결실들",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "매력적인 가격대, 매수 기회",
+        "target_price": 460000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "PUBG는 다시 성장하는 중",
+        "target_price": 380000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "맺어지는 투자의 결실들",
+        "target_price": 390000
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 285000.0,
+  "signal": "Neutral",
+  "confidence": 45,
+  "reasons": [
+    "현재가 285,000원만 제공되었으며, 향후 20거래일 주가 방향을 판단하기 위한 기술적·펀더멘탈 지표가 전혀 제공되지 않았습니다.",
+    "차트 패턴, 이동평균선, 거래량, PER, PBR 등 의사결정에 필요한 정량적 데이터가 부재합니다.",
+    "단일 현재가 정보만으로는 상승 또는 하락 근거를 객관적으로 도출할 수 없어 방향성을 확신할 수 없습니다."
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 22.73,
+    "pbr": 4.05,
+    "roe": 17.82,
+    "market_cap": 1666.2,
+    "momentum_1m": -4.6823,
+    "volume_change": -7.6448,
+    "price_position_52w": 74.36,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-08",
+        "title": "과격한 주가 반응에 뇌동하지 말자",
+        "target_price": 550000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "하반기, EPS 성장률 둔화 예상",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "외풍을 극복하고도 남을 실적",
+        "target_price": 460000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "실적 전망치 상향 조정 지속",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "걱정의 벽을 타고",
+        "target_price": 560000
+      }
+    ]
+  }
+}

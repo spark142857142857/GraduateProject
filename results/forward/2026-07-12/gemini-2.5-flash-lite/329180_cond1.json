@@ -1,0 +1,38 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 504000.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "최근 20거래일 동안 주가 상승 추세가 관찰되며, 이는 향후 상승 가능성을 시사합니다.",
+    "거래량 증가와 함께 주가가 상승하는 패턴은 매수세의 유입을 나타내며 긍정적인 신호입니다.",
+    "현재 주가가 주요 이동평균선 위에 위치하며 지지받는 모습은 추가 상승 여력을 보여줍니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 25.36,
+    "pbr": 5.45,
+    "roe": 21.49,
+    "market_cap": 52.9,
+    "momentum_1m": -21.9814,
+    "volume_change": -35.7133,
+    "price_position_52w": 35.39,
+    "revenue_growth": 54.78,
+    "operating_margin": 15.3,
+    "debt_ratio": 183.91,
+    "dividend_yield": 1.08,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Pre: 본업 좀 봐주세요 좋아요",
+        "target_price": 860000
+      }
+    ]
+  }
+}

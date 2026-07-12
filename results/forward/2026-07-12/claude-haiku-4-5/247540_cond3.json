@@ -1,0 +1,60 @@
+{
+  "ticker": "247540",
+  "name": "에코프로비엠",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 121600.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "PER 207.5배, PBR 6.66배로 극도로 높은 밸류에이션 수준에서 추가 상승 여력이 제한적",
+    "ROE 3.2%의 저조한 수익성 대비 시가총액 11.9조원의 과도한 평가로 조정 압력 존재",
+    "최근 1개월 -25.99% 하락, 52주 최고가 대비 50.6% 하락한 약세 추세가 단기 내 반전 신호 부재",
+    "1.2조원 유상증자로 인한 단기 주주가치 희석이 애널리스트들에 의해 지적되고 있으며 거래량도 -12.34% 감소",
+    "목표주가 제시 애널리스트들도 230,000~300,000원으로 현재가 121,600원 대비 상승 여지가 제한적이며 희석 우려 존재"
+  ],
+  "cond": "cond3",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 207.51,
+    "pbr": 6.66,
+    "roe": 3.21,
+    "market_cap": 11.9,
+    "momentum_1m": -25.989,
+    "volume_change": -12.3382,
+    "price_position_52w": 14.62,
+    "revenue_growth": -3.88,
+    "operating_margin": 3.46,
+    "debt_ratio": 147.34,
+    "dividend_yield": 0.05,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-02",
+        "title": "유상증자 관련 코멘트: 단기 주주가치 희석 ..",
+        "target_price": null
+      },
+      {
+        "date": "2026-07-02",
+        "title": "유상증자 관련 코멘트: 단기 주주가치 희석 ..",
+        "target_price": null
+      },
+      {
+        "date": "2026-07-01",
+        "title": "가이던스 반영 시 유상증자 희석 영향 제한..",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "니켈 Upstream 내재화를 통한 중장기 경쟁력 ..",
+        "target_price": 230000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "1.2조원 유상증자 관련 코멘트",
+        "target_price": null
+      }
+    ]
+  }
+}

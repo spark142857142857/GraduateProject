@@ -1,0 +1,43 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 35350.0,
+  "signal": "Sell",
+  "confidence": 85,
+  "reasons": [
+    "현재 주가가 52주 최저가 대비 6.4% 수준에 위치하여 매우 강한 하락 추세에 있으며 지지선 확인이 불분명함",
+    "최근 1개월 수익률이 -10.05%로 하락세가 지속되고 있으며, 거래량 변화율이 -42.39%로 급감하여 매수세가 매우 위축된 상태임",
+    "ROE(4.7%) 대비 PER(29.2)이 높아 밸류에이션 부담이 있으며, 리포트에서도 AI 수익화 검증과 강력한 트리거가 필요하다고 언급되어 단기 상승 모멘텀이 부족함"
+  ],
+  "cond": "cond3",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 29.24,
+    "pbr": 1.36,
+    "roe": 4.65,
+    "market_cap": 15.7,
+    "momentum_1m": -10.0509,
+    "volume_change": -42.3881,
+    "price_position_52w": 6.37,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

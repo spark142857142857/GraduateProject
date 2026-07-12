@@ -1,0 +1,32 @@
+{
+  "ticker": "196170",
+  "name": "알테오젠",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 324000.0,
+  "signal": "Sell",
+  "confidence": 78,
+  "reasons": [
+    "현재 주가는 52주 최고가 대비 크게 낮고(52주 내 현재 위치 12.8%), 최근 1개월 수익률도 -6.63%로 단기 추세가 약세입니다.",
+    "거래량 변화율이 -17.31%로 수급 동력이 둔화된 모습이라 향후 20거래일 내 반등 지속 근거가 약합니다.",
+    "PER 133.2, PBR 34.69로 밸류에이션 부담이 매우 큰 반면, 현재 데이터만으로는 이를 상쇄할 단기 상승 촉매가 확인되지 않습니다."
+  ],
+  "cond": "cond3",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 133.22,
+    "pbr": 34.69,
+    "roe": 26.04,
+    "market_cap": 17.4,
+    "momentum_1m": -6.6282,
+    "volume_change": -17.3107,
+    "price_position_52w": 12.8,
+    "revenue_growth": -14.45,
+    "operating_margin": 54.89,
+    "debt_ratio": 42.24,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": []
+  }
+}

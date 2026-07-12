@@ -1,0 +1,32 @@
+{
+  "ticker": "051910",
+  "name": "LG화학",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 264000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "제공된 데이터만으로는 LG화학의 향후 20거래일 주가 방향성을 명확하게 판단할 수 있는 지표가 부족합니다.",
+    "현재가 264,000원이라는 정보만으로는 상승 또는 하락을 뒷받침할 만한 기술적 또는 펀더멘탈 분석 근거가 제시되지 않았습니다.",
+    "기업의 브랜드 이미지, 인지도, 과거 명성 등은 배제하고 오직 제공된 데이터만을 근거로 판단해야 하므로, 추가적인 데이터 없이는 방향성 확신이 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 0.59,
+    "roe": null,
+    "market_cap": 18.6,
+    "momentum_1m": -16.5877,
+    "volume_change": -39.5873,
+    "price_position_52w": 17.46,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 119.71,
+    "dividend_yield": 0.6,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": []
+  }
+}

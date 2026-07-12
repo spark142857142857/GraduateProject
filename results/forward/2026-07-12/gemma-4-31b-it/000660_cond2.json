@@ -1,0 +1,58 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 2180000.0,
+  "signal": "Sell",
+  "confidence": 82,
+  "reasons": [
+    "PBR이 9.66으로 자산 가치 대비 극도로 고평가된 상태입니다.",
+    "거래량 변화율이 2.28%로 매우 낮아 최근의 주가 상승을 지지할 강력한 모멘텀이 부족합니다.",
+    "52주 가격 범위 내 현재 위치가 72.4%로 상단에 위치하여 기술적 조정 가능성이 높습니다."
+  ],
+  "cond": "cond2",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 20.29,
+    "pbr": 9.66,
+    "roe": 47.61,
+    "market_cap": 1553.7,
+    "momentum_1m": 3.7601,
+    "volume_change": 2.2779,
+    "price_position_52w": 72.36,
+    "revenue_growth": 198.07,
+    "operating_margin": 71.53,
+    "debt_ratio": 35.56,
+    "dividend_yield": 0.4,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-07",
+        "title": "슈퍼 모멘텀",
+        "target_price": 3900000
+      },
+      {
+        "date": "2026-07-02",
+        "title": "Agent AI Ecosystem 중심에 서다",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-02",
+        "title": "Agent AI Ecosystem 중심에 서다",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "2Q26 Preview 컨센서스 부합",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "경쟁사 본진으로 침투하는 주도주",
+        "target_price": 4200000
+      }
+    ]
+  }
+}

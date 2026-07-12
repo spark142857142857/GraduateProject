@@ -1,0 +1,32 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 78100.0,
+  "signal": "Sell",
+  "confidence": 78,
+  "reasons": [
+    "최근 1개월 수익률이 -11.85%이고 거래량 변화율도 -14.11%로, 단기 추세와 수급이 모두 약세를 보이고 있습니다.",
+    "현재 주가는 52주 최고가 대비 26.2% 수준으로 고점 대비 크게 낮아, 최근 반등 모멘텀이 충분히 확인되지 않습니다.",
+    "1분기 매출과 영업이익은 증가했지만 PER 324.1배, PBR 6.23배, ROE 1.9%로 밸류에이션 대비 수익성이 낮고 영업현금흐름도 -5,655억원으로 재무적 부담이 있습니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 324.07,
+    "pbr": 6.23,
+    "roe": 1.92,
+    "market_cap": 50.0,
+    "momentum_1m": -11.851,
+    "volume_change": -14.1111,
+    "price_position_52w": 26.2,
+    "revenue_growth": 13.67,
+    "operating_margin": 5.48,
+    "debt_ratio": 130.6,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": []
+  }
+}

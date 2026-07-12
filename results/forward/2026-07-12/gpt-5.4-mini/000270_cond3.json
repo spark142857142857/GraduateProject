@@ -1,0 +1,58 @@
+{
+  "ticker": "000270",
+  "name": "기아",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 147500.0,
+  "signal": "Buy",
+  "confidence": 78,
+  "reasons": [
+    "PER 8.2, PBR 0.93, ROE 11.4%로 밸류에이션 대비 수익성이 양호해 20거래일 내 재평가 여지가 있습니다.",
+    "최근 30일 애널리스트 리포트 5건의 목표주가가 205,000원~290,000원으로 현재가 147,500원 대비 상방 여력이 크게 제시되고 있습니다.",
+    "최근 1개월 수익률 -5.45%와 거래량 변화율 -32.62%는 단기 약세를 보여주지만, 52주 범위 내 현재 위치가 45.9%로 극단적 고점 부담은 크지 않아 반등 가능성이 우세합니다."
+  ],
+  "cond": "cond3",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 8.19,
+    "pbr": 0.93,
+    "roe": 11.36,
+    "market_cap": 57.6,
+    "momentum_1m": -5.4487,
+    "volume_change": -32.6216,
+    "price_position_52w": 45.93,
+    "revenue_growth": 5.3,
+    "operating_margin": 7.47,
+    "debt_ratio": 70.93,
+    "dividend_yield": 4.2,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Preview: 앞서 가는 실적, 뒤따라갈 주..",
+        "target_price": 250000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "높아진 BEV Mix가 단기 손익 부담으로",
+        "target_price": 205000
+      },
+      {
+        "date": "2026-07-09",
+        "title": "흔들리지 않는 편안함",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-06",
+        "title": "신차 경쟁력 입증, 이제는 가치 재조명",
+        "target_price": 290000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "실적이 끌고, 현대모비스가 밀고",
+        "target_price": 240000
+      }
+    ]
+  }
+}

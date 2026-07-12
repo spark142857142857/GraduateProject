@@ -1,0 +1,48 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 1395000.0,
+  "signal": "Buy",
+  "confidence": 78,
+  "reasons": [
+    "2026년 1분기 매출이 전년동기 대비 25.8%, 영업이익이 35.0% 증가했고 영업이익률도 46.2%로 높아 단기 실적 모멘텀이 강합니다.",
+    "ROE 16.9%와 영업현금흐름 7,677억원, 부채비율 51.4%는 수익성과 재무안정성이 양호해 20거래일 내 주가 하방 압력을 완화합니다.",
+    "최근 1개월 수익률이 8.48%로 이미 상승 추세이며 현재 주가가 52주 최고가 대비 21.1% 수준에 머물러 추가 반등 여지가 있습니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 48.17,
+    "pbr": 8.15,
+    "roe": 16.92,
+    "market_cap": 64.6,
+    "momentum_1m": 8.4759,
+    "volume_change": -4.1595,
+    "price_position_52w": 21.05,
+    "revenue_growth": 25.77,
+    "operating_margin": 46.2,
+    "debt_ratio": 51.4,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "하반기 불확실성 해소 기대",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

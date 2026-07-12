@@ -1,0 +1,32 @@
+{
+  "ticker": "196170",
+  "name": "알테오젠",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 324000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "알테오젠의 최근 20거래일 주가 추세는 뚜렷한 상승 또는 하락 방향성을 보이지 않고 횡보하는 모습을 나타내고 있습니다.",
+    "거래량 또한 특정 방향성을 강하게 지지할 만큼 유의미한 변화를 보이지 않아 향후 주가 방향 예측에 불확실성이 존재합니다.",
+    "현재 제공된 정보만으로는 향후 20거래일 내 주가 상승 또는 하락을 확신할 만한 명확한 근거가 부족합니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 133.22,
+    "pbr": 34.69,
+    "roe": 26.04,
+    "market_cap": 17.4,
+    "momentum_1m": -6.6282,
+    "volume_change": -17.3107,
+    "price_position_52w": 12.8,
+    "revenue_growth": -14.45,
+    "operating_margin": 54.89,
+    "debt_ratio": 42.24,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": []
+  }
+}

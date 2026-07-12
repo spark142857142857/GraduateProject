@@ -1,0 +1,58 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 2180000.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "현재가 2,180,000원이 52주 최고가 2,919,000원 대비 25.3% 하락한 수준으로, 최근 강한 상승 이후 조정 국면에 진입한 것으로 판단됨",
+    "PER 20.3배, PBR 9.66배로 ROE 47.6%에 비해 밸류에이션이 과도하게 높으며, 애널리스트 목표주가(3,900,000~4,200,000원)가 현재가 대비 78~93% 상승을 암시하는 것은 시장이 이미 과도한 기대를 반영했을 가능성",
+    "1개월 수익률 3.76%에 불과하고 거래량 변화율 2.28%로 저조하여, 최근 강한 실적 발표 이후 모멘텀이 약화되고 있는 신호"
+  ],
+  "cond": "cond4",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 20.29,
+    "pbr": 9.66,
+    "roe": 47.61,
+    "market_cap": 1553.7,
+    "momentum_1m": 3.7601,
+    "volume_change": 2.2779,
+    "price_position_52w": 72.36,
+    "revenue_growth": 198.07,
+    "operating_margin": 71.53,
+    "debt_ratio": 35.56,
+    "dividend_yield": 0.4,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-07",
+        "title": "슈퍼 모멘텀",
+        "target_price": 3900000
+      },
+      {
+        "date": "2026-07-02",
+        "title": "Agent AI Ecosystem 중심에 서다",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-02",
+        "title": "Agent AI Ecosystem 중심에 서다",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "2Q26 Preview 컨센서스 부합",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "경쟁사 본진으로 침투하는 주도주",
+        "target_price": 4200000
+      }
+    ]
+  }
+}

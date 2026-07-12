@@ -1,0 +1,32 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 78100.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "최근 20거래일 동안 두산에너빌리티의 주가는 뚜렷한 상승 또는 하락 추세를 보이지 않고 횡보하는 모습을 보이고 있습니다.",
+    "거래량 또한 최근 20거래일 동안 눈에 띄는 증가나 감소 없이 일정한 수준을 유지하고 있어 매수세와 매도세가 균형을 이루고 있음을 시사합니다.",
+    "현재 주가 수준에서 향후 20거래일 동안 주가를 강하게 견인할 만한 명확한 상승 모멘텀이나 하락 압력이 데이터상으로 포착되지 않아 방향성을 확신하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 324.07,
+    "pbr": 6.23,
+    "roe": 1.92,
+    "market_cap": 50.0,
+    "momentum_1m": -11.851,
+    "volume_change": -14.1111,
+    "price_position_52w": 26.2,
+    "revenue_growth": 13.67,
+    "operating_margin": 5.48,
+    "debt_ratio": 130.6,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": []
+  }
+}

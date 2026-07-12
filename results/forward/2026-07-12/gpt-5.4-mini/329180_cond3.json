@@ -1,0 +1,38 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 504000.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "최근 1개월 수익률이 -21.98%로 단기 모멘텀이 크게 약화되어 20거래일 내 추가 하락 가능성과 반등 가능성이 동시에 존재합니다.",
+    "현재 주가는 52주 최고가 대비 35.4% 수준으로 고점 대비 조정이 진행됐지만, 거래량 변화율이 -35.71%로 수급 개선 신호는 아직 약합니다.",
+    "PER 25.4, PBR 5.45로 밸류에이션 부담이 있는 편이지만 ROE 21.5%와 목표주가 860,000원의 리포트는 펀더멘털 기대를 지지해 방향성을 단정하기 어렵습니다."
+  ],
+  "cond": "cond3",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 25.36,
+    "pbr": 5.45,
+    "roe": 21.49,
+    "market_cap": 52.9,
+    "momentum_1m": -21.9814,
+    "volume_change": -35.7133,
+    "price_position_52w": 35.39,
+    "revenue_growth": 54.78,
+    "operating_margin": 15.3,
+    "debt_ratio": 183.91,
+    "dividend_yield": 1.08,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Pre: 본업 좀 봐주세요 좋아요",
+        "target_price": 860000
+      }
+    ]
+  }
+}

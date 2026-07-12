@@ -1,0 +1,38 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 504000.0,
+  "signal": "Neutral",
+  "confidence": 42,
+  "reasons": [
+    "제공된 데이터가 종목명과 현재가뿐이라 20거래일 방향성을 판단할 수 있는 가격·거래량·실적·수급 정보가 없습니다.",
+    "상승과 하락을 가를 기술적 지표나 펀더멘털 근거가 전혀 없어 Buy 또는 Sell을 선택할 근거가 부족합니다.",
+    "주어진 정보만으로는 방향성이 불명확하므로 적극적 중립 판단이 가장 타당합니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 25.36,
+    "pbr": 5.45,
+    "roe": 21.49,
+    "market_cap": 52.9,
+    "momentum_1m": -21.9814,
+    "volume_change": -35.7133,
+    "price_position_52w": 35.39,
+    "revenue_growth": 54.78,
+    "operating_margin": 15.3,
+    "debt_ratio": 183.91,
+    "dividend_yield": 1.08,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Pre: 본업 좀 봐주세요 좋아요",
+        "target_price": 860000
+      }
+    ]
+  }
+}

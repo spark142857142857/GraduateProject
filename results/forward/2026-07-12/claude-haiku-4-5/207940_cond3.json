@@ -1,0 +1,48 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 1395000.0,
+  "signal": "Neutral",
+  "confidence": 52,
+  "reasons": [
+    "PER 48.2배는 높은 밸류에이션 수준으로 추가 상승의 근거가 제한적이며, 현재가가 52주 최저가 대비 21.1% 수준으로 여전히 저점 근처에 있어 방향성이 불명확함",
+    "애널리스트 목표주가가 1,800,000~2,090,000원으로 현재가 대비 29~50% 상승을 제시하나, 거래량 변화율 -4.16%는 상승 모멘텀의 약화를 시사함",
+    "ROE 16.9%와 PBR 8.15배는 양호하나, 최근 1개월 수익률 8.48%에도 불구하고 거래량이 감소하는 것은 상승 지속성에 대한 투자자 확신 부족을 의미함"
+  ],
+  "cond": "cond3",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 48.17,
+    "pbr": 8.15,
+    "roe": 16.92,
+    "market_cap": 64.6,
+    "momentum_1m": 8.4759,
+    "volume_change": -4.1595,
+    "price_position_52w": 21.05,
+    "revenue_growth": 25.77,
+    "operating_margin": 46.2,
+    "debt_ratio": 51.4,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "하반기 불확실성 해소 기대",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

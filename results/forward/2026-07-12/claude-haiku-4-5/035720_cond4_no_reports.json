@@ -1,0 +1,44 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 35350.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "PER 29.2배는 높은 수준이면서 ROE 4.7%는 낮아 수익성 대비 과도한 밸류에이션을 보이고 있습니다.",
+    "52주 내 현재 위치 6.4%와 최근 1개월 수익률 -10.05%는 강한 하락 추세를 나타내며, 거래량 변화율 -42.39%는 하락장에서의 약한 수급을 시사합니다.",
+    "부채비율 86.8%로 높은 재무 레버리지를 보유한 상태에서 주가 하락 시 추가 하락 압력이 가중될 수 있습니다.",
+    "2026년 1분기 영업이익률 10.9%와 영업현금흐름 3,167억원은 긍정적이나, 현재의 기술적 약세와 높은 밸류에이션 대비 단기 상승 근거로는 부족합니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 29.24,
+    "pbr": 1.36,
+    "roe": 4.65,
+    "market_cap": 15.7,
+    "momentum_1m": -10.0509,
+    "volume_change": -42.3881,
+    "price_position_52w": 6.37,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

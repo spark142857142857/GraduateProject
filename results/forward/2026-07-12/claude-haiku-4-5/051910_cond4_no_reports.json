@@ -1,0 +1,33 @@
+{
+  "ticker": "051910",
+  "name": "LG화학",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 264000.0,
+  "signal": "Sell",
+  "confidence": 76,
+  "reasons": [
+    "2026 1분기 순이익 -7,819억원의 심각한 적자로 PER 산출 불가능하며 수익성 악화가 명확함",
+    "부채비율 119.7%로 자본금을 초과하는 높은 부채 수준에서 영업현금흐름 -1,759억원으로 현금 창출 능력 상실",
+    "52주 최저가 229,000원 대비 현재가 264,000원으로 저점 회복 중이나 최고가 429,500원 대비 38.5% 하락한 상태에서 추가 하락 압력 존재",
+    "최근 1개월 -16.59% 하락 추세와 거래량 -39.59% 감소로 약세 심화 및 투자자 관심 급감"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 0.59,
+    "roe": null,
+    "market_cap": 18.6,
+    "momentum_1m": -16.5877,
+    "volume_change": -39.5873,
+    "price_position_52w": 17.46,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 119.71,
+    "dividend_yield": 0.6,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": []
+  }
+}

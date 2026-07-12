@@ -1,0 +1,43 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 35350.0,
+  "signal": "Neutral",
+  "confidence": 67,
+  "reasons": [
+    "2026년 1분기 매출이 전년동기 대비 11.1%, 영업이익이 66.0% 증가해 실적 모멘텀은 분명하지만, 이는 이미 발표된 실적 개선으로 단기 주가에 얼마나 추가 반영될지는 불확실합니다.",
+    "현재 주가는 52주 최고가 대비 크게 낮고 52주 내 위치가 6.4%로 바닥권에 가깝지만, 최근 1개월 수익률 -10.05%와 거래량 변화율 -42.39%는 단기 추세와 수급이 약함을 보여줍니다.",
+    "PER 29.2는 이익 대비 밸류에이션 부담이 있는 편이고 ROE 4.7%는 자본효율성이 높지 않아, 실적 개선에도 불구하고 향후 20거래일 방향을 강하게 단정하기 어렵습니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 29.24,
+    "pbr": 1.36,
+    "roe": 4.65,
+    "market_cap": 15.7,
+    "momentum_1m": -10.0509,
+    "volume_change": -42.3881,
+    "price_position_52w": 6.37,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

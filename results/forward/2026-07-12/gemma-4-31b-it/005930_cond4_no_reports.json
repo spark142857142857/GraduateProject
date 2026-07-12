@@ -1,0 +1,58 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 285000.0,
+  "signal": "Buy",
+  "confidence": 92,
+  "reasons": [
+    "2026년 1분기 영업이익이 전년 동기 대비 756.1% 폭증하였으며, 영업이익률이 42.8%에 달하는 압도적인 수익성을 기록함",
+    "부채비율 30.1%의 낮은 재무 리스크와 40.3조원의 강력한 영업현금흐름을 통해 매우 높은 재무 안정성을 확보함",
+    "최근 1개월 수익률(-4.68%)과 거래량(-7.64%)의 감소세가 있으나, 폭발적인 실적 성장세가 이를 상쇄하고 주가 상승을 견인할 강력한 근거가 됨"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 22.73,
+    "pbr": 4.05,
+    "roe": 17.82,
+    "market_cap": 1666.2,
+    "momentum_1m": -4.6823,
+    "volume_change": -7.6448,
+    "price_position_52w": 74.36,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-08",
+        "title": "과격한 주가 반응에 뇌동하지 말자",
+        "target_price": 550000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "하반기, EPS 성장률 둔화 예상",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "외풍을 극복하고도 남을 실적",
+        "target_price": 460000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "실적 전망치 상향 조정 지속",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "걱정의 벽을 타고",
+        "target_price": 560000
+      }
+    ]
+  }
+}

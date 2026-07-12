@@ -1,0 +1,58 @@
+{
+  "ticker": "005380",
+  "name": "현대차",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 457500.0,
+  "signal": "Neutral",
+  "confidence": 45,
+  "reasons": [
+    "현재가 457,500원만 제공되었으며, 향후 20거래일 주가 방향을 판단하기 위한 기술적·펀더멘탈 지표 데이터가 전혀 제공되지 않았습니다.",
+    "차트 패턴, 이동평균선, RSI, MACD 등 기술적 분석 지표가 없어 단기 추세 판단이 불가능합니다.",
+    "실적, PER, PBR, 배당수익률 등 펀더멘탈 지표가 없어 기업 가치 평가 및 상승·하락 근거를 도출할 수 없습니다."
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 13.2,
+    "pbr": 1.02,
+    "roe": 7.73,
+    "market_cap": 93.7,
+    "momentum_1m": -23.3668,
+    "volume_change": -44.6611,
+    "price_position_52w": 46.18,
+    "revenue_growth": 3.45,
+    "operating_margin": 5.47,
+    "debt_ratio": 190.28,
+    "dividend_yield": 1.9,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "하늘을 짊어진 Atlas, 이제 주가를 들어 올릴..",
+        "target_price": 780000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Preview: 실적 저점 구간의 매수 기회",
+        "target_price": 900000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "내러티브보다는 펀더멘털 회복 가능성에 주목",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-07-06",
+        "title": "둔화에서 회복, 기대에서 현실화",
+        "target_price": 760000
+      },
+      {
+        "date": "2026-06-18",
+        "title": "기대감에서 실적으로",
+        "target_price": 760000
+      }
+    ]
+  }
+}

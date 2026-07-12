@@ -1,0 +1,58 @@
+{
+  "ticker": "005380",
+  "name": "현대차",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 457500.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월 수익률이 -23.37%로 큰 폭의 하락세를 보이고 있으며, 거래량 변화율 또한 -44.66%로 감소하여 투자 심리가 위축되었음을 시사합니다.",
+    "2026년 1분기 영업이익이 전년 동기 대비 -30.8% 감소하며 수익성 악화가 관찰되었습니다.",
+    "부채비율이 190.3%로 다소 높은 수준이며, 이는 재무 안정성에 대한 우려를 제기할 수 있습니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 13.2,
+    "pbr": 1.02,
+    "roe": 7.73,
+    "market_cap": 93.7,
+    "momentum_1m": -23.3668,
+    "volume_change": -44.6611,
+    "price_position_52w": 46.18,
+    "revenue_growth": 3.45,
+    "operating_margin": 5.47,
+    "debt_ratio": 190.28,
+    "dividend_yield": 1.9,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "하늘을 짊어진 Atlas, 이제 주가를 들어 올릴..",
+        "target_price": 780000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Preview: 실적 저점 구간의 매수 기회",
+        "target_price": 900000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "내러티브보다는 펀더멘털 회복 가능성에 주목",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-07-06",
+        "title": "둔화에서 회복, 기대에서 현실화",
+        "target_price": 760000
+      },
+      {
+        "date": "2026-06-18",
+        "title": "기대감에서 실적으로",
+        "target_price": 760000
+      }
+    ]
+  }
+}

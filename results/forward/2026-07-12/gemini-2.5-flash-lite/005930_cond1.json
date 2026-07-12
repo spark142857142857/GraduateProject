@@ -1,0 +1,58 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 285000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 285,000원은 과거 주가 흐름 대비 특별한 상승 또는 하락 추세를 강하게 시사하지 않습니다.",
+    "제공된 데이터만으로는 향후 20거래일 내 삼성전자의 주가 상승 또는 하락을 뒷받침할 명확한 기술적 또는 펀더멘탈 지표가 부족합니다.",
+    "따라서 현재 시점에서는 상승과 하락의 근거가 균형을 이루거나 방향성을 확신하기 어려운 상황입니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 22.73,
+    "pbr": 4.05,
+    "roe": 17.82,
+    "market_cap": 1666.2,
+    "momentum_1m": -4.6823,
+    "volume_change": -7.6448,
+    "price_position_52w": 74.36,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-08",
+        "title": "과격한 주가 반응에 뇌동하지 말자",
+        "target_price": 550000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "하반기, EPS 성장률 둔화 예상",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "외풍을 극복하고도 남을 실적",
+        "target_price": 460000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "실적 전망치 상향 조정 지속",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "걱정의 벽을 타고",
+        "target_price": 560000
+      }
+    ]
+  }
+}

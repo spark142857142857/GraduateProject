@@ -1,0 +1,43 @@
+{
+  "ticker": "068270",
+  "name": "셀트리온",
+  "date": "2026-07-12",
+  "context_date": "2026-07-12",
+  "price": 175200.0,
+  "signal": "Neutral",
+  "confidence": 45,
+  "reasons": [
+    "현재가 175,200원에 대한 기술적 지지선, 저항선, 이동평균선 등의 차트 데이터가 제공되지 않아 단기 추세 판단이 불가능합니다.",
+    "재무제표, 실적 추이, PER/PBR 등 밸류에이션 지표가 제공되지 않아 기업의 내재가치 대비 현재 주가 수준을 평가할 수 없습니다.",
+    "최근 공시, 뉴스, 산업 동향, 경쟁사 대비 상대 강도 등 펀더멘탈 정보가 부재하여 향후 20거래일 주가 방향성을 확신할 수 없습니다."
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 30.62,
+    "pbr": 2.29,
+    "roe": 7.48,
+    "market_cap": 40.7,
+    "momentum_1m": 5.4152,
+    "volume_change": -14.8213,
+    "price_position_52w": 26.57,
+    "revenue_growth": 36.0,
+    "operating_margin": 28.11,
+    "debt_ratio": 29.99,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-06",
+        "title": "신규 바이오시밀러가 증명한 이익 체력",
+        "target_price": 250000
+      },
+      {
+        "date": "2026-07-06",
+        "title": "높아지는 실적 신뢰도",
+        "target_price": null
+      }
+    ]
+  }
+}
