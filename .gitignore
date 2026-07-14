@@ -22,3 +22,6 @@ docs_cache/
 # IDE
 .vscode/
 .idea/
+
+# 심사 방어 준비용 개인 문서 (push 안 함)
+docs/defense_qa.md
