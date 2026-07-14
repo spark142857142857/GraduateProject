@@ -25,3 +25,6 @@ docs_cache/
 
 # 심사 방어 준비용 개인 문서 (push 안 함)
 docs/defense_qa.md
+
+# 중간보고서 초안·양식 (개인 제출용, push 안 함)
+docs/*중간보고서*
