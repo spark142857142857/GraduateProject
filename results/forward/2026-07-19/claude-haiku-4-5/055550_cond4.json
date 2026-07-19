@@ -1,0 +1,55 @@
+{
+  "ticker": "055550",
+  "name": "신한지주",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 107900.0,
+  "signal": "Neutral",
+  "confidence": 52,
+  "reasons": [
+    "52주 내 현재 위치 97.1%로 이미 최고가 근처에 위치하여 단기 상승 여력이 제한적",
+    "PER 10.6, PBR 0.89의 저평가 지표와 ROE 8.4%의 낮은 수익성 사이에 괴리 존재",
+    "최근 1개월 수익률 4.66% 상승 후 거래량 변화율 -10.04%로 하락하여 상승 모멘텀 약화 신호",
+    "부채비율 1228.5%의 극도로 높은 재무 레버리지가 향후 리스크 요인으로 작용 가능",
+    "애널리스트 목표주가 129,000~130,000원은 현재가 대비 19~20% 상승을 시사하나, 이미 고점 근처 위치에서의 추가 상승 실현 가능성 불확실"
+  ],
+  "cond": "cond4",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 10.56,
+    "pbr": 0.89,
+    "roe": 8.43,
+    "market_cap": 51.2,
+    "momentum_1m": 4.6557,
+    "volume_change": -10.0366,
+    "price_position_52w": 97.12,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1228.55,
+    "dividend_yield": 3.01,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-13",
+        "title": "실적과 주주환원 모두 양호",
+        "target_price": 129000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-07-03",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      }
+    ]
+  }
+}

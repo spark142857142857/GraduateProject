@@ -1,0 +1,53 @@
+{
+  "ticker": "068270",
+  "name": "셀트리온",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 175800.0,
+  "signal": "Neutral",
+  "confidence": 52,
+  "reasons": [
+    "2026 1분기 매출 +36.0%, 영업이익 +115.4%의 강한 실적 성장이 긍정적이나, 현재 PER 30.7배는 고성장을 상당 부분 반영한 수준",
+    "52주 내 현재 위치 21.2%로 저점 근처에 있어 상승 여력이 있으나, 최근 1개월 수익률 0.69%와 거래량 변화율 -4.11%는 모멘텀 약화를 시사",
+    "ROE 7.5%는 낮은 수준으로 자본효율성이 미흡하며, PBR 2.30과 높은 밸류에이션 대비 수익성 개선 속도가 불명확하여 단기 방향성 판단이 어려움"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 30.73,
+    "pbr": 2.3,
+    "roe": 7.48,
+    "market_cap": 40.9,
+    "momentum_1m": 0.6873,
+    "volume_change": -4.1057,
+    "price_position_52w": 21.17,
+    "revenue_growth": 36.0,
+    "operating_margin": 28.11,
+    "debt_ratio": 29.99,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-06",
+        "title": "신규 바이오시밀러가 증명한 이익 체력",
+        "target_price": 250000
+      },
+      {
+        "date": "2026-07-06",
+        "title": "높아지는 실적 신뢰도",
+        "target_price": null
+      },
+      {
+        "date": "2026-07-06",
+        "title": "신규 바이오시밀러가 증명한 이익 체력",
+        "target_price": 250000
+      },
+      {
+        "date": "2026-07-06",
+        "title": "높아지는 실적 신뢰도",
+        "target_price": null
+      }
+    ]
+  }
+}

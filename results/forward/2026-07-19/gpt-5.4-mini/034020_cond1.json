@@ -1,0 +1,32 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 69700.0,
+  "signal": "Neutral",
+  "confidence": 42,
+  "reasons": [
+    "제공된 정보가 현재가와 종목명뿐이라 20거래일 방향성을 판단할 수 있는 추세·실적·밸류에이션·수급 데이터가 없다.",
+    "상승과 하락을 가를 기술적 지표나 최근 거래량, 변동성 정보가 없어 Buy 또는 Sell 근거를 만들기 어렵다.",
+    "브랜드 이미지와 과거 명성을 배제해야 하므로, 현재 제공 데이터만으로는 방향성 확신이 부족해 Neutral이 적절하다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 289.21,
+    "pbr": 5.56,
+    "roe": 1.92,
+    "market_cap": 44.6,
+    "momentum_1m": -32.4612,
+    "volume_change": -7.6547,
+    "price_position_52w": 15.57,
+    "revenue_growth": 13.67,
+    "operating_margin": 5.48,
+    "debt_ratio": 130.6,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": []
+  }
+}

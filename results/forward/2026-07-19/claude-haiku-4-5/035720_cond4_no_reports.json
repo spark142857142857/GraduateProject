@@ -1,0 +1,54 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 35900.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "PER 29.7배는 시장 평균 대비 고평가 상태이며, ROE 4.7%는 저수익성을 나타내 주가 정당성이 약함",
+    "최근 1개월 수익률 -11.47%와 거래량 변화율 -33.82%는 투자자 관심 급락과 하락 추세를 시사",
+    "52주 최저가 33,150원 근처(현재 35,900원)에서 반등 약세를 보이며, 52주 내 8.0% 위치는 저점 근처 상태로 추가 하락 위험 존재",
+    "부채비율 86.8%는 높은 수준의 재무 레버리지로 경기 악화 시 취약성 노출 가능"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 29.69,
+    "pbr": 1.38,
+    "roe": 4.65,
+    "market_cap": 15.9,
+    "momentum_1m": -11.4673,
+    "volume_change": -33.8175,
+    "price_position_52w": 7.96,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "카나나 서비스의 가능성 증명 필요",
+        "target_price": 57000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

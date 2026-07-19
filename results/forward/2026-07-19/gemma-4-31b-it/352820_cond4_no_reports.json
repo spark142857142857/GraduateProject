@@ -1,0 +1,53 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 208500.0,
+  "signal": "Sell",
+  "confidence": 85,
+  "reasons": [
+    "전년 동기 대비 영업이익이 -1009.1% 급감하며 1,966억원의 대규모 영업손실과 -28.1%의 영업이익률을 기록했다.",
+    "최근 1개월 수익률이 -11.46%로 단기 하락 추세가 뚜렷하며, 거래량 변화율(2.21%)이 낮아 반등 모멘텀이 부족하다.",
+    "52주 가격 범위 내 현재 위치가 13.5%로 매우 낮으나, 실적 악화와 주가 하락세가 결합되어 추가 하락 가능성이 높다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": null,
+    "pbr": 2.68,
+    "roe": null,
+    "market_cap": 9.0,
+    "momentum_1m": -11.465,
+    "volume_change": 2.2072,
+    "price_position_52w": 13.54,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "팔랑귀 팔랑귀 할 만큼 좋은 실적",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-13",
+        "title": "높아진 실적 기대감, 높아질 주가",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      }
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "ticker": "105560",
+  "name": "KB금융",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 181100.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "제공된 데이터만으로는 KB금융의 향후 20거래일 주가 방향성을 명확히 판단할 근거가 부족합니다.",
+    "현재가 181,100원이라는 정보만으로는 상승 또는 하락을 지지할 만한 기술적 또는 펀더멘털 분석이 불가능합니다.",
+    "추가적인 재무 지표, 시장 동향, 거시 경제 지표 등의 데이터가 제공되지 않아 확신 있는 투자 신호를 도출하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 11.22,
+    "pbr": 1.13,
+    "roe": 10.07,
+    "market_cap": 64.2,
+    "momentum_1m": 10.4268,
+    "volume_change": 4.038,
+    "price_position_52w": 93.64,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1257.11,
+    "dividend_yield": 3.2,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-07",
+        "title": "이번에도 기대되는 주주환원",
+        "target_price": 216000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "이번에도 기대되는 주주환원",
+        "target_price": 216000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "단기 변동성 확대 예상",
+        "target_price": 225000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "적극 매수 구간",
+        "target_price": 190000
+      }
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 484000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 484,000원은 과거 20거래일 평균가 대비 소폭 상승한 수준으로, 명확한 추세 전환 신호는 포착되지 않습니다.",
+    "제공된 데이터만으로는 향후 20거래일 내 주가 상승 또는 하락을 강하게 지지할 만한 명확한 모멘텀 지표나 추세 지표가 부족합니다.",
+    "향후 20거래일 동안의 시장 환경 변화나 수주 관련 추가 정보 없이는 주가 방향성을 확신하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 24.35,
+    "pbr": 5.23,
+    "roe": 21.48,
+    "market_cap": 50.8,
+    "momentum_1m": -31.5417,
+    "volume_change": -28.9079,
+    "price_position_52w": 28.98,
+    "revenue_growth": 54.78,
+    "operating_margin": 15.3,
+    "debt_ratio": 183.91,
+    "dividend_yield": 1.08,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-15",
+        "title": "여전히 강한 성장 동력을 보유",
+        "target_price": 880000
+      },
+      {
+        "date": "2026-07-14",
+        "title": "엔진 캐파 증설해 주실 거죠?",
+        "target_price": 970000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Pre: 본업 좀 봐주세요 좋아요",
+        "target_price": 860000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Pre: 본업 좀 봐주세요 좋아요",
+        "target_price": 860000
+      }
+    ]
+  }
+}

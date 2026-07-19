@@ -1,0 +1,53 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 208500.0,
+  "signal": "Neutral",
+  "confidence": 45,
+  "reasons": [
+    "제공된 데이터가 현재가 정보만 있고 기술적 지표, 재무 지표, 거래량, 추세 정보 등이 부재하여 방향성 판단의 근거가 극도로 제한적입니다.",
+    "단일 시점의 가격 정보만으로는 향후 20거래일의 상승 또는 하락을 예측할 객관적 근거를 제시할 수 없습니다.",
+    "차트 패턴, 이동평균선, RSI, MACD 등 기술적 분석 지표와 PER, PBR, 매출액, 영업이익 등 펀더멘탈 데이터가 필요하나 제공되지 않았습니다."
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 2.68,
+    "roe": null,
+    "market_cap": 9.0,
+    "momentum_1m": -11.465,
+    "volume_change": 2.2072,
+    "price_position_52w": 13.54,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "팔랑귀 팔랑귀 할 만큼 좋은 실적",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-13",
+        "title": "높아진 실적 기대감, 높아질 주가",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      }
+    ]
+  }
+}

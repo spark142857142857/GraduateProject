@@ -1,0 +1,53 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 208500.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "52주 내 현재 위치 13.5%로 저점 근처에 있으나, 최근 1개월 수익률 -11.46%로 하락 모멘텀이 지속되고 있음",
+    "PER 적자 상태이며 PBR 2.68로 상대적으로 높은 밸류에이션을 유지하고 있어 추가 하락 압력 가능성",
+    "52주 최고가 404,500원 대비 현재가 208,500원으로 약 49% 하락한 상태에서 거래량 변화율 2.21%로 저조하여 반등 근거 부족"
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 2.68,
+    "roe": null,
+    "market_cap": 9.0,
+    "momentum_1m": -11.465,
+    "volume_change": 2.2072,
+    "price_position_52w": 13.54,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "팔랑귀 팔랑귀 할 만큼 좋은 실적",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-13",
+        "title": "높아진 실적 기대감, 높아질 주가",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      }
+    ]
+  }
+}

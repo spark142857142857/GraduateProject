@@ -1,0 +1,53 @@
+{
+  "ticker": "055550",
+  "name": "신한지주",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 107900.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "현재가 정보만 제공되어 기술적·펀더멘탈 분석 불가능",
+    "최근 주가 추이, 거래량, 기술적 지표 데이터 부재",
+    "투자 판단을 위한 최소한의 데이터 기준 미충족"
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 10.56,
+    "pbr": 0.89,
+    "roe": 8.43,
+    "market_cap": 51.2,
+    "momentum_1m": 4.6557,
+    "volume_change": -10.0366,
+    "price_position_52w": 97.12,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1228.55,
+    "dividend_yield": 3.01,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-13",
+        "title": "실적과 주주환원 모두 양호",
+        "target_price": 129000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      },
+      {
+        "date": "2026-07-03",
+        "title": "편안하게 매수하시면 됩니다.",
+        "target_price": 130000
+      }
+    ]
+  }
+}

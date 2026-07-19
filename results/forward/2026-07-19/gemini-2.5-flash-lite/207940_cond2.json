@@ -1,0 +1,48 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 1396000.0,
+  "signal": "Neutral",
+  "confidence": 60,
+  "reasons": [
+    "현재가(1,396,000원)는 52주 최저가(1,243,000원) 대비 상승했으나 52주 최고가(1,965,000원) 대비로는 상당한 하락폭을 보이며 52주 내 현재 위치(21.2%)가 낮아 상승 여력과 하락 위험이 공존합니다.",
+    "최근 1개월 수익률(1.90%)은 소폭 상승했으나 거래량 변화율(-8.38%)은 감소하여 투자 심리가 강하게 형성되지 않았음을 시사합니다.",
+    "PER(48.2)과 PBR(8.16)은 다소 높은 수준으로 밸류에이션 부담이 존재하나, ROE(16.9%)는 양호한 수준으로 기업의 수익성은 뒷받침되고 있어 단기적인 방향성을 명확히 판단하기 어렵습니다."
+  ],
+  "cond": "cond2",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 48.2,
+    "pbr": 8.16,
+    "roe": 16.93,
+    "market_cap": 64.6,
+    "momentum_1m": 1.8978,
+    "volume_change": -8.3792,
+    "price_position_52w": 21.19,
+    "revenue_growth": 25.77,
+    "operating_margin": 46.2,
+    "debt_ratio": 51.4,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "큰 파도를 지나는 중",
+        "target_price": 1800000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "하반기 불확실성 해소 기대",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

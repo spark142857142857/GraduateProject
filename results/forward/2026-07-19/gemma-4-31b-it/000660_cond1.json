@@ -1,0 +1,58 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 1842000.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "제공된 데이터가 현재가와 상장 시장 정보뿐이며, 주가 변동을 예측할 수 있는 기술적·기본적 지표가 전혀 없습니다.",
+    "재무제표, 거래량, 가격 추세 등 분석 가능한 정량적 데이터가 부재하여 방향성을 판단할 근거가 없습니다.",
+    "데이터 부족으로 인해 향후 20거래일간의 상승 또는 하락 가능성을 통계적으로 산출할 수 없습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 17.14,
+    "pbr": 8.16,
+    "roe": 47.61,
+    "market_cap": 1312.8,
+    "momentum_1m": -26.9338,
+    "volume_change": 20.8534,
+    "price_position_52w": 59.72,
+    "revenue_growth": 198.07,
+    "operating_margin": 71.53,
+    "debt_ratio": 35.56,
+    "dividend_yield": 0.4,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "시선을 약간만 아래로",
+        "target_price": 4200000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "슈퍼 모멘텀",
+        "target_price": 3900000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "슈퍼 모멘텀",
+        "target_price": 3900000
+      },
+      {
+        "date": "2026-07-02",
+        "title": "Agent AI Ecosystem 중심에 서다",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "2Q26 Preview 컨센서스 부합",
+        "target_price": 4000000
+      }
+    ]
+  }
+}

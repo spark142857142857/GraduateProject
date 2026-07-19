@@ -1,0 +1,58 @@
+{
+  "ticker": "000270",
+  "name": "기아",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 149700.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "PER 8.3, PBR 0.95, ROE 11.4%로 밸류에이션과 수익성은 무난하지만, 이것만으로 향후 20거래일 주가 상승을 강하게 뒷받침하기에는 부족합니다.",
+    "최근 1개월 수익률이 -9.98%이고 거래량 변화율도 -23.56%로 단기 모멘텀과 수급이 약해 단기 반등 확신이 높지 않습니다.",
+    "애널리스트 목표주가가 205,000~250,000원으로 현재가 대비 높지만, BEV Mix에 따른 단기 손익 부담 의견도 함께 존재해 상승과 하락 근거가 혼재합니다."
+  ],
+  "cond": "cond3",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 8.31,
+    "pbr": 0.95,
+    "roe": 11.43,
+    "market_cap": 58.4,
+    "momentum_1m": -9.982,
+    "volume_change": -23.5621,
+    "price_position_52w": 47.97,
+    "revenue_growth": 5.3,
+    "operating_margin": 7.47,
+    "debt_ratio": 70.93,
+    "dividend_yield": 4.2,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "2Q26 프리뷰: 양호한 실적, 뛰어난 xEV 경쟁..",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Preview: 앞서 가는 실적, 뒤따라갈 주..",
+        "target_price": 250000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "높아진 BEV Mix가 단기 손익 부담으로",
+        "target_price": 205000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Preview: 앞서 가는 실적, 뒤따라갈 주..",
+        "target_price": 250000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "높아진 BEV Mix가 단기 손익 부담으로",
+        "target_price": 205000
+      }
+    ]
+  }
+}

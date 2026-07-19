@@ -1,0 +1,54 @@
+{
+  "ticker": "105560",
+  "name": "KB금융",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 181100.0,
+  "signal": "Buy",
+  "confidence": 72,
+  "reasons": [
+    "52주 내 현재 위치 93.6%로 상단부에 위치하면서도 52주 최고가 186,200원 대비 현재가 181,100원으로 약 2.7% 상승 여력이 있음",
+    "최근 1개월 수익률 10.43%의 강한 상승 추세 중에 있으며, 애널리스트 목표주가 평균 211,750원으로 현재가 대비 16.9% 상승 여력을 제시",
+    "PER 11.2, PBR 1.13의 저평가 지표와 ROE 10.1%의 수익성이 결합되어 있으며, 주주환원 기대감이 복수 리포트에서 언급됨",
+    "거래량 변화율 4.04%로 거래량 증가 추세를 보이고 있어 상승 추세의 신뢰성을 뒷받침"
+  ],
+  "cond": "cond3",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 11.22,
+    "pbr": 1.13,
+    "roe": 10.07,
+    "market_cap": 64.2,
+    "momentum_1m": 10.4268,
+    "volume_change": 4.038,
+    "price_position_52w": 93.64,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1257.11,
+    "dividend_yield": 3.2,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-07",
+        "title": "이번에도 기대되는 주주환원",
+        "target_price": 216000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "이번에도 기대되는 주주환원",
+        "target_price": 216000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "단기 변동성 확대 예상",
+        "target_price": 225000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "적극 매수 구간",
+        "target_price": 190000
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "ticker": "005380",
+  "name": "현대차",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 425000.0,
+  "signal": "Neutral",
+  "confidence": 50,
+  "reasons": [
+    "현재가 425,000원만 제시되어 있어 추세, 밸류에이션, 거래량, 실적 모멘텀 등 20거래일 방향을 판단할 핵심 데이터가 부족합니다.",
+    "상승과 하락을 가늠할 수 있는 기술적 지표나 수급 정보가 없어 Buy 또는 Sell을 우위로 둘 근거가 없습니다.",
+    "제공된 정보만으로는 방향성이 불명확하므로 적극적 선택으로서 Neutral이 가장 적절합니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 12.26,
+    "pbr": 0.94,
+    "roe": 7.67,
+    "market_cap": 87.0,
+    "momentum_1m": -31.2298,
+    "volume_change": -33.2764,
+    "price_position_52w": 40.2,
+    "revenue_growth": 3.45,
+    "operating_margin": 5.47,
+    "debt_ratio": 190.28,
+    "dividend_yield": 1.9,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "하늘을 짊어진 Atlas, 이제 주가를 들어 올릴..",
+        "target_price": 780000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Preview: 실적 저점 구간의 매수 기회",
+        "target_price": 900000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "하늘을 짊어진 Atlas, 이제 주가를 들어 올릴..",
+        "target_price": 780000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Preview: 실적 저점 구간의 매수 기회",
+        "target_price": 900000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "내러티브보다는 펀더멘털 회복 가능성에 주목",
+        "target_price": 700000
+      }
+    ]
+  }
+}

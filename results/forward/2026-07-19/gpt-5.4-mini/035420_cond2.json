@@ -1,0 +1,53 @@
+{
+  "ticker": "035420",
+  "name": "네이버",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 190000.0,
+  "signal": "Sell",
+  "confidence": 78,
+  "reasons": [
+    "최근 1개월 수익률이 -21.97%로 단기 추세가 매우 약하고, 향후 20거래일에도 약세 흐름이 이어질 가능성이 높습니다.",
+    "거래량 변화율이 -72.48%로 급감해 매수세 유입이 약하며, 반등을 뒷받침할 수급 신호가 부족합니다.",
+    "현재 주가가 52주 최저가 183,200원에 매우 근접한 52주 내 위치 6.5%에 있어 추가 하락 압력이 상대적으로 우세합니다."
+  ],
+  "cond": "cond2",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 15.68,
+    "pbr": 1.01,
+    "roe": 6.44,
+    "market_cap": 29.8,
+    "momentum_1m": -21.9713,
+    "volume_change": -72.4777,
+    "price_position_52w": 6.55,
+    "revenue_growth": 16.3,
+    "operating_margin": 16.72,
+    "debt_ratio": 45.21,
+    "dividend_yield": 1.0,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "3분기까지 마진 압박 불가피",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "평이한 실적, 결국 트리거는 신사업",
+        "target_price": 400000
+      }
+    ]
+  }
+}

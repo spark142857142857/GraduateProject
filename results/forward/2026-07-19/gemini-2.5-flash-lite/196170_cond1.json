@@ -1,0 +1,38 @@
+{
+  "ticker": "196170",
+  "name": "알테오젠",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 276500.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "알테오젠의 최근 20거래일 주가 추세는 뚜렷한 상승 또는 하락 방향성을 보이지 않고 횡보하는 모습을 나타내고 있습니다.",
+    "현재가 276,500원은 최근 20거래일 동안의 고점과 저점 범위 내에 위치하여 추가적인 상승 또는 하락을 강하게 시사하는 지표가 부족합니다.",
+    "거래량 또한 최근 20거래일 동안 특별한 급증이나 급감을 보이지 않아 투자자들의 명확한 방향성에 대한 의지가 확인되지 않습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 113.69,
+    "pbr": 29.61,
+    "roe": 26.04,
+    "market_cap": 14.8,
+    "momentum_1m": -25.8713,
+    "volume_change": -0.0753,
+    "price_position_52w": 0.0,
+    "revenue_growth": -14.45,
+    "operating_margin": 54.89,
+    "debt_ratio": 42.24,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-15",
+        "title": "시밀러가 아닌 ALT-B4를 쓴 이유가 있지 않겠..",
+        "target_price": 580000
+      }
+    ]
+  }
+}

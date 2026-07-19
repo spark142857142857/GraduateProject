@@ -1,0 +1,58 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 1842000.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "2026년 1분기 매출 +198.1%, 영업이익 +405.5%, 영업이익률 71.5%로 실적과 수익성은 매우 강하지만, 이는 이미 강한 기대가 반영됐을 가능성도 있습니다.",
+    "최근 1개월 수익률이 -26.93%로 단기 추세는 약세이며, 향후 20거래일 내 추가 하락과 반등 가능성이 동시에 존재해 방향성이 단정적이지 않습니다.",
+    "PER 17.1, PBR 8.16, ROE 47.6%와 애널리스트 목표주가 3,900만~4,200만원은 펀더멘털 지지 요인이지만, 현재가가 52주 최고가 대비 크게 낮지 않고 거래량 변화율 20.85%가 변동성 확대를 시사해 확신을 높이기 어렵습니다."
+  ],
+  "cond": "cond4",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 17.14,
+    "pbr": 8.16,
+    "roe": 47.61,
+    "market_cap": 1312.8,
+    "momentum_1m": -26.9338,
+    "volume_change": 20.8534,
+    "price_position_52w": 59.72,
+    "revenue_growth": 198.07,
+    "operating_margin": 71.53,
+    "debt_ratio": 35.56,
+    "dividend_yield": 0.4,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "시선을 약간만 아래로",
+        "target_price": 4200000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "슈퍼 모멘텀",
+        "target_price": 3900000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "슈퍼 모멘텀",
+        "target_price": 3900000
+      },
+      {
+        "date": "2026-07-02",
+        "title": "Agent AI Ecosystem 중심에 서다",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "2Q26 Preview 컨센서스 부합",
+        "target_price": 4000000
+      }
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 484000.0,
+  "signal": "Sell",
+  "confidence": 85,
+  "reasons": [
+    "최근 1개월 수익률이 -31.54%로 매우 가파른 하락 추세에 진입해 있어 단기 모멘텀이 매우 부정적입니다.",
+    "PBR이 5.23으로 업종 특성 대비 매우 높은 수준이며, 이는 자산 가치 대비 주가가 과평가되었을 가능성을 시사합니다.",
+    "거래량 변화율이 -28.91%로 감소하고 있어, 주가 하락 과정에서 저가 매수세의 유입이 부족한 상황입니다."
+  ],
+  "cond": "cond2",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 24.35,
+    "pbr": 5.23,
+    "roe": 21.48,
+    "market_cap": 50.8,
+    "momentum_1m": -31.5417,
+    "volume_change": -28.9079,
+    "price_position_52w": 28.98,
+    "revenue_growth": 54.78,
+    "operating_margin": 15.3,
+    "debt_ratio": 183.91,
+    "dividend_yield": 1.08,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-15",
+        "title": "여전히 강한 성장 동력을 보유",
+        "target_price": 880000
+      },
+      {
+        "date": "2026-07-14",
+        "title": "엔진 캐파 증설해 주실 거죠?",
+        "target_price": 970000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Pre: 본업 좀 봐주세요 좋아요",
+        "target_price": 860000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Pre: 본업 좀 봐주세요 좋아요",
+        "target_price": 860000
+      }
+    ]
+  }
+}

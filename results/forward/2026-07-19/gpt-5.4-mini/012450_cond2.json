@@ -1,0 +1,48 @@
+{
+  "ticker": "012450",
+  "name": "한화에어로스페이스",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 943000.0,
+  "signal": "Sell",
+  "confidence": 82,
+  "reasons": [
+    "최근 1개월 수익률이 -22.96%로 단기 추세가 뚜렷하게 약세이며, 향후 20거래일에도 반등보다 추가 조정 가능성이 더 높습니다.",
+    "현재 주가는 52주 최고가 대비 18.9% 수준에 불과해 고점 대비 큰 폭으로 밀려 있으며, 강한 추세 회복 신호가 아직 확인되지 않습니다.",
+    "거래량 변화율이 -5.13%로 수급이 위축된 상태이고, PER 29.8과 PBR 4.88은 현재 약세 구간에서 밸류에이션 부담을 완화해줄 만큼 충분히 낮지 않습니다."
+  ],
+  "cond": "cond2",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 29.8,
+    "pbr": 4.88,
+    "roe": 16.38,
+    "market_cap": 48.6,
+    "momentum_1m": -22.9575,
+    "volume_change": -5.1329,
+    "price_position_52w": 18.85,
+    "revenue_growth": 4.86,
+    "operating_margin": 11.11,
+    "debt_ratio": 224.88,
+    "dividend_yield": 0.7,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-09",
+        "title": "2Q26 Preview: 조용한 지금이 기회",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-07-09",
+        "title": "2Q26 Preview: 조용한 지금이 기회",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "든든한 수주 파이프라인",
+        "target_price": 1780000
+      }
+    ]
+  }
+}

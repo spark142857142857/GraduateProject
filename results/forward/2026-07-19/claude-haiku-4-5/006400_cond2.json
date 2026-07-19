@@ -1,0 +1,49 @@
+{
+  "ticker": "006400",
+  "name": "삼성SDI",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 434500.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "최근 1개월 수익률 -21.00%로 급락세를 보이고 있으며, 52주 최저가 대비 현재가가 2.55배 상승한 상태로 상당한 상승분을 이미 소화했음",
+    "52주 내 현재 위치 48.8%는 연중 하단부에 위치하고 있으며, 52주 최고가 712,000원 대비 39% 하락한 수준으로 하락 모멘텀이 지속 중",
+    "거래량 변화율 -17.90%로 거래량이 감소하고 있어 추가 상승을 뒷받침할 수 있는 수급 강도가 약화된 상태",
+    "PER 적자 상태이고 PBR 1.43으로 저평가 수준이나, 현재의 강한 하락 추세와 거래량 감소가 단기 추가 하락 가능성을 시사"
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 1.43,
+    "roe": null,
+    "market_cap": 35.0,
+    "momentum_1m": -21.0,
+    "volume_change": -17.8986,
+    "price_position_52w": 48.79,
+    "revenue_growth": 12.58,
+    "operating_margin": null,
+    "debt_ratio": null,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-06-30",
+        "title": "밸류에이션 부담 완화, 비중 확대 시점",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "밸류에이션 부담 완화, 비중 확대 시점",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "2Q26, 7개 분기만의 영업흑자 전환 예상",
+        "target_price": 1000000
+      }
+    ]
+  }
+}

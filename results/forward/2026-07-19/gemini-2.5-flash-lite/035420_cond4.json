@@ -1,0 +1,53 @@
+{
+  "ticker": "035420",
+  "name": "네이버",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 190000.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월 수익률이 -21.97%로 큰 폭 하락했으며, 거래량 변화율 또한 -72.48%로 감소하여 투자 심리가 위축되었음을 시사합니다.",
+    "애널리스트 리포트에서 'AI 수익화 전까지는 공백'이라는 언급과 '3분기까지 마진 압박 불가피'라는 의견은 단기적인 실적 개선에 대한 불확실성을 내포하고 있습니다.",
+    "현재가(190,000원)가 52주 최저가(183,200원)에 근접해 있으나, 52주 최고가(287,000원) 대비 상당한 하락폭을 기록하고 있어 추가 하락 가능성을 배제할 수 없습니다."
+  ],
+  "cond": "cond4",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 15.68,
+    "pbr": 1.01,
+    "roe": 6.44,
+    "market_cap": 29.8,
+    "momentum_1m": -21.9713,
+    "volume_change": -72.4777,
+    "price_position_52w": 6.55,
+    "revenue_growth": 16.3,
+    "operating_margin": 16.72,
+    "debt_ratio": 45.21,
+    "dividend_yield": 1.0,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "3분기까지 마진 압박 불가피",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "평이한 실적, 결국 트리거는 신사업",
+        "target_price": 400000
+      }
+    ]
+  }
+}

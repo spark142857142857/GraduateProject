@@ -1,0 +1,53 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 35900.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "카카오의 현재가 35,900원은 최근 20거래일 평균가 대비 큰 변동성을 보이지 않아 상승 또는 하락의 명확한 추세를 파악하기 어렵습니다.",
+    "제공된 정보만으로는 향후 20거래일 동안 카카오의 주가에 영향을 미칠 만한 구체적인 상승 또는 하락 모멘텀을 확인할 수 없습니다.",
+    "기업의 브랜드 이미지, 인지도, 과거 명성을 배제하고 제공된 데이터만을 근거로 판단할 때, 현재 시점에서 명확한 투자 방향을 설정하기에는 근거가 제한적입니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 29.69,
+    "pbr": 1.38,
+    "roe": 4.65,
+    "market_cap": 15.9,
+    "momentum_1m": -11.4673,
+    "volume_change": -33.8175,
+    "price_position_52w": 7.96,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "카나나 서비스의 가능성 증명 필요",
+        "target_price": 57000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

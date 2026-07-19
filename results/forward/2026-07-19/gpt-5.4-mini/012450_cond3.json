@@ -1,0 +1,48 @@
+{
+  "ticker": "012450",
+  "name": "한화에어로스페이스",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 943000.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "최근 1개월 수익률이 -22.96%로 단기 모멘텀이 매우 약하고, 현재 주가가 52주 최고가 대비 18.9% 수준에 머물러 있어 추가 하락과 반등이 동시에 가능한 구간입니다.",
+    "PER 29.8, PBR 4.88은 밸류에이션 부담이 있는 편이지만 ROE 16.4%로 수익성은 양호해, 펀더멘털만으로는 상승·하락을 단정하기 어렵습니다.",
+    "애널리스트 목표주가(1,720,000원, 1,780,000원)가 현재가보다 높아 중기 기대는 우호적이지만, 최근 리포트가 중복되고 거래량 변화율도 -5.13%로 수급 확신이 약해 20거래일 방향성은 불명확합니다."
+  ],
+  "cond": "cond3",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 29.8,
+    "pbr": 4.88,
+    "roe": 16.38,
+    "market_cap": 48.6,
+    "momentum_1m": -22.9575,
+    "volume_change": -5.1329,
+    "price_position_52w": 18.85,
+    "revenue_growth": 4.86,
+    "operating_margin": 11.11,
+    "debt_ratio": 224.88,
+    "dividend_yield": 0.7,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-09",
+        "title": "2Q26 Preview: 조용한 지금이 기회",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-07-09",
+        "title": "2Q26 Preview: 조용한 지금이 기회",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "든든한 수주 파이프라인",
+        "target_price": 1780000
+      }
+    ]
+  }
+}

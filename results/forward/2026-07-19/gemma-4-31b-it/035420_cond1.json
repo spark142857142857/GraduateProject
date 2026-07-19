@@ -1,0 +1,53 @@
+{
+  "ticker": "035420",
+  "name": "네이버",
+  "date": "2026-07-19",
+  "context_date": "2026-07-19",
+  "price": 190000.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "제공된 데이터가 현재가와 상장 시장 정보뿐으로, 주가 방향성을 판단할 수 있는 기술적·기본적 지표가 전혀 없음",
+    "재무 상태, 거래량, 수급 현황 등 퀀트 분석에 필요한 정량적 데이터가 제공되지 않아 상승 또는 하락의 근거를 찾을 수 없음",
+    "판단 근거가 전무하여 신뢰도 기준 50 미만에 해당하므로 규정에 따라 Neutral을 선택함"
+  ],
+  "cond": "cond1",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 15.68,
+    "pbr": 1.01,
+    "roe": 6.44,
+    "market_cap": 29.8,
+    "momentum_1m": -21.9713,
+    "volume_change": -72.4777,
+    "price_position_52w": 6.55,
+    "revenue_growth": 16.3,
+    "operating_margin": 16.72,
+    "debt_ratio": 45.21,
+    "dividend_yield": 1.0,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "3분기까지 마진 압박 불가피",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "평이한 실적, 결국 트리거는 신사업",
+        "target_price": 400000
+      }
+    ]
+  }
+}
