@@ -1,0 +1,58 @@
+{
+  "ticker": "000270",
+  "name": "기아",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 130500.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "제공된 데이터가 현재가와 상장 시장 정보에 국한되어 있어 주가 추세 분석이 불가능함",
+    "재무 지표, 거래량, 기술적 분석 데이터 등 방향성을 판단할 근거 자료가 전혀 제공되지 않음",
+    "분석 가능한 데이터의 부재로 인해 향후 20거래일간의 주가 변동 방향을 확신할 수 없음"
+  ],
+  "cond": "cond1",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 7.24,
+    "pbr": 0.83,
+    "roe": 11.46,
+    "market_cap": 50.9,
+    "momentum_1m": -6.0475,
+    "volume_change": -25.6638,
+    "price_position_52w": 30.22,
+    "revenue_growth": 5.3,
+    "operating_margin": 7.47,
+    "debt_ratio": 70.93,
+    "dividend_yield": 4.2,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "2Q26 프리뷰: 양호한 실적, 뛰어난 xEV 경쟁..",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Preview: 앞서 가는 실적, 뒤따라갈 주..",
+        "target_price": 250000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "높아진 BEV Mix가 단기 손익 부담으로",
+        "target_price": 205000
+      },
+      {
+        "date": "2026-07-09",
+        "title": "흔들리지 않는 편안함",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-06",
+        "title": "신차 경쟁력 입증, 이제는 가치 재조명",
+        "target_price": 290000
+      }
+    ]
+  }
+}

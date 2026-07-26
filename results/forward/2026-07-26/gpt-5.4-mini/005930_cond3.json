@@ -1,0 +1,58 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 249500.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "최근 1개월 수익률이 -26.73%로 단기 추세가 매우 약하고, 거래량 변화율도 -13.81%로 수급 개선 신호가 뚜렷하지 않습니다.",
+    "현재 주가는 52주 최고가 대비 크게 낮지만 52주 내 위치가 62.3%로 극단적 저점 구간은 아니어서, 단기 반등과 추가 하락 중 어느 쪽도 단정하기 어렵습니다.",
+    "PER 19.9, PBR 3.55, ROE 17.8%와 최근 애널리스트 목표주가 상향은 펀더멘털 기대를 지지하지만, 향후 20거래일의 주가 방향을 강하게 확정할 만큼 단기 모멘텀 근거는 부족합니다."
+  ],
+  "cond": "cond3",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 19.9,
+    "pbr": 3.55,
+    "roe": 17.84,
+    "market_cap": 1458.6,
+    "momentum_1m": -26.7254,
+    "volume_change": -13.8078,
+    "price_position_52w": 62.33,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-08",
+        "title": "메모리 이익 체력 확인. 실적 상향 여력 충분",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "체급의 위력",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "걱정의 벽을 타고",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "실적 전망치 상향 조정 지속",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "외풍을 극복하고도 남을 실적",
+        "target_price": 460000
+      }
+    ]
+  }
+}

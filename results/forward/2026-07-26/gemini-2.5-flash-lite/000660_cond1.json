@@ -1,0 +1,58 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 1759000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 1,759,000원은 과거 데이터 대비 상승 또는 하락을 명확히 지지할 만한 추세적 근거가 부족합니다.",
+    "제공된 데이터만으로는 향후 20거래일 내 SK하이닉스의 주가 상승 또는 하락을 강하게 예측할 수 있는 지표가 없습니다.",
+    "매수 또는 매도 신호를 결정하기에는 현재 데이터만으로는 불확실성이 높아 중립적인 판단이 합리적입니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 16.37,
+    "pbr": 7.79,
+    "roe": 47.59,
+    "market_cap": 1253.6,
+    "momentum_1m": -31.8217,
+    "volume_change": 2.8756,
+    "price_position_52w": 56.62,
+    "revenue_growth": 198.07,
+    "operating_margin": 71.53,
+    "debt_ratio": 35.56,
+    "dividend_yield": 0.4,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "시선을 약간만 아래로",
+        "target_price": 4200000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "슈퍼 모멘텀",
+        "target_price": 3900000
+      },
+      {
+        "date": "2026-07-02",
+        "title": "Agent AI Ecosystem 중심에 서다",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "2Q26 Preview 컨센서스 부합",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "경쟁사 본진으로 침투하는 주도주",
+        "target_price": 4200000
+      }
+    ]
+  }
+}

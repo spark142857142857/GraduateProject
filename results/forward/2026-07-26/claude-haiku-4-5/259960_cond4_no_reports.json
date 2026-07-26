@@ -1,0 +1,53 @@
+{
+  "ticker": "259960",
+  "name": "크래프톤",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 242500.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "PER 12.1은 저평가 수준이나, 52주 내 현재 위치 25.7%로 저점 근처에 있어 이미 상당한 조정이 진행된 상태",
+    "2026 1분기 매출 +56.9% 성장과 41.0% 영업이익률은 강력한 실적이나, 최근 1개월 수익률 +10.23%로 긍정적 뉴스가 이미 반영된 것으로 보임",
+    "거래량 변화율 -29.86%로 급락하여 추가 상승을 뒷받침할 수 있는 수요 확보가 불명확하며, 현재 위치에서의 방향성을 확신하기 어려움"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 12.14,
+    "pbr": 1.57,
+    "roe": 12.93,
+    "market_cap": 11.2,
+    "momentum_1m": 10.2273,
+    "volume_change": -29.8562,
+    "price_position_52w": 25.67,
+    "revenue_growth": 56.88,
+    "operating_margin": 40.95,
+    "debt_ratio": 31.8,
+    "dividend_yield": 0.9,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-09",
+        "title": "여전히 견조한 PUBG 성과",
+        "target_price": 360000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "맺어지는 투자의 결실들",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "매력적인 가격대, 매수 기회",
+        "target_price": 460000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "PUBG는 다시 성장하는 중",
+        "target_price": 380000
+      }
+    ]
+  }
+}

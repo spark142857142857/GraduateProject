@@ -1,0 +1,48 @@
+{
+  "ticker": "035420",
+  "name": "네이버",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 207500.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "거래량 변화율 -75.67%로 급격한 거래량 감소는 시장 관심 저하와 방향성 불명확을 시사한다.",
+    "52주 내 현재 위치 23.4%로 저점 근처에 있으나, PER 17.1과 PBR 1.10은 저평가 신호와 ROE 6.4%의 약한 수익성이 상충한다.",
+    "최근 1개월 수익률 4.06%의 소폭 상승이 있으나, 52주 최고가 287,000원 대비 27.8% 하락한 상태로 반등 근거와 추가 하락 우려가 균형을 이룬다."
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 17.12,
+    "pbr": 1.1,
+    "roe": 6.43,
+    "market_cap": 32.6,
+    "momentum_1m": 4.0622,
+    "volume_change": -75.6697,
+    "price_position_52w": 23.41,
+    "revenue_growth": 16.3,
+    "operating_margin": 16.72,
+    "debt_ratio": 45.21,
+    "dividend_yield": 1.0,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "3분기까지 마진 압박 불가피",
+        "target_price": 300000
+      },
+      {
+        "date": "2026-07-01",
+        "title": "평이한 실적, 결국 트리거는 신사업",
+        "target_price": 400000
+      }
+    ]
+  }
+}

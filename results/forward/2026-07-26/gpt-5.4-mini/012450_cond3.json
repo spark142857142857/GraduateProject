@@ -1,0 +1,48 @@
+{
+  "ticker": "012450",
+  "name": "한화에어로스페이스",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 979000.0,
+  "signal": "Neutral",
+  "confidence": 61,
+  "reasons": [
+    "최근 1개월 수익률이 -10.51%이고 거래량 변화율도 -9.82%로, 단기 모멘텀과 수급이 동시에 약화된 상태입니다.",
+    "현재 주가는 52주 최고가 대비 23.6% 수준으로 고점 대비 크게 조정되었지만, 52주 최저가 807,000원과의 거리도 크지 않아 방향성이 아직 명확하지 않습니다.",
+    "PER 30.9, PBR 5.07은 부담이 있으나 ROE 16.4%와 애널리스트 목표주가 1,720,000~1,780,000원은 중기 기대를 지지해 상승·하락 근거가 혼재합니다."
+  ],
+  "cond": "cond3",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 30.94,
+    "pbr": 5.07,
+    "roe": 16.39,
+    "market_cap": 50.5,
+    "momentum_1m": -10.5119,
+    "volume_change": -9.8155,
+    "price_position_52w": 23.56,
+    "revenue_growth": 4.86,
+    "operating_margin": 11.11,
+    "debt_ratio": 224.88,
+    "dividend_yield": 0.7,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-20",
+        "title": "하반기 실적과 수주 동반 개선 기대",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-07-09",
+        "title": "2Q26 Preview: 조용한 지금이 기회",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "든든한 수주 파이프라인",
+        "target_price": 1780000
+      }
+    ]
+  }
+}

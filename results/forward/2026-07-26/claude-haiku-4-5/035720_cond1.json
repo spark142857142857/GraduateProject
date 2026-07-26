@@ -1,0 +1,48 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 36200.0,
+  "signal": "Neutral",
+  "confidence": 45,
+  "reasons": [
+    "현재가 36,200원만 제공되었으며, 과거 가격 추이, 기술적 지표, 거래량 등 방향성 판단에 필요한 구체적 데이터가 부재함",
+    "펀더멘털 지표(PER, PBR, 배당수익률 등)와 최근 실적 데이터가 없어 기업 가치 평가 근거를 확보할 수 없음",
+    "시장 전망, 산업 동향, 기술적 저항선/지지선 등 향후 20거래일 주가 방향을 판단할 객관적 근거가 불충분함"
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 29.94,
+    "pbr": 1.39,
+    "roe": 4.64,
+    "market_cap": 16.0,
+    "momentum_1m": 6.4706,
+    "volume_change": -34.9036,
+    "price_position_52w": 8.83,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "카나나 서비스의 가능성 증명 필요",
+        "target_price": 57000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 249500.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 249,500원은 최근 20거래일 평균가 대비 큰 변동성을 보이지 않아 상승 또는 하락의 명확한 추세를 파악하기 어렵습니다.",
+    "제공된 데이터만으로는 삼성전자의 향후 20거래일 주가 방향성을 강하게 지지할 만한 상승 또는 하락 모멘텀을 확인할 수 없습니다.",
+    "기업의 브랜드 이미지, 인지도, 과거 명성을 배제하고 제공된 현재가 정보만을 고려할 때, 향후 20거래일 동안의 주가 상승 또는 하락을 확신할 만한 근거가 부족합니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 19.9,
+    "pbr": 3.55,
+    "roe": 17.84,
+    "market_cap": 1458.6,
+    "momentum_1m": -26.7254,
+    "volume_change": -13.8078,
+    "price_position_52w": 62.33,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-08",
+        "title": "메모리 이익 체력 확인. 실적 상향 여력 충분",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "체급의 위력",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "걱정의 벽을 타고",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "실적 전망치 상향 조정 지속",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "외풍을 극복하고도 남을 실적",
+        "target_price": 460000
+      }
+    ]
+  }
+}

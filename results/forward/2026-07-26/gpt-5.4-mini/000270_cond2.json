@@ -1,0 +1,58 @@
+{
+  "ticker": "000270",
+  "name": "기아",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 130500.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "PER 7.2와 PBR 0.83은 밸류에이션 부담이 크지 않아 하방을 강하게 단정하기 어렵습니다.",
+    "ROE 11.5%는 수익성 측면에서 양호하지만, 최근 1개월 수익률이 -6.05%로 단기 모멘텀은 약합니다.",
+    "52주 최고가 대비 현재 위치가 30.2%로 중간 이하 구간이며 거래량 변화율도 -25.66%로 수급이 둔화되어 향후 20거래일 방향성을 확신하기 어렵습니다."
+  ],
+  "cond": "cond2",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 7.24,
+    "pbr": 0.83,
+    "roe": 11.46,
+    "market_cap": 50.9,
+    "momentum_1m": -6.0475,
+    "volume_change": -25.6638,
+    "price_position_52w": 30.22,
+    "revenue_growth": 5.3,
+    "operating_margin": 7.47,
+    "debt_ratio": 70.93,
+    "dividend_yield": 4.2,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "2Q26 프리뷰: 양호한 실적, 뛰어난 xEV 경쟁..",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Preview: 앞서 가는 실적, 뒤따라갈 주..",
+        "target_price": 250000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "높아진 BEV Mix가 단기 손익 부담으로",
+        "target_price": 205000
+      },
+      {
+        "date": "2026-07-09",
+        "title": "흔들리지 않는 편안함",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-06",
+        "title": "신차 경쟁력 입증, 이제는 가치 재조명",
+        "target_price": 290000
+      }
+    ]
+  }
+}

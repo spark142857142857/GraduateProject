@@ -1,0 +1,58 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 1518000.0,
+  "signal": "Neutral",
+  "confidence": 42,
+  "reasons": [
+    "현재가 1,518,000원만으로는 20거래일 내 상승·하락 방향을 판단할 수 있는 추세 정보가 제공되지 않았습니다.",
+    "거래량, 최근 수익률, 이동평균, 변동성, 수급 등 방향성을 판단할 핵심 데이터가 없어 Buy 또는 Sell 근거가 부족합니다.",
+    "제공된 정보가 종목명과 시장 구분에 한정되어 있어, 데이터 기반으로는 방향성이 불명확하므로 Neutral이 적절합니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 52.41,
+    "pbr": 8.87,
+    "roe": 16.92,
+    "market_cap": 70.3,
+    "momentum_1m": 9.6029,
+    "volume_change": -15.8272,
+    "price_position_52w": 38.09,
+    "revenue_growth": 25.77,
+    "operating_margin": 46.2,
+    "debt_ratio": 51.4,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Re: 3분기부터 시작될 성장 랠리",
+        "target_price": 1950000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review; 방향성을 믿고 갈 때",
+        "target_price": 1900000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "체급을 키우기 위한 약간의 성장통 (2Q26 Rev..",
+        "target_price": 2050000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "분기 최대 실적 달성, 3Q 쉬어가도 성장은 지..",
+        "target_price": 2000000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "미국 생산거점과 5공장, 그리고 펩타이드",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

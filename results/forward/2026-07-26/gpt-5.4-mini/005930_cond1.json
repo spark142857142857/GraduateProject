@@ -1,0 +1,58 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 249500.0,
+  "signal": "Neutral",
+  "confidence": 50,
+  "reasons": [
+    "현재가 249,500원만 제시되어 있어 추세, 모멘텀, 변동성, 거래량 등 20거래일 방향성을 판단할 핵심 데이터가 부족합니다.",
+    "제공된 정보에는 실적, 밸류에이션, 수급, 기술적 지표가 없어 상승 또는 하락 근거를 우위로 둘 수 없습니다.",
+    "브랜드 이미지나 과거 명성은 배제해야 하므로, 현재 제공 데이터만으로는 Buy나 Sell을 정당화하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 19.9,
+    "pbr": 3.55,
+    "roe": 17.84,
+    "market_cap": 1458.6,
+    "momentum_1m": -26.7254,
+    "volume_change": -13.8078,
+    "price_position_52w": 62.33,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-08",
+        "title": "메모리 이익 체력 확인. 실적 상향 여력 충분",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "체급의 위력",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "걱정의 벽을 타고",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "실적 전망치 상향 조정 지속",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "외풍을 극복하고도 남을 실적",
+        "target_price": 460000
+      }
+    ]
+  }
+}

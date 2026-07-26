@@ -1,0 +1,53 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 212000.0,
+  "signal": "Neutral",
+  "confidence": 61,
+  "reasons": [
+    "최근 1개월 수익률이 9.33%로 단기 모멘텀은 양호하지만, 거래량 변화율이 -3.97%로 상승 추세의 신뢰도는 다소 약합니다.",
+    "현재 주가는 52주 최고가 대비 15.1% 수준으로 저점권에 가까워 추가 반등 여지는 있으나, 이미 단기 반등이 진행된 상태라 방향성이 단정적이지 않습니다.",
+    "PER이 적자로 산출되지 않고 PBR 2.73, 시가총액 9.1조원인 점은 극단적 저평가 신호로 보기 어렵고, 제공된 데이터만으로 20거래일 내 상승·하락을 확신하기 어렵습니다."
+  ],
+  "cond": "cond2",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": null,
+    "pbr": 2.73,
+    "roe": null,
+    "market_cap": 9.1,
+    "momentum_1m": 9.3347,
+    "volume_change": -3.9687,
+    "price_position_52w": 15.09,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-20",
+        "title": "2분기 BTS와 함께 증명될 역대 최대 실적",
+        "target_price": 330000
+      },
+      {
+        "date": "2026-07-14",
+        "title": "팔랑귀 팔랑귀 할 만큼 좋은 실적",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-13",
+        "title": "높아진 실적 기대감, 높아질 주가",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      }
+    ]
+  }
+}

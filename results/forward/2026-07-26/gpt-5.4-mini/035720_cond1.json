@@ -1,0 +1,48 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 36200.0,
+  "signal": "Neutral",
+  "confidence": 42,
+  "reasons": [
+    "제공된 데이터가 종목명과 현재가뿐이라 20거래일 방향성을 판단할 수 있는 추세·실적·수급·밸류에이션 정보가 없다.",
+    "상승과 하락을 지지하는 근거가 모두 부재해 Buy 또는 Sell 중 하나를 선택할 만한 데이터 우위가 없다.",
+    "주어진 정보만으로는 변동성이나 모멘텀을 추정할 수 없어 방향성 확신이 낮다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 29.94,
+    "pbr": 1.39,
+    "roe": 4.64,
+    "market_cap": 16.0,
+    "momentum_1m": 6.4706,
+    "volume_change": -34.9036,
+    "price_position_52w": 8.83,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "카나나 서비스의 가능성 증명 필요",
+        "target_price": 57000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

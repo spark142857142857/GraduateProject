@@ -1,0 +1,50 @@
+{
+  "ticker": "006400",
+  "name": "삼성SDI",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 428000.0,
+  "signal": "Neutral",
+  "confidence": 52,
+  "reasons": [
+    "최근 1개월 수익률 -12.47%와 거래량 변화율 -26.68%로 단기 모멘텀이 약화되어 있음",
+    "52주 최저가 대비 현재가가 143% 상승했으나 최고가 대비 40% 하락한 상태로 기술적 반등 여력과 하락 리스크가 공존",
+    "애널리스트 목표주가 700,000~1,000,000원은 현재가 대비 63~134% 상승을 시사하나, 적자 상태에서 흑자전환 초기 단계로 실적 개선 지속성이 불확실함",
+    "2026 1분기 매출 성장(+12.6%)과 순이익 흑자(+561억원)는 긍정적이나 영업이익 미공시로 본업 수익성 개선 정도를 정확히 판단할 수 없음",
+    "PBR 1.41은 적정 수준이나 PER 부재(적자)로 수익성 기반 밸류에이션 판단이 불가능하며, 20거래일 단기 방향성을 확신하기 어려움"
+  ],
+  "cond": "cond4",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 1.41,
+    "roe": null,
+    "market_cap": 34.5,
+    "momentum_1m": -12.4744,
+    "volume_change": -26.6829,
+    "price_position_52w": 47.01,
+    "revenue_growth": 12.58,
+    "operating_margin": null,
+    "debt_ratio": null,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-20",
+        "title": "흑자전환, 다음은 본업",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-06-30",
+        "title": "밸류에이션 부담 완화, 비중 확대 시점",
+        "target_price": 700000
+      },
+      {
+        "date": "2026-06-29",
+        "title": "2Q26, 7개 분기만의 영업흑자 전환 예상",
+        "target_price": 1000000
+      }
+    ]
+  }
+}

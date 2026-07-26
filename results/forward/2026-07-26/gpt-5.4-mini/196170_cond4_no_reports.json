@@ -1,0 +1,38 @@
+{
+  "ticker": "196170",
+  "name": "알테오젠",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 300500.0,
+  "signal": "Sell",
+  "confidence": 78,
+  "reasons": [
+    "최근 1개월 수익률이 -19.11%로 약세 추세가 뚜렷하고, 현재 주가가 52주 최고가 대비 11.2% 수준에 머물러 있어 단기 반등보다 추가 약세 가능성이 더 높습니다.",
+    "거래량 변화율이 -9.15%로 수급이 둔화된 가운데, 2026년 1분기 매출과 영업이익이 각각 전년동기 대비 -14.4%, -35.6% 감소해 실적 모멘텀이 약합니다.",
+    "ROE 26.0%와 영업현금흐름 +210억원, 부채비율 42.2%는 재무 안정성을 보여주지만, PER 123.6과 PBR 32.18, 시가총액 16.1조원은 기대치가 높아 단기 20거래일 관점에서 밸류에이션 부담이 큽니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 123.56,
+    "pbr": 32.18,
+    "roe": 26.04,
+    "market_cap": 16.1,
+    "momentum_1m": -19.1117,
+    "volume_change": -9.1482,
+    "price_position_52w": 11.17,
+    "revenue_growth": -14.45,
+    "operating_margin": 54.89,
+    "debt_ratio": 42.24,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-15",
+        "title": "시밀러가 아닌 ALT-B4를 쓴 이유가 있지 않겠..",
+        "target_price": 580000
+      }
+    ]
+  }
+}

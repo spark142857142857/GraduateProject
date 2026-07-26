@@ -1,0 +1,53 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 212000.0,
+  "signal": "Neutral",
+  "confidence": 50,
+  "reasons": [
+    "제공된 종목 정보에는 현재가와 시장 구분만 있고, 20거래일 방향성을 판단할 수 있는 실적·수급·기술적 지표가 없어 상승 또는 하락 근거를 확인할 수 없습니다.",
+    "브랜드 이미지·인지도·과거 명성은 판단에서 배제해야 하므로, HYBE에 대한 정성적 기대만으로는 Buy 또는 Sell을 정당화할 수 없습니다.",
+    "주어진 데이터만으로는 향후 20거래일 내 주가의 우위 방향을 확신할 수 없어 Neutral이 가장 적절합니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": null,
+    "pbr": 2.73,
+    "roe": null,
+    "market_cap": 9.1,
+    "momentum_1m": 9.3347,
+    "volume_change": -3.9687,
+    "price_position_52w": 15.09,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-20",
+        "title": "2분기 BTS와 함께 증명될 역대 최대 실적",
+        "target_price": 330000
+      },
+      {
+        "date": "2026-07-14",
+        "title": "팔랑귀 팔랑귀 할 만큼 좋은 실적",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-13",
+        "title": "높아진 실적 기대감, 높아질 주가",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      }
+    ]
+  }
+}

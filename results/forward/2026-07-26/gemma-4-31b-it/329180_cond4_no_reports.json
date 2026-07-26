@@ -1,0 +1,48 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 485500.0,
+  "signal": "Neutral",
+  "confidence": 60,
+  "reasons": [
+    "2026년 1분기 영업이익이 전년 동기 대비 108.7% 증가하고 영업이익률 15.3%를 기록하는 등 펀더멘털 성장세가 매우 강력합니다.",
+    "최근 1개월 수익률 -17.29% 및 거래량 변화율 -25.51%로 단기적인 주가 하락 모멘텀과 매수세 위축이 뚜렷하게 나타납니다.",
+    "PBR 5.25의 높은 밸류에이션 부담과 ROE 21.5%의 높은 수익성 지표가 상충하여 단기 방향성을 확신하기 어렵습니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 24.43,
+    "pbr": 5.25,
+    "roe": 21.49,
+    "market_cap": 51.0,
+    "momentum_1m": -17.2913,
+    "volume_change": -25.5106,
+    "price_position_52w": 27.51,
+    "revenue_growth": 54.78,
+    "operating_margin": 15.3,
+    "debt_ratio": 183.91,
+    "dividend_yield": 1.08,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-15",
+        "title": "여전히 강한 성장 동력을 보유",
+        "target_price": 880000
+      },
+      {
+        "date": "2026-07-14",
+        "title": "엔진 캐파 증설해 주실 거죠?",
+        "target_price": 970000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "2Q26 Pre: 본업 좀 봐주세요 좋아요",
+        "target_price": 860000
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "ticker": "055550",
+  "name": "신한지주",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 104400.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "PER 10.2와 PBR 0.86은 밸류에이션 부담이 크지 않아 하방을 강하게 지지하지는 않지만, ROE 8.4%는 강한 성장 모멘텀을 보여주지 못합니다.",
+    "현재 주가는 52주 최고가의 89.4% 수준으로 단기적으로는 고점권에 근접해 추가 상승 여력이 제한될 수 있습니다.",
+    "최근 1개월 수익률이 9.09%로 이미 상승이 진행된 반면 거래량 변화율이 -18.77%로 수급 확장이 확인되지 않아 향후 20거래일 방향성을 확신하기 어렵습니다."
+  ],
+  "cond": "cond2",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 10.21,
+    "pbr": 0.86,
+    "roe": 8.42,
+    "market_cap": 49.6,
+    "momentum_1m": 9.0909,
+    "volume_change": -18.7696,
+    "price_position_52w": 89.38,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1228.55,
+    "dividend_yield": 3.01,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-24",
+        "title": "환원 수익률 7% 내외로 투자매력 확보",
+        "target_price": 137000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review: 견조한 실적 바탕으로 목표 ROE..",
+        "target_price": 134000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "M&A 이슈가 단기 주가 흐름에 영향을 미칠 전..",
+        "target_price": 135000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "기대되는 10월 자사주 매입 발표",
+        "target_price": 140000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "더 좋아질 이익과 높아진 주주환원 매력",
+        "target_price": 132000
+      }
+    ]
+  }
+}

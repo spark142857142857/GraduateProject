@@ -1,0 +1,58 @@
+{
+  "ticker": "005380",
+  "name": "현대차",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 401000.0,
+  "signal": "Buy",
+  "confidence": 82,
+  "reasons": [
+    "PBR이 0.89로 장부가치보다 낮게 평가되어 있어 밸류에이션 매력이 존재함",
+    "최근 5건의 애널리스트 리포트가 모두 '바닥 확인' 및 '하반기 회복'을 언급하며 일관되게 긍정적인 전망을 제시함",
+    "현재가(401,000원)가 분석가들이 제시한 최저 목표주가(570,000원)와 비교해도 상당한 괴리율을 보이며 상승 여력이 큼"
+  ],
+  "cond": "cond3",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 11.57,
+    "pbr": 0.89,
+    "roe": 7.69,
+    "market_cap": 82.1,
+    "momentum_1m": -21.2181,
+    "volume_change": -38.4364,
+    "price_position_52w": 35.79,
+    "revenue_growth": 3.45,
+    "operating_margin": 5.47,
+    "debt_ratio": 190.28,
+    "dividend_yield": 1.9,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-24",
+        "title": "실적은 저점, 시선은 로봇",
+        "target_price": 840000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "상반기 부정적 영향은 해소되는 중",
+        "target_price": 760000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review: 바닥을 찍고, 하반기 레벨업",
+        "target_price": 740000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Re: 하반기 OPM 회복 발판 마련",
+        "target_price": 570000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 리뷰: 우려 대비 양호, 로봇 모멘텀 주..",
+        "target_price": 840000
+      }
+    ]
+  }
+}

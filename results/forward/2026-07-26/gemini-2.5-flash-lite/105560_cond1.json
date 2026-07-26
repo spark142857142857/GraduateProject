@@ -1,0 +1,58 @@
+{
+  "ticker": "105560",
+  "name": "KB금융",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 171500.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "제공된 데이터만으로는 KB금융의 향후 20거래일 주가 방향성을 명확히 판단할 수 있는 지표가 부족합니다.",
+    "현재가 171,500원이라는 정보만으로는 상승 또는 하락을 뒷받침할 만한 추가적인 기술적, 펀더멘탈적 근거가 제시되지 않았습니다.",
+    "따라서, 상승과 하락의 근거가 균형을 이루거나 방향성을 확신할 수 없는 상황으로 판단되어 Neutral을 선택합니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 10.62,
+    "pbr": 1.07,
+    "roe": 10.08,
+    "market_cap": 60.8,
+    "momentum_1m": 12.9776,
+    "volume_change": -6.1597,
+    "price_position_52w": 81.67,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1257.11,
+    "dividend_yield": 3.2,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-24",
+        "title": "기말 배당으로 이연된 하반기 재원",
+        "target_price": 226000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review: 업계 최고 수준의 자본력이 주..",
+        "target_price": 210000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "전 계열사 고른 손익 개선. 총주주환원율도 5..",
+        "target_price": 220000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "조달비용 상승 우려 선반영",
+        "target_price": 235000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "이익과 주주환원 모두 가장 편안한 선택지",
+        "target_price": 205000
+      }
+    ]
+  }
+}

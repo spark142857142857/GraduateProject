@@ -1,0 +1,39 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 72100.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "PER 299.2는 극도로 높은 수준으로, 현재 주가가 실적 대비 과도하게 평가되어 있음을 시사한다.",
+    "ROE 1.9%는 매우 낮은 수익성을 나타내며, 높은 주가를 정당화할 실적 개선 근거가 부족하다.",
+    "최근 1개월 수익률 -20.42%와 거래량 변화율 -14.96%는 투자자 관심 감소와 하락 추세를 동시에 보여준다.",
+    "52주 최저가 57,400원 대비 현재가 72,100원이지만, 최고가 136,400원 대비 47% 하락한 상태로 추가 조정 가능성이 있다."
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 299.17,
+    "pbr": 5.75,
+    "roe": 1.92,
+    "market_cap": 46.2,
+    "momentum_1m": -20.4194,
+    "volume_change": -14.9577,
+    "price_position_52w": 18.61,
+    "revenue_growth": 13.67,
+    "operating_margin": 5.48,
+    "debt_ratio": 130.6,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-22",
+        "title": "대만 NDR 후기: 같은 스토리, 다른 렌즈",
+        "target_price": 149000
+      }
+    ]
+  }
+}

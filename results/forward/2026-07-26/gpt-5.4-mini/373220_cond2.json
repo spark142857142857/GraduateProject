@@ -1,0 +1,58 @@
+{
+  "ticker": "373220",
+  "name": "LG에너지솔루션",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 329500.0,
+  "signal": "Sell",
+  "confidence": 78,
+  "reasons": [
+    "최근 1개월 수익률이 -9.85%로 단기 추세가 하락 방향이며, 향후 20거래일에도 약세 흐름이 이어질 가능성이 높습니다.",
+    "거래량 변화율이 -34.61%로 수급이 둔화된 상태라 반등 탄력이 약할 수 있습니다.",
+    "현재 주가가 52주 최고가 대비 9.1% 수준에 불과하고 52주 최저가 311,000원에 근접해 있어 기술적으로도 하방 압력이 우세합니다."
+  ],
+  "cond": "cond2",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": null,
+    "pbr": 3.48,
+    "roe": null,
+    "market_cap": 77.1,
+    "momentum_1m": -9.8495,
+    "volume_change": -34.6135,
+    "price_position_52w": 9.11,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 140.02,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-08",
+        "title": "하반기 회복세 지속 전망",
+        "target_price": 530000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "그래도 꿈과 희망이 있다",
+        "target_price": 470000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "LG에너지솔루션 2Q26 잠정실적 발표",
+        "target_price": 550000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 잠정 실적 코멘트",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-06",
+        "title": "하반기 개선 방향성은 유효",
+        "target_price": 550000
+      }
+    ]
+  }
+}

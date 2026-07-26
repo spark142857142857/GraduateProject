@@ -1,0 +1,58 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 1518000.0,
+  "signal": "Buy",
+  "confidence": 78,
+  "reasons": [
+    "2026년 1분기 매출이 전년동기 대비 25.8%, 영업이익이 35.0% 증가했고 영업이익률도 46.2%로 높아 단기 실적 모멘텀이 강합니다.",
+    "ROE 16.9%와 영업현금흐름 7,677억원, 부채비율 51.4%는 수익성과 현금창출력, 재무안정성이 모두 양호함을 보여줍니다.",
+    "최근 1개월 수익률이 9.60%로 상승 추세이고 현재 주가가 52주 최고가 대비 38.1% 수준에 머물러 있어 추가 반등 여지가 있습니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 52.41,
+    "pbr": 8.87,
+    "roe": 16.92,
+    "market_cap": 70.3,
+    "momentum_1m": 9.6029,
+    "volume_change": -15.8272,
+    "price_position_52w": 38.09,
+    "revenue_growth": 25.77,
+    "operating_margin": 46.2,
+    "debt_ratio": 51.4,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Re: 3분기부터 시작될 성장 랠리",
+        "target_price": 1950000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review; 방향성을 믿고 갈 때",
+        "target_price": 1900000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "체급을 키우기 위한 약간의 성장통 (2Q26 Rev..",
+        "target_price": 2050000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "분기 최대 실적 달성, 3Q 쉬어가도 성장은 지..",
+        "target_price": 2000000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "미국 생산거점과 5공장, 그리고 펩타이드",
+        "target_price": 2090000
+      }
+    ]
+  }
+}

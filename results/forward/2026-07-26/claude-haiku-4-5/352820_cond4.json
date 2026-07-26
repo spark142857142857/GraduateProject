@@ -1,0 +1,53 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-07-26",
+  "context_date": "2026-07-26",
+  "price": 212000.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "1분기 영업이익 -1,966억원, 영업이익률 -28.1%로 심각한 적자 상태이며 PER 산출 불가능한 수준의 실적 악화",
+    "애널리스트들의 2분기 실적 개선 기대감이 높으나 현재 주가 212,000원이 이미 최근 1개월 +9.33% 상승하며 기대감이 부분 반영된 상태",
+    "52주 최저가 177,800원 대비 현재가가 19.2% 상승했으나 최고가 404,500원 대비 47.6% 하락 중이며, 2분기 실적 발표 전까지 변수가 크다"
+  ],
+  "cond": "cond4",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 2.73,
+    "roe": null,
+    "market_cap": 9.1,
+    "momentum_1m": 9.3347,
+    "volume_change": -3.9687,
+    "price_position_52w": 15.09,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-20",
+        "title": "2분기 BTS와 함께 증명될 역대 최대 실적",
+        "target_price": 330000
+      },
+      {
+        "date": "2026-07-14",
+        "title": "팔랑귀 팔랑귀 할 만큼 좋은 실적",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-13",
+        "title": "높아진 실적 기대감, 높아질 주가",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-08",
+        "title": "2Q26 확신의 실적 개선 구간 진입",
+        "target_price": 330000
+      }
+    ]
+  }
+}
