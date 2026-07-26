@@ -224,19 +224,22 @@ def _update_reports_one(ticker: str, name: str) -> int:
         return 0
 
     df_new = pd.DataFrame(records)
+    n_before = len(df_existing)
     df_out = (
         pd.concat([df_existing, df_new], ignore_index=True)
         if not df_existing.empty
         else df_new
     )
+    df_out["nid"] = df_out["nid"].astype(str)  # fetch는 nid를 str로, 기존 CSV는 int64로 읽음 → 타입 통일해야 drop_duplicates가 동작
     df_out = (
         df_out.sort_values("date")
         .drop_duplicates(subset=["nid"])
         .reset_index(drop=True)
     )
     df_out.to_csv(out_path, index=False, encoding="utf-8-sig")
-    print(f"  [{ticker}] {name}: 리포트 {len(records)}건 추가")
-    return len(records)
+    n_added = len(df_out) - n_before
+    print(f"  [{ticker}] {name}: 리포트 {n_added}건 추가 (수집 {len(records)}건)")
+    return n_added
 
 
 def _build_dart_row(ticker: str, name: str, fy: int, reprt_code: str, div_fy: int) -> dict:
