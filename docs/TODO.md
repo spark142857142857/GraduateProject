@@ -122,8 +122,14 @@
   - [x] **forward DART 인메모리 fetch 전환** — `_build_dart_row` 추출 후 `get_today_context`가 CSV 미기록·현재 FY 직접 조회. `data/dart_fundamentals/`는 2023-2025 순수 36행 유지(스모크로 CSV 불변 확인), write 경로(_update_dart_one) 동작 불변. reports는 라이브 유지.
   - **주간 리듬(일요일 저녁)**: ① `crawl.py`(리포트 최신화) ② `forward_run_all.py`(생성) ③ `forward_verify.py`(입력 점검) ④(4주 뒤~) `forward_eval.py`(성숙 평가). ⚠️ **리포트 자동갱신 안 됨 → ① 필수**. 20d 보유 겹쳐 표본 비독립 → 실전 참고용(유의성은 백테스트)
 - [ ] app.py 디자인 개선 (최후 — 발표/데모용)
-  - [ ] 전체 종목 한눈에 보기 탭 추가
-  - [ ] Streamlit Community Cloud 배포 (API 키를 st.secrets로 전환)
+  - [x] 전체 종목 한눈에 보기 탭 추가 (탭2 — forward 캐시 신호 매트릭스, API 호출 없음)
+  - [x] **탭1 신뢰성 3건** (2026-07-29): ① 분석 실패 시 직전 종목 결과가 남던 stale 버그 제거 ② 생성 출처 배지(정식 배치 캐시 / 시연 캐시 / 신규 호출) ③ `forward_verify.verify_ticker` 재사용한 입력 검증 배지 — `get_price` 호출이 있어 렌더링마다 돌지 않도록 분석 시 1회만 수행 후 session_state 저장
+  - [x] **DART 초기화 lazy 전환** (2026-07-29): `_check_dart_cache()`를 앱 시작 → 분석 버튼 시점으로 이동. 날짜가 바뀐 첫 실행에서 법인코드 약 11MB 재다운로드가 DART와 무관한 탭2·탭3(읽기 전용)까지 묶던 문제 해소. 캐시 반환 경로에서는 호출조차 하지 않음
+  - [x] **모델 커버리지 안내** (2026-07-29): 백테스트 완료 모델을 폴더에서 동적으로 읽어 탭1 안내문·탭3 상단 캡션에 명시 — forward 4모델 vs 백테스트 2모델 차이가 누락으로 오인되지 않도록. gpt/claude 백테스트 완료 시 자동 반영됨
+  - [x] **시연 신호 격리** (2026-07-29): 앱에서 생성된 forward 신호를 `results/forward_demo/`로 이동해 `forward_eval.py` 평가 표본에서 자동 제외. 계기가 된 07-11 오염 1건과 설계 상세는 [forward_log.md](forward_log.md) 참고
+  - [x] `use_container_width` → `width="stretch"` 9곳 (streamlit 1.58 deprecation, 2025-12-31 폐기 예정)
+  - [ ] Streamlit Community Cloud 배포 (API 키를 st.secrets로 전환) — 배포 시 탭1은 API 키가 필요하므로 캐시 읽기 전용 데모 모드 분리 검토, 투자 조언 아님 고지 추가
+  - **미채택 — forward 성과 탭** (2026-07-29 결정): `evaluation.csv`를 앱에 붙이는 대신 **보고서 표로 서술**한다. 이유는 ① 주간 반복으로 20거래일 보유구간이 겹쳐 표본이 비독립이라 유의성 주장이 불가한데 탭 하나를 주면 주력 근거로 오인될 소지가 있고 ② 백테스트(36개월 × 20종목 × 5조건)가 주력, forward는 보조라는 위계를 화면이 흐리기 때문. 정적 CSV라 필요해지면 나중에도 즉시 추가 가능
 
 ### C-4. 선택 (재현성·기술부채)
 - [ ] 결과 메타데이터(JSON) 저장 루틴

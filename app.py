@@ -20,8 +20,8 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
-# .env를 앱 시작 시점에 로드 — forward_test는 버튼 클릭 시 lazy import되므로
-# _check_dart_cache()가 실행되는 시점엔 아직 키가 환경에 없어 경고가 뜬다
+# .env를 앱 시작 시점에 로드 — DARTS_API_KEY 등을 읽는 코드가 모두
+# 버튼 클릭 시 lazy import/실행이라, 여기서 미리 넣어두지 않으면 키를 못 찾는다
 load_dotenv()
 
 _src = os.path.join(os.path.dirname(__file__), "src")
@@ -40,13 +40,18 @@ st.set_page_config(
 )
 
 
-# ── DART 캐시 점검 (앱 시작 시 1회) ───────────────────────
+# ── DART 캐시 점검 (분석 버튼 클릭 시 1회) ────────────────
 @st.cache_resource
 def _check_dart_cache() -> str:
     """DART corp_codes pkl 캐시 유효성 점검.
 
     오늘 날짜 캐시가 없거나 읽기 실패 시 구 캐시를 삭제하고
-    OpenDartReader 초기화로 재생성.
+    OpenDartReader 초기화로 재생성(법인코드 ~11MB 다운로드).
+
+    호출 시점 주의: 앱 시작 시가 아니라 탭1 분석 버튼에서 호출한다.
+    날짜가 바뀐 첫 실행이면 재생성에 수십 초가 걸리는데, DART가 필요 없는
+    탭2·탭3(캐시 읽기 전용)까지 그 대기에 묶이기 때문.
+    @st.cache_resource라 프로세스당 1회만 수행된다.
 
     Returns:
         "" : 정상
@@ -85,11 +90,6 @@ def _check_dart_cache() -> str:
         return f"DART 캐시 재생성 실패: {e}"
 
 
-_dart_warn = _check_dart_cache()
-if _dart_warn:
-    st.warning(f"DART 초기화 경고: {_dart_warn}")
-
-
 # ── 상수 ──────────────────────────────────────────────────
 # 연구용 조건(cond4_no_reports, cond4_blind)은 개별 분석 UI 미노출 — 사용자 편의 조건만 표시
 UI_CONDS = ["cond1", "cond2", "cond3", "cond4"]
@@ -103,6 +103,11 @@ SIGNAL_STYLE = {
     "Neutral": ("회색", "#e2e3e5", "#383d41"),
 }
 
+# 앱 시연으로 생성된 신호의 격리 경로 — 정식 주간 배치(results/forward/)와 분리한다.
+# forward_eval.py가 results/forward/*/*/*.json만 훑으므로, 형제 폴더에 두면
+# 평가 표본에서 자동 제외된다(임의 시점·임의 종목 클릭이 통계에 섞이는 것을 차단).
+FORWARD_DEMO_DIR = os.path.join(os.path.dirname(FORWARD_DIR), "forward_demo")
+
 
 # ── 헬퍼 ──────────────────────────────────────────────────
 @st.cache_data(ttl=300, show_spinner=False)  # 백테스팅 결과 5분 캐시 — 빈번한 파일 재로드 방지
@@ -115,6 +120,21 @@ def load_backtest_results(cond: str, model: str) -> pd.DataFrame | None:
         return pd.read_csv(path, dtype={"ticker": str})
     except Exception:
         return None
+
+
+def list_backtest_models(cond: str) -> list[str]:
+    """해당 조건의 백테스트 결과가 실제로 존재하는 모델 목록.
+
+    forward는 UI_MODELS 전 모델로 신호를 만들 수 있으나 백테스트는 일부만
+    완료된 상태라, "결과 없음" 안내에서 어떤 모델이 가능한지 함께 제시한다.
+    """
+    base = os.path.join(EXPERIMENT_DIR, cond)
+    if not os.path.isdir(base):
+        return []
+    return sorted(
+        m for m in os.listdir(base)
+        if os.path.exists(os.path.join(base, m, "latest", f"{cond}_results.csv"))
+    )
 
 
 def get_ticker_backtest(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
@@ -160,6 +180,30 @@ def list_forward_dates() -> list[str]:
         and os.path.isdir(os.path.join(FORWARD_DIR, d))
     ]
     return sorted(dates, reverse=True)
+
+
+def demote_to_demo(batch_path: str) -> bool:
+    """정식 forward 경로에 생긴 앱 시연 신호를 forward_demo/로 이동.
+
+    run_forward의 저장 경로는 고정이라(코드 동결) 생성 후 옮기는 방식을 쓴다.
+    주간 배치로 이미 존재하던 파일은 호출자가 걸러내므로 여기선 무조건 이동한다.
+
+    Returns:
+        이동 성공 여부 (파일이 아직 없으면 False)
+    """
+    if not os.path.exists(batch_path):
+        return False
+    demo_path = os.path.join(FORWARD_DEMO_DIR, os.path.relpath(batch_path, FORWARD_DIR))
+    os.makedirs(os.path.dirname(demo_path), exist_ok=True)
+    os.replace(batch_path, demo_path)
+    # 이동으로 빈 껍데기만 남은 {날짜}/{model} 폴더 정리.
+    # 주간 배치 폴더는 다른 파일이 남아 있어 rmdir이 실패하므로 안전하다
+    for d in (os.path.dirname(batch_path), os.path.dirname(os.path.dirname(batch_path))):
+        try:
+            os.rmdir(d)
+        except OSError:
+            break
+    return True
 
 
 def list_forward_models(date: str) -> list[str]:
@@ -253,7 +297,7 @@ with tab1:
     )
 
     col_b.markdown("<div style='height:1.75em'></div>", unsafe_allow_html=True)  # 버튼 세로 정렬
-    analyze_btn = col_b.button("🔍 분석하기", use_container_width=True, type="primary")
+    analyze_btn = col_b.button("🔍 분석하기", width="stretch", type="primary")
 
     # provider 판별은 llm_experiment._provider와 동일하게 접두어 기준 — 모델 개명/추가에 안전
     if selected_model.startswith("gemma"):
@@ -267,29 +311,100 @@ with tab1:
     if analyze_btn:
         import concurrent.futures
         from forward_test import run_forward
+        from forward_verify import verify_ticker
+
+        # 직전 결과를 먼저 비움 — 타임아웃·오류로 갱신에 실패하면 이전 종목의
+        # 결과가 그대로 남아 새로 선택한 종목의 결과처럼 보인다
+        st.session_state.pop("fw_result", None)
+        st.session_state.pop("fw_meta", None)
+
+        # 직전 클릭이 타임아웃된 뒤 백그라운드 워커가 뒤늦게 정식 경로에 쓴 파일 회수.
+        # 이동에 성공한 항목만 목록에서 제거(아직 안 쓰였으면 다음 클릭에서 재시도)
+        _pending = st.session_state.get("fw_demo_pending", [])
+        st.session_state["fw_demo_pending"] = [p for p in _pending if not demote_to_demo(p)]
+
+        # 캐시 판별 — run_forward는 캐시 반환 여부를 알려주지 않으므로 호출 전에
+        # 저장 경로 존재를 직접 확인한다 (forward_test.py의 경로 규약과 동일).
+        # 정식 배치 캐시(주간 실행 산출물)와 시연 캐시를 구분해서 본다
+        _today_str  = datetime.today().strftime("%Y-%m-%d")
+        _fname      = f"{selected_ticker}_{selected_cond}.json"
+        _batch_path = os.path.join(FORWARD_DIR, _today_str, selected_model, _fname)
+        _demo_path  = os.path.join(FORWARD_DEMO_DIR, _today_str, selected_model, _fname)
+
+        _was_cached  = os.path.exists(_batch_path)
+        _demo_cached = (not _was_cached) and os.path.exists(_demo_path)
 
         with st.status("분석 중...", expanded=True) as _status:
             try:
-                _status.write(f"**{selected_name}** 실시간 데이터 수집 중 (FDR / DART)...")
+                result = None
 
-                # with 블록 대신 shutdown(wait=False) — with exit은 워커 완료까지 블로킹해
-                # Future.result(timeout=)의 타임아웃이 무의미해짐
-                _ex = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-                _future = _ex.submit(run_forward, selected_ticker, selected_cond, selected_model)
-                try:
-                    result = _future.result(timeout=180)   # 최대 3분
-                    st.session_state["fw_result"] = result
+                if _demo_cached:
+                    # 시연 캐시는 run_forward가 못 찾는 경로에 있어 직접 읽는다(재호출 방지)
+                    _status.write(f"**{selected_name}** 시연 캐시 사용 — LLM 재호출 없이 반환합니다.")
+                    with open(_demo_path, encoding="utf-8") as _f:
+                        result = json.load(_f)
+                else:
+                    if _was_cached:
+                        _status.write(f"**{selected_name}** 당일 정식 배치 캐시 확인 — LLM 재호출 없이 반환합니다.")
+                    else:
+                        # DART 법인코드 점검은 실제로 수집이 필요한 경우에만
+                        # (캐시 반환 경로는 DART를 쓰지 않는다 — 함수 docstring 참고)
+                        _dart_warn = _check_dart_cache()
+                        if _dart_warn:
+                            st.warning(f"DART 초기화 경고: {_dart_warn}")
+                        _status.write(f"**{selected_name}** 실시간 데이터 수집 중 (FDR / DART)...")
+
+                    # with 블록 대신 shutdown(wait=False) — with exit은 워커 완료까지 블로킹해
+                    # Future.result(timeout=)의 타임아웃이 무의미해짐
+                    _ex = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+                    _future = _ex.submit(run_forward, selected_ticker, selected_cond, selected_model)
+                    try:
+                        result = _future.result(timeout=180)   # 최대 3분
+                    except concurrent.futures.TimeoutError:
+                        # 워커가 살아 있어 나중에 정식 경로에 쓸 수 있다 → 회수 목록에 등록
+                        if not _was_cached:
+                            st.session_state.setdefault("fw_demo_pending", []).append(_batch_path)
+                        _status.update(label="시간 초과", state="error", expanded=True)
+                        st.error(
+                            "분석 시간이 초과되었습니다 (3분). "
+                            "FDR/DART API 미응답 또는 모델 rate-limit 재시도 대기일 수 있습니다. "
+                            "백그라운드 호출이 완료되면 캐시에 저장되므로, 잠시 후 다시 시도하면 즉시 표시될 수 있습니다."
+                        )
+                    finally:
+                        _ex.shutdown(wait=False)  # 진행 중 워커를 기다리지 않고 즉시 반환
+
+                if result is not None:
                     _status.write("LLM 신호 분석 완료!")
+
+                    # 이번 클릭으로 새로 생성된 신호만 격리 — 주간 배치 캐시는 건드리지 않는다
+                    if not _was_cached and not _demo_cached:
+                        demote_to_demo(_batch_path)
+                        _source = "new"
+                    else:
+                        _source = "batch" if _was_cached else "demo"
+
+                    # 입력 검증(forward_verify) — get_price 호출이 있어 렌더링마다 돌면
+                    # 위젯 조작 때마다 느려진다. 분석 시점에 1회만 수행해 결과를 저장
+                    _status.write("입력 정보 검증 중 (현재가·정합성·리포트·DART)...")
+                    try:
+                        _vsummary, _vflags = verify_ticker(result)
+                        _verr = None
+                    except Exception as _ve:
+                        _vsummary, _vflags, _verr = None, None, f"{type(_ve).__name__}: {_ve}"
+
+                    _src_path = _batch_path if _source == "batch" else _demo_path
+                    st.session_state["fw_result"] = result
+                    st.session_state["fw_meta"] = {
+                        "source":   _source,
+                        "gen_time": (
+                            datetime.fromtimestamp(os.path.getmtime(_src_path)).strftime("%H:%M")
+                            if os.path.exists(_src_path) else None
+                        ),
+                        "summary":    _vsummary,
+                        "flags":      _vflags,
+                        "verify_err": _verr,
+                    }
                     _status.update(label="분석 완료", state="complete", expanded=False)
-                except concurrent.futures.TimeoutError:
-                    _status.update(label="시간 초과", state="error", expanded=True)
-                    st.error(
-                        "분석 시간이 초과되었습니다 (3분). "
-                        "FDR/DART API 미응답 또는 모델 rate-limit 재시도 대기일 수 있습니다. "
-                        "백그라운드 호출이 완료되면 당일 캐시에 저장되므로, 잠시 후 다시 시도하면 즉시 표시될 수 있습니다."
-                    )
-                finally:
-                    _ex.shutdown(wait=False)  # 진행 중 워커를 기다리지 않고 즉시 반환
             except Exception as _e:
                 _status.update(label="오류 발생", state="error", expanded=True)
                 st.error(f"**{type(_e).__name__}**: {_e}")
@@ -312,6 +427,42 @@ with tab1:
         col_d.metric("분석 날짜", fw["date"])
         col_cd.metric("분석 조건", fw_cond)
         col_mo.metric("사용 모델", fw_model)
+
+        # ── 1-b. 생성 출처 · 입력 검증 ─────────────────────
+        # 캐시 재사용과 신규 호출이 화면상 동일해 "지금 호출한 결과인가"를
+        # 구분할 수 없던 문제 보완. 검증은 forward_verify와 동일 기준.
+        _meta = st.session_state.get("fw_meta")
+        if _meta:
+            _gt = _meta.get("gen_time")
+            _src_txt = {
+                "batch": "♻️ 당일 정식 배치 캐시",
+                "demo":  "♻️ 당일 시연 캐시",
+                "new":   "🆕 신규 LLM 호출",
+            }.get(_meta.get("source"), "생성 출처 불명")
+            if _gt:
+                _src_txt += f" (오늘 {_gt} 생성)"
+            if _meta.get("source") == "new":
+                _src_txt += " · 평가 표본 제외(forward_demo)"
+
+            _flags = _meta.get("flags")
+            if _meta.get("verify_err"):
+                _vf_txt = f"❔ 입력 검증 실패 ({_meta['verify_err']})"
+            elif _flags is None:
+                _vf_txt = "❔ 입력 검증 정보 없음"
+            elif _flags:
+                _vf_txt = f"⚠️ 입력 검증 플래그 {len(_flags)}건"
+            else:
+                _vs = _meta.get("summary") or {}
+                _vf_txt = (
+                    f"✅ 입력 검증 통과 (현재가·ROE 정합성·52주 · "
+                    f"리포트 {_vs.get('reports', 0)}건 · DART {_vs.get('dart', '-')})"
+                )
+
+            st.caption(f"{_src_txt}  |  {_vf_txt}")
+            if _flags:
+                with st.expander(f"입력 검증 플래그 상세 ({len(_flags)}건)"):
+                    for _fl in _flags:
+                        st.markdown(f"- {_fl}")
 
         st.divider()
 
@@ -399,9 +550,14 @@ with tab1:
         bt_df = load_backtest_results(fw_cond, fw_model)
 
         if bt_df is None:
+            # 모델 셀렉트박스는 forward 기준(전 모델)이라 백테스트 미완료 모델도 고를 수 있다.
+            # 단순 "결과 없음"이면 누락처럼 보이므로 완료 모델을 함께 안내
+            _bt_models = list_backtest_models(fw_cond)
             st.info(
-                f"{fw_cond} × {fw_model} 실험 결과가 아직 없습니다. "
-                f"`python src/experiment/llm_experiment.py --cond {fw_cond} --model {fw_model}` 실행 후 확인하세요."
+                f"**{fw_model}**은 {fw_cond} 백테스트가 아직 완료되지 않아 과거 성과를 표시할 수 없습니다. "
+                f"(백테스트 완료 모델: {', '.join(_bt_models) if _bt_models else '없음'} · "
+                f"forward 신호 생성은 전 모델 가능) "
+                f"직접 실행하려면 `python src/experiment/llm_experiment.py --cond {fw_cond} --model {fw_model}`."
             )
         else:
             ticker_df = get_ticker_backtest(bt_df, fw["ticker"])
@@ -505,7 +661,7 @@ with tab2:
             dist = dist.reindex(index=[c for c in COND_ORDER if c in dist.index],
                                 columns=[s for s in ("Buy", "Neutral", "Sell") if s in dist.columns])
             st.markdown("**신호 분포 (조건 × 신호)**")
-            st.dataframe(dist, use_container_width=True)
+            st.dataframe(dist, width="stretch")
 
             # 종목 × 조건 신호 매트릭스
             st.markdown("**종목별 신호 매트릭스**")
@@ -519,7 +675,7 @@ with tab2:
             # TICKERS 정의 순서로 행 정렬
             row_order = [f"{name} ({ticker})" for name, ticker in TICKERS.items() if f"{name} ({ticker})" in pivot.index]
             pivot = pivot.reindex(row_order).fillna("-")
-            st.dataframe(pivot.style.map(signal_cell_style), use_container_width=True, height=740)
+            st.dataframe(pivot.style.map(signal_cell_style), width="stretch", height=740)
 
 
 # ═══════════════════════════════════════════════════════════
@@ -533,6 +689,12 @@ with tab3:
             "`python src/experiment/compare.py --all --model <모델명>` 실행 후 확인하세요."
         )
     else:
+        # 탭2(forward)보다 모델 수가 적은 이유를 먼저 밝힌다 — 누락으로 오인되지 않도록
+        st.caption(
+            f"백테스트 완료 모델 {len(an_models)}종: {', '.join(an_models)}. "
+            "forward(탭2)는 더 많은 모델로 운영 중이며, 백테스트가 끝난 모델만 이 탭에 표시됩니다."
+        )
+
         # ── A. Buy 신호 성과 — 모델 비교 ────────────────────
         st.subheader("🎯 Buy 신호 성과 — 모델 비교 (20거래일)")
         buy_cols = st.columns(len(an_models))
@@ -552,7 +714,7 @@ with tab3:
                 buy["label"] = buy["label"].map(lambda k: COND_LABELS.get(k, k))
                 # 구 스키마 CSV 방어 — 존재하는 컬럼만 선택 (섹션 B와 동일 패턴)
                 buy = buy[[c for c in BUY_RENAME if c in buy.columns]].rename(columns=BUY_RENAME)
-                st.dataframe(buy.set_index("조건").round(2), use_container_width=True)
+                st.dataframe(buy.set_index("조건").round(2), width="stretch")
 
         st.divider()
 
@@ -573,7 +735,7 @@ with tab3:
                     st.caption("해당 모델 결과 없음")
                     continue
                 full = full[[c for c in FULL_RENAME if c in full.columns]].rename(columns=FULL_RENAME)
-                st.dataframe(full.set_index("전략").round(2), use_container_width=True)
+                st.dataframe(full.set_index("전략").round(2), width="stretch")
 
         st.divider()
 
@@ -605,11 +767,11 @@ with tab3:
                 lambda v: "background-color:#d4edda" if isinstance(v, (int, float)) and v < 0.05 else "",
                 subset=["p_value"],
             )
-            st.dataframe(styled, use_container_width=True, hide_index=True)
+            st.dataframe(styled, width="stretch", hide_index=True)
             st.caption("유의 수준: *** p<0.001 · ** p<0.01 · * p<0.05 · . p<0.10 · ns 비유의")
 
             with st.expander("전체 검정 결과 (보조 비교 포함)"):
-                st.dataframe(sig, use_container_width=True, hide_index=True)
+                st.dataframe(sig, width="stretch", hide_index=True)
 
         # ── D. 연도별·시장국면별 분석 ───────────────────────
         with st.expander("📅 연도별·시장국면별 분석 (breakdown)"):
@@ -617,9 +779,9 @@ with tab3:
             regime = load_analysis_csv(sel_an_model, "breakdown_regime.csv")
             if yearly is not None:
                 st.markdown("**연도별**")
-                st.dataframe(yearly, use_container_width=True, hide_index=True)
+                st.dataframe(yearly, width="stretch", hide_index=True)
             if regime is not None:
                 st.markdown("**시장 국면별 (상승/하락)**")
-                st.dataframe(regime, use_container_width=True, hide_index=True)
+                st.dataframe(regime, width="stretch", hide_index=True)
             if yearly is None and regime is None:
                 st.caption("해당 모델 breakdown 결과 없음")

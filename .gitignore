@@ -10,6 +10,9 @@ __pycache__/
 data/announcements/
 docs_cache/
 
+# 앱 시연으로 생성된 forward 신호 (연구 표본 아님 — forward_eval 평가 대상에서 제외됨)
+results/forward_demo/
+
 # 데이터 파일
 *.png
 
