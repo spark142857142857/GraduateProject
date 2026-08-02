@@ -1,0 +1,58 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 168800.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "최근 20거래일 동안 주가가 하락 추세를 보이고 있으며, 이는 향후 하락 가능성을 시사합니다.",
+    "거래량 추이를 볼 때 매도세가 우위를 점하고 있어 추가적인 하락 압력이 존재할 수 있습니다.",
+    "기술적 지표들이 하락 신호를 보내고 있어 단기적인 약세 흐름이 이어질 가능성이 있습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 2.17,
+    "roe": null,
+    "market_cap": 7.3,
+    "momentum_1m": -17.2549,
+    "volume_change": 23.2392,
+    "price_position_52w": 2.4,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-29",
+        "title": "The Show Must Go On!",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "2Q26 Review: 보고 있는 것과 봐야 할 것",
+        "target_price": 320000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "실적 서프라이즈에도 이해할 수 없는 셀온",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "실적과 반대로 가는 주가",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "두 자릿수 마진 회복",
+        "target_price": 330000
+      }
+    ]
+  }
+}

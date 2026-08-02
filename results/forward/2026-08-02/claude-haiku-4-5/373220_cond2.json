@@ -1,0 +1,58 @@
+{
+  "ticker": "373220",
+  "name": "LG에너지솔루션",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 328000.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "52주 내 현재 위치 12.9%로 저점 근처에 있으며, 52주 최고가 514,000원 대비 36% 하락한 상태로 강한 하락 추세를 보임",
+    "최근 1개월 수익률 -5.75%와 거래량 변화율 -23.34%로 하락세와 함께 거래량 위축이 동시에 진행 중",
+    "PER 적자 상태에서 PBR 3.46으로 높은 밸류에이션을 유지하고 있어 추가 조정 압력 존재"
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 3.46,
+    "roe": null,
+    "market_cap": 76.8,
+    "momentum_1m": -5.7471,
+    "volume_change": -23.3392,
+    "price_position_52w": 12.88,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 140.02,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "지연된 물량, 채워지는 수주",
+        "target_price": 600000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "하반기 강한 증익 모멘텀",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "EV도 회복 국면 진입",
+        "target_price": 510000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "ESS가 이끄는 외형 성장",
+        "target_price": 470000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "90 - 20 = 70",
+        "target_price": 560000
+      }
+    ]
+  }
+}

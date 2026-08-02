@@ -1,0 +1,38 @@
+{
+  "ticker": "247540",
+  "name": "에코프로비엠",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 103500.0,
+  "signal": "Sell",
+  "confidence": 90,
+  "reasons": [
+    "PER가 176.6으로 매우 높은 반면 ROE는 3.2%에 불과하여 수익성 대비 밸류에이션이 극도로 과평가되어 있음",
+    "최근 1개월 수익률이 -22.00%로 단기 하락 추세가 매우 강함",
+    "거래량 변화율이 -36.80%로 감소하며 주가 하락 구간에서 저가 매수세의 유입이 부족한 상태임"
+  ],
+  "cond": "cond2",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 176.62,
+    "pbr": 5.67,
+    "roe": 3.21,
+    "market_cap": 10.1,
+    "momentum_1m": -22.0045,
+    "volume_change": -36.8022,
+    "price_position_52w": 7.11,
+    "revenue_growth": -3.88,
+    "operating_margin": 3.46,
+    "debt_ratio": 147.34,
+    "dividend_yield": 0.05,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-29",
+        "title": "수익성 정상화를 넘어 외형 확장 국면 진입",
+        "target_price": null
+      }
+    ]
+  }
+}

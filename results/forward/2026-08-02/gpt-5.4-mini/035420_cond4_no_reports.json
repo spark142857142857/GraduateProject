@@ -1,0 +1,43 @@
+{
+  "ticker": "035420",
+  "name": "네이버",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 208000.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "2026년 1분기 매출이 전년동기 대비 16.3% 증가하고 영업이익도 5,418억원으로 흑자를 유지해 펀더멘털은 양호하지만, 영업이익 증가율은 7.2%로 매출 성장 대비 다소 둔화되어 강한 주가 모멘텀으로 보기는 어렵습니다.",
+    "PER 17.2배와 PBR 1.11배는 과도한 고평가는 아니지만 ROE 6.5%로 수익성 효율이 높지 않아 밸류에이션과 이익창출력의 조합이 강한 상승 신호를 주지는 않습니다.",
+    "최근 1개월 수익률은 +5.37%로 단기 반등은 있었으나 거래량 변화율이 -51.28%로 수급 강도가 약해 20거래일 내 추가 상승 또는 하락을 확신하기 어렵습니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 17.17,
+    "pbr": 1.11,
+    "roe": 6.46,
+    "market_cap": 32.6,
+    "momentum_1m": 5.3698,
+    "volume_change": -51.2804,
+    "price_position_52w": 23.89,
+    "revenue_growth": 16.3,
+    "operating_margin": 16.72,
+    "debt_ratio": 45.21,
+    "dividend_yield": 1.0,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-28",
+        "title": "3대 주주 엔비디아, 의심을 확신으로 바꿀 시..",
+        "target_price": 400000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      }
+    ]
+  }
+}

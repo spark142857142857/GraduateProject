@@ -1,0 +1,59 @@
+{
+  "ticker": "259960",
+  "name": "크래프톤",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 243000.0,
+  "signal": "Buy",
+  "confidence": 72,
+  "reasons": [
+    "애널리스트 5건 모두 목표주가 300,000~460,000원으로 현재가 243,000원 대비 23~89% 상승을 제시하고 있어 단기 상승 근거가 명확함",
+    "PER 12.2배, PBR 1.57배의 낮은 밸류에이션과 ROE 12.9%의 긍정적 수익성으로 기술적 저평가 상태임",
+    "52주 최저가 204,000원 대비 현재가 243,000원으로 저점 회복 중이며, 최고가 353,500원까지 상승 여력이 있음",
+    "PUBG PC, 서브노티카2 등 기존작과 신작 모두 실적 성장을 견인하고 있다는 점이 향후 매출 지속성을 시사함"
+  ],
+  "cond": "cond3",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 12.17,
+    "pbr": 1.57,
+    "roe": 12.9,
+    "market_cap": 11.2,
+    "momentum_1m": -0.8163,
+    "volume_change": -22.3521,
+    "price_position_52w": 26.09,
+    "revenue_growth": 56.88,
+    "operating_margin": 40.95,
+    "debt_ratio": 31.8,
+    "dividend_yield": 0.9,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-30",
+        "title": "8월 게임스컴과 4Q26 모바일 PUBG 매출이 관..",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "웰메이드 모드가 신작이다",
+        "target_price": 460000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "PUBG PC와 서브노티카2가 이끈 실적 성장",
+        "target_price": 380000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "웰메이드 실적",
+        "target_price": 400000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "기존작/신작 모두 서프라이즈",
+        "target_price": 300000
+      }
+    ]
+  }
+}

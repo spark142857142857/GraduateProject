@@ -1,0 +1,48 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 37400.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "애널리스트 목표주가(57,000~62,000원)는 현재가(37,400원) 대비 52~66% 상승을 시사하나, 모두 '검증 필요' 또는 '트리거 필요'라는 조건부 평가로 확실성이 낮음",
+    "PER 30.9는 고평가 수준이며 ROE 4.7%는 저수익성을 나타내어 현재 주가 정당성에 의문이 있음",
+    "52주 최저가(33,150원) 근처에서 최근 1개월 7.47% 상승했으나, 52주 최고가(67,700원)까지는 81% 상승 필요로 단기 20거래일 내 달성 가능성이 불명확함"
+  ],
+  "cond": "cond3",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 30.93,
+    "pbr": 1.44,
+    "roe": 4.66,
+    "market_cap": 16.6,
+    "momentum_1m": 7.4713,
+    "volume_change": 12.1133,
+    "price_position_52w": 12.3,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "카나나 서비스의 가능성 증명 필요",
+        "target_price": 57000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

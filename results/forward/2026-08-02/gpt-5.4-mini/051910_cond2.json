@@ -1,0 +1,38 @@
+{
+  "ticker": "051910",
+  "name": "LG화학",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 258000.0,
+  "signal": "Sell",
+  "confidence": 78,
+  "reasons": [
+    "최근 1개월 수익률이 -7.86%로 단기 추세가 하락 방향이며, 향후 20거래일에도 약세 흐름이 이어질 가능성을 시사합니다.",
+    "거래량 변화율이 -29.62%로 수급이 위축된 상태라 반등 탄력이 강하게 붙기 어려운 환경입니다.",
+    "현재 주가가 52주 최고가 대비 12.9% 수준에 불과하고 PER도 적자라 실적 기반의 상승 논리를 만들기 어려워, 단기적으로는 하락 리스크가 우세합니다."
+  ],
+  "cond": "cond2",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": null,
+    "pbr": 0.58,
+    "roe": null,
+    "market_cap": 18.2,
+    "momentum_1m": -7.8571,
+    "volume_change": -29.6188,
+    "price_position_52w": 12.94,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 119.71,
+    "dividend_yield": 0.6,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-23",
+        "title": "더디지만 그래도 조금씩 회복되는 첨단소재",
+        "target_price": 370000
+      }
+    ]
+  }
+}

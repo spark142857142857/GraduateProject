@@ -1,0 +1,43 @@
+{
+  "ticker": "012450",
+  "name": "한화에어로스페이스",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 917000.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "현재가가 52주 최저가(810,000원) 대비 14.7% 수준으로 매우 낮은 위치에 있어 기술적 반등 가능성이 높음",
+    "최근 애널리스트 리포트의 목표주가(1,720,000원)가 현재가 대비 약 87% 상회하여 강력한 상승 여력을 제시함",
+    "ROE 16.4%의 양호한 수익성과 하반기 실적 및 수주 개선에 대한 긍정적인 전망이 뒷받침됨"
+  ],
+  "cond": "cond3",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 28.98,
+    "pbr": 4.75,
+    "roe": 16.39,
+    "market_cap": 47.3,
+    "momentum_1m": -15.9487,
+    "volume_change": -6.1504,
+    "price_position_52w": 14.72,
+    "revenue_growth": 4.86,
+    "operating_margin": 11.11,
+    "debt_ratio": 224.88,
+    "dividend_yield": 0.7,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-20",
+        "title": "하반기 실적과 수주 동반 개선 기대",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-07-09",
+        "title": "2Q26 Preview: 조용한 지금이 기회",
+        "target_price": 1720000
+      }
+    ]
+  }
+}

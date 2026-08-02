@@ -1,0 +1,58 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 1718000.0,
+  "signal": "Neutral",
+  "confidence": 67,
+  "reasons": [
+    "2026년 1분기 매출과 영업이익이 각각 전년동기 대비 +198.1%, +405.5%로 매우 강하지만, 이는 이미 강한 실적 모멘텀이 주가에 상당 부분 반영됐을 가능성도 있습니다.",
+    "최근 1개월 수익률이 -32.89%로 단기 추세는 약세이나, 거래량 변화율 +15.76%는 변동성 확대 신호일 뿐 방향성을 단정하기에는 부족합니다.",
+    "PER 16.0, PBR 7.61, ROE 47.6%, 부채비율 35.6%, 영업현금흐름 +26.3조원은 펀더멘털이 우수함을 보여주지만, 52주 최고가 대비 현재 위치 55.1%와 시가총액 1255.0조원은 향후 20거래일 내 추가 상승 여력이 명확하다고 보기 어렵습니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 15.99,
+    "pbr": 7.61,
+    "roe": 47.59,
+    "market_cap": 1255.0,
+    "momentum_1m": -32.8906,
+    "volume_change": 15.7598,
+    "price_position_52w": 55.09,
+    "revenue_growth": 198.07,
+    "operating_margin": 71.53,
+    "debt_ratio": 35.56,
+    "dividend_yield": 0.4,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "시간의 문제",
+        "target_price": 3700000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "2Q26 Re: 귀에 걸면 귀걸이 코에 걸면 코걸이",
+        "target_price": 3100000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "2Q26 Review HBM4와 LTA로 이어질 실적 모멘..",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "LTA가 불러올 나비효과",
+        "target_price": 3150000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "새로운 펀더멘털에도 주가는 과락",
+        "target_price": 3600000
+      }
+    ]
+  }
+}

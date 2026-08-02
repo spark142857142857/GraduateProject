@@ -1,0 +1,48 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 37400.0,
+  "signal": "Buy",
+  "confidence": 78,
+  "reasons": [
+    "2026년 1분기 매출이 전년동기 대비 11.1% 증가하고 영업이익이 66.0% 증가해 실적 모멘텀이 뚜렷합니다.",
+    "영업이익률 10.9%와 영업현금흐름 3,167억원, 부채비율 86.8%는 단기 주가에 부담이 될 수준의 재무 불안이 크지 않음을 보여줍니다.",
+    "주가는 52주 최고가 대비 12.3% 수준으로 낮고 최근 1개월 수익률과 거래량이 각각 7.47%, 12.11% 증가해 단기 추세가 우상향입니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 30.93,
+    "pbr": 1.44,
+    "roe": 4.66,
+    "market_cap": 16.6,
+    "momentum_1m": 7.4713,
+    "volume_change": 12.1133,
+    "price_position_52w": 12.3,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "카나나 서비스의 가능성 증명 필요",
+        "target_price": 57000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

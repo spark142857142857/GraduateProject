@@ -1,0 +1,48 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 37400.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "PER 30.9는 고평가 수준으로 추가 상승 여력이 제한적이며, ROE 4.7%는 자본 효율성이 낮아 실적 개선 근거가 약함",
+    "52주 최저가 대비 12.3% 수준의 저위치와 최근 1개월 7.47% 상승으로 단기 반등 가능성이 있으나, 고PER 대비 실적 뒷받침 부족",
+    "거래량 변화율 12.11% 증가는 긍정적이나, PBR 1.44와 함께 고려할 때 상승과 하락 근거가 균형을 이루어 방향성 확신 불가"
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 30.93,
+    "pbr": 1.44,
+    "roe": 4.66,
+    "market_cap": 16.6,
+    "momentum_1m": 7.4713,
+    "volume_change": 12.1133,
+    "price_position_52w": 12.3,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "카나나 서비스의 가능성 증명 필요",
+        "target_price": 57000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

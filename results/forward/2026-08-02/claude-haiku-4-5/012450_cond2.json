@@ -1,0 +1,43 @@
+{
+  "ticker": "012450",
+  "name": "한화에어로스페이스",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 917000.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "최근 1개월 수익률 -15.95%로 단기 하락 추세가 명확하며, 52주 최저가 대비 현재가가 13.2% 상승한 수준으로 반등 여력이 제한적",
+    "PER 29.0과 PBR 4.75는 모두 고평가 수준이며, ROE 16.4%에 비해 밸류에이션이 과도하여 조정 압력 존재",
+    "거래량 변화율 -6.15%로 거래량이 감소하는 가운데 주가가 하락 중이므로, 약한 수급 구조에서 추가 하락 가능성"
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 28.98,
+    "pbr": 4.75,
+    "roe": 16.39,
+    "market_cap": 47.3,
+    "momentum_1m": -15.9487,
+    "volume_change": -6.1504,
+    "price_position_52w": 14.72,
+    "revenue_growth": 4.86,
+    "operating_margin": 11.11,
+    "debt_ratio": 224.88,
+    "dividend_yield": 0.7,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-20",
+        "title": "하반기 실적과 수주 동반 개선 기대",
+        "target_price": 1720000
+      },
+      {
+        "date": "2026-07-09",
+        "title": "2Q26 Preview: 조용한 지금이 기회",
+        "target_price": 1720000
+      }
+    ]
+  }
+}

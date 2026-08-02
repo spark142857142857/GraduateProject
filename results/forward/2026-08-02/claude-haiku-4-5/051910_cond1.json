@@ -1,0 +1,38 @@
+{
+  "ticker": "051910",
+  "name": "LG화학",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 258000.0,
+  "signal": "Neutral",
+  "confidence": 0,
+  "reasons": [
+    "현재가 정보만으로는 기술적·펀더멘탈 판단 불가능",
+    "최근 추세, 거래량, 실적 등 핵심 데이터 부재",
+    "방향성을 확신할 수 없으므로 Neutral이 올바른 판단"
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 0.58,
+    "roe": null,
+    "market_cap": 18.2,
+    "momentum_1m": -7.8571,
+    "volume_change": -29.6188,
+    "price_position_52w": 12.94,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 119.71,
+    "dividend_yield": 0.6,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-23",
+        "title": "더디지만 그래도 조금씩 회복되는 첨단소재",
+        "target_price": 370000
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "ticker": "005380",
+  "name": "현대차",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 388000.0,
+  "signal": "Neutral",
+  "confidence": 50,
+  "reasons": [
+    "현재가 388,000원만 제시되어 있어 20거래일 방향을 판단할 수 있는 추세·모멘텀·밸류에이션 비교 데이터가 부족합니다.",
+    "상승 또는 하락을 뒷받침할 실적, 수급, 기술적 지표, 이벤트 정보가 제공되지 않아 Buy와 Sell 중 우위를 정하기 어렵습니다.",
+    "제공된 데이터만 근거로 하면 방향성이 불명확하므로 적극적 선택으로는 Neutral이 가장 적절합니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 11.2,
+    "pbr": 0.86,
+    "roe": 7.68,
+    "market_cap": 79.4,
+    "momentum_1m": -20.4103,
+    "volume_change": -27.0063,
+    "price_position_52w": 33.39,
+    "revenue_growth": 3.45,
+    "operating_margin": 5.47,
+    "debt_ratio": 190.28,
+    "dividend_yield": 1.9,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-30",
+        "title": "NDR 후기: 실적 저점 확인과 로보틱스",
+        "target_price": 840000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "실적은 저점, 시선은 로봇",
+        "target_price": 840000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "상반기 부정적 영향은 해소되는 중",
+        "target_price": 760000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review: 바닥을 찍고, 하반기 레벨업",
+        "target_price": 740000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Re: 하반기 OPM 회복 발판 마련",
+        "target_price": 570000
+      }
+    ]
+  }
+}

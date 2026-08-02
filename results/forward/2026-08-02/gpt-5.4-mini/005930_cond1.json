@@ -1,0 +1,58 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 262500.0,
+  "signal": "Neutral",
+  "confidence": 42,
+  "reasons": [
+    "현재가 262,500원만으로는 20거래일 내 상승·하락 방향을 판단할 수 있는 추세 정보가 제공되지 않았습니다.",
+    "재무, 실적, 수급, 거래량, 기술적 지표 등 방향성을 뒷받침할 추가 데이터가 없어 Buy 또는 Sell 근거가 부족합니다.",
+    "제공된 정보가 종목명, 현재가, 시장 구분에 한정되어 있어 방향성 확신이 낮으므로 Neutral이 적절합니다."
+  ],
+  "cond": "cond1",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 20.94,
+    "pbr": 3.73,
+    "roe": 17.81,
+    "market_cap": 1534.6,
+    "momentum_1m": -16.5342,
+    "volume_change": -0.2517,
+    "price_position_52w": 66.28,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "3Q26 실적 전망치 상향",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "2Q26 Review 변하지 않은 메모리 호황",
+        "target_price": 500000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "품격을 보여줬다",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "명확한 주주환원 의지",
+        "target_price": 450000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "무시할 실적이 아니다",
+        "target_price": 460000
+      }
+    ]
+  }
+}

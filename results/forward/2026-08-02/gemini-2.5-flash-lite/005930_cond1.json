@@ -1,0 +1,58 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 262500.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "현재가 262,500원은 과거 주가 흐름 대비 상승 또는 하락을 명확히 지지하는 지표가 부족합니다.",
+    "제공된 정보만으로는 향후 20거래일 내 삼성전자의 주가 상승 또는 하락을 강하게 예상할 만한 명확한 근거가 없습니다.",
+    "따라서, 현재 시점에서는 상승과 하락의 근거가 균형을 이루거나 방향성을 확신하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 20.94,
+    "pbr": 3.73,
+    "roe": 17.81,
+    "market_cap": 1534.6,
+    "momentum_1m": -16.5342,
+    "volume_change": -0.2517,
+    "price_position_52w": 66.28,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "3Q26 실적 전망치 상향",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "2Q26 Review 변하지 않은 메모리 호황",
+        "target_price": 500000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "품격을 보여줬다",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "명확한 주주환원 의지",
+        "target_price": 450000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "무시할 실적이 아니다",
+        "target_price": 460000
+      }
+    ]
+  }
+}

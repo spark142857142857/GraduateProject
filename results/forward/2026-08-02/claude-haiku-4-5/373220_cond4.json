@@ -1,0 +1,60 @@
+{
+  "ticker": "373220",
+  "name": "LG에너지솔루션",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 328000.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "2026년 1분기 영업이익 -2,078억원, 순이익 -9,440억원의 심각한 적자로 현재 기업의 수익성이 완전히 악화된 상태",
+    "애널리스트 목표주가가 470,000~600,000원으로 현재가 328,000원 대비 43~83% 상승을 제시하나, 적자 기업에 대한 신뢰도 제한적",
+    "부채비율 140%, 영업현금흐름 -3,163억원으로 재무 안정성이 악화되었으나 하반기 증익 모멘텀과 ESS 성장이 회복 가능성을 시사하는 상충된 신호",
+    "52주 내 현재 위치 12.9%로 저점 근처이고 최근 1개월 -5.75% 하락, 거래량 -23.34% 감소로 단기 약세 지속 중",
+    "지연된 물량 충당과 EV 회복 국면 진입이라는 긍정 요인이 있으나 실적 개선 시점과 규모가 불확실하여 20거래일 단기 방향성 판단 불가"
+  ],
+  "cond": "cond4",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": null,
+    "pbr": 3.46,
+    "roe": null,
+    "market_cap": 76.8,
+    "momentum_1m": -5.7471,
+    "volume_change": -23.3392,
+    "price_position_52w": 12.88,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 140.02,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "지연된 물량, 채워지는 수주",
+        "target_price": 600000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "하반기 강한 증익 모멘텀",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "EV도 회복 국면 진입",
+        "target_price": 510000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "ESS가 이끄는 외형 성장",
+        "target_price": 470000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "90 - 20 = 70",
+        "target_price": 560000
+      }
+    ]
+  }
+}

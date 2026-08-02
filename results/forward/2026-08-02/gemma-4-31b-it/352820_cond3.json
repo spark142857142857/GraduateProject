@@ -1,0 +1,58 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 168800.0,
+  "signal": "Neutral",
+  "confidence": 40,
+  "reasons": [
+    "현재가가 52주 최저가(163,000원)에 매우 근접한 2.4% 지점에 위치하여 기술적 지지선 형성 가능성과 추가 하락 가능성이 공존함",
+    "애널리스트 리포트에서 '실적 서프라이즈'와 '마진 회복'을 언급함에도 불구하고 실제 주가는 '셀온(Sell-on)' 현상을 보이며 하락하는 괴리 현상이 발생함",
+    "최근 1개월 수익률이 -17.25%로 강한 하락 추세에 있으며, 재무적으로 적자 상태(PER 해당없음)라는 점이 단기 상승 동력을 제한함"
+  ],
+  "cond": "cond3",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": null,
+    "pbr": 2.17,
+    "roe": null,
+    "market_cap": 7.3,
+    "momentum_1m": -17.2549,
+    "volume_change": 23.2392,
+    "price_position_52w": 2.4,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-29",
+        "title": "The Show Must Go On!",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "2Q26 Review: 보고 있는 것과 봐야 할 것",
+        "target_price": 320000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "실적 서프라이즈에도 이해할 수 없는 셀온",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "실적과 반대로 가는 주가",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "두 자릿수 마진 회복",
+        "target_price": 330000
+      }
+    ]
+  }
+}

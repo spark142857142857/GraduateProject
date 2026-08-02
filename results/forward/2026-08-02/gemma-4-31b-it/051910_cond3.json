@@ -1,0 +1,38 @@
+{
+  "ticker": "051910",
+  "name": "LG화학",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 258000.0,
+  "signal": "Neutral",
+  "confidence": 45,
+  "reasons": [
+    "최근 1개월 수익률(-7.86%)과 거래량 변화율(-29.62%)이 모두 감소하며 단기적인 하락 추세와 매수세 약화가 관찰됨",
+    "PBR 0.58로 장부 가치 대비 매우 저평가되어 있으며 52주 최저가 근처(현재 위치 12.9%)에 있어 추가 하락폭이 제한적일 가능성이 있음",
+    "애널리스트 목표주가(370,000원)는 현재가 대비 높으나, 회복 속도가 '더디다'고 명시되어 20거래일 내의 단기 반등 확신이 부족함"
+  ],
+  "cond": "cond3",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": null,
+    "pbr": 0.58,
+    "roe": null,
+    "market_cap": 18.2,
+    "momentum_1m": -7.8571,
+    "volume_change": -29.6188,
+    "price_position_52w": 12.94,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 119.71,
+    "dividend_yield": 0.6,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-23",
+        "title": "더디지만 그래도 조금씩 회복되는 첨단소재",
+        "target_price": 370000
+      }
+    ]
+  }
+}

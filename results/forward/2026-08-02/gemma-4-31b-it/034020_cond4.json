@@ -1,0 +1,58 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 67100.0,
+  "signal": "Sell",
+  "confidence": 80,
+  "reasons": [
+    "PER 278.4 및 PBR 5.35의 극심한 고평가 상태 대비 ROE가 1.9%로 매우 낮아 펀더멘털 측면의 주가 지지력이 부족함",
+    "최근 1개월 수익률이 -24.18%로 가파른 하락 추세에 있으며, 거래량 변화율 또한 -11.88%로 감소하며 하락 모멘텀이 지속되고 있음",
+    "1분기 영업이익 증가에도 불구하고 영업현금흐름이 -5,655억원으로 큰 폭의 적자를 기록하여 실제 현금 창출 능력에 심각한 의문이 있음"
+  ],
+  "cond": "cond4",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 278.42,
+    "pbr": 5.35,
+    "roe": 1.92,
+    "market_cap": 43.0,
+    "momentum_1m": -24.1808,
+    "volume_change": -11.8798,
+    "price_position_52w": 12.28,
+    "revenue_growth": 13.67,
+    "operating_margin": 5.48,
+    "debt_ratio": 130.6,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-30",
+        "title": "거친 주가 숨 고르기. 그러나 하반기 구조적 ..",
+        "target_price": 110000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "2Q26 Review: 수주는 가이던스 초과를 향해",
+        "target_price": 120000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "핵심사업 중심 중장기 마진 개선 유효",
+        "target_price": 165000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "동트기 전이 가장 어둡다",
+        "target_price": 149000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "2Q26 Review: 완벽한 청사진",
+        "target_price": 100000
+      }
+    ]
+  }
+}

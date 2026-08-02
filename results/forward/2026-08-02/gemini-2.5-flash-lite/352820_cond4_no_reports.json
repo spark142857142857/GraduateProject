@@ -1,0 +1,58 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 168800.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월 수익률이 -17.25%로 하락세를 보이고 있으며, 2026년 1분기 영업이익이 전년 동기 대비 큰 폭으로 적자 전환하며 수익성 악화가 두드러지고 있습니다.",
+    "PER이 '해당없음(적자)'으로 산출되는 등 현재 기업의 수익 창출 능력이 부진한 상황입니다.",
+    "52주 최고가 대비 현재 위치가 2.4%로, 52주 최저가(163,000원)에 근접한 168,800원이라는 점은 추가 하락 가능성을 시사합니다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 2.17,
+    "roe": null,
+    "market_cap": 7.3,
+    "momentum_1m": -17.2549,
+    "volume_change": 23.2392,
+    "price_position_52w": 2.4,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-29",
+        "title": "The Show Must Go On!",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "2Q26 Review: 보고 있는 것과 봐야 할 것",
+        "target_price": 320000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "실적 서프라이즈에도 이해할 수 없는 셀온",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "실적과 반대로 가는 주가",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "두 자릿수 마진 회복",
+        "target_price": 330000
+      }
+    ]
+  }
+}

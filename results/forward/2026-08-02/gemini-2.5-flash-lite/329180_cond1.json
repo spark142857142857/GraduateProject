@@ -1,0 +1,58 @@
+{
+  "ticker": "329180",
+  "name": "HD현대중공업",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 481000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "제공된 데이터만으로는 향후 20거래일 내 HD현대중공업의 주가 상승 또는 하락을 명확하게 예측할 만한 강력한 근거가 부족합니다.",
+    "현재가 481,000원이라는 정보만으로는 추세적 상승 또는 하락을 판단하기 어렵습니다.",
+    "추가적인 기술적 지표, 시장 수급, 거시 경제 지표 등의 데이터가 제공되지 않아 명확한 투자 방향을 설정하기 어렵습니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 24.2,
+    "pbr": 5.2,
+    "roe": 21.49,
+    "market_cap": 50.5,
+    "momentum_1m": -21.7886,
+    "volume_change": -11.8155,
+    "price_position_52w": 20.48,
+    "revenue_growth": 54.78,
+    "operating_margin": 15.3,
+    "debt_ratio": 183.91,
+    "dividend_yield": 1.08,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-30",
+        "title": "압도적인 모멘텀. 전사적인 수익성도 확대 중",
+        "target_price": 900000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "2Q26 Re: 가던 길, 마저 갑니다",
+        "target_price": 842000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "이제는 그냥 조선사가 아니다",
+        "target_price": 1000000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "2Q26: 역시 최고의 조선사",
+        "target_price": 860000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "견고한 본업과 차근차근 준비하는 미래 사업",
+        "target_price": 880000
+      }
+    ]
+  }
+}

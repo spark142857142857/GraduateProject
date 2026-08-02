@@ -1,0 +1,48 @@
+{
+  "ticker": "035720",
+  "name": "카카오",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 37400.0,
+  "signal": "Neutral",
+  "confidence": 65,
+  "reasons": [
+    "최근 1개월 수익률(7.47%)과 거래량 변화율(12.11%)이 상승하며 단기적인 바닥 다지기 및 반등 신호가 나타나고 있습니다.",
+    "ROE(4.7%)가 PER(30.9) 대비 매우 낮아 자본 효율성이 떨어지며 펀더멘털 측면의 상승 동력이 부족합니다.",
+    "애널리스트 리포트에서 AI 수익화 검증 및 강력한 트리거가 필요하다고 명시하여, 20거래일 내의 확실한 주가 상승 촉매제가 불분명합니다."
+  ],
+  "cond": "cond3",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 30.93,
+    "pbr": 1.44,
+    "roe": 4.66,
+    "market_cap": 16.6,
+    "momentum_1m": 7.4713,
+    "volume_change": 12.1133,
+    "price_position_52w": 12.3,
+    "revenue_growth": 11.11,
+    "operating_margin": 10.89,
+    "debt_ratio": 86.78,
+    "dividend_yield": 0.1,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-14",
+        "title": "카나나 서비스의 가능성 증명 필요",
+        "target_price": 57000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "본업 양호하나 AI 수익화 검증 필요",
+        "target_price": 61000
+      },
+      {
+        "date": "2026-07-07",
+        "title": "하반기 강력한 트리거 필요",
+        "target_price": 62000
+      }
+    ]
+  }
+}

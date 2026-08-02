@@ -1,0 +1,59 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 262500.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "최근 1개월 수익률이 -16.53%로 급락세를 보이고 있어 단기 하락 모멘텀이 강함",
+    "52주 최고가 대비 현재가가 27.6% 하락한 상태로 고점에서의 조정이 진행 중",
+    "PER 20.9, PBR 3.73으로 현재 밸류에이션이 높은 수준이며, 하락장에서 밸류에이션 압축 위험 존재",
+    "거래량 변화율이 -0.25%로 음수를 기록하여 하락 추세에서 거래량 약세가 동반"
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 20.94,
+    "pbr": 3.73,
+    "roe": 17.81,
+    "market_cap": 1534.6,
+    "momentum_1m": -16.5342,
+    "volume_change": -0.2517,
+    "price_position_52w": 66.28,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "3Q26 실적 전망치 상향",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "2Q26 Review 변하지 않은 메모리 호황",
+        "target_price": 500000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "품격을 보여줬다",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "명확한 주주환원 의지",
+        "target_price": 450000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "무시할 실적이 아니다",
+        "target_price": 460000
+      }
+    ]
+  }
+}

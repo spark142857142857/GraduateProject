@@ -1,0 +1,58 @@
+{
+  "ticker": "068270",
+  "name": "셀트리온",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 186700.0,
+  "signal": "Buy",
+  "confidence": 92,
+  "reasons": [
+    "최근 5건의 애널리스트 리포트 목표주가(280,000원~320,000원)가 현재가(186,700원) 대비 매우 높은 상승 여력을 보이고 있습니다.",
+    "최근 1개월 수익률 6.99% 상승과 거래량 변화율 20.44% 증가가 동시에 나타나며 단기 상승 모멘텀이 확인됩니다.",
+    "52주 가격 범위 내 현재 위치가 35.2%로 저점 부근에 위치하여 기술적 반등 및 상승 공간이 충분합니다."
+  ],
+  "cond": "cond3",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 32.63,
+    "pbr": 2.44,
+    "roe": 7.48,
+    "market_cap": 43.4,
+    "momentum_1m": 6.9914,
+    "volume_change": 20.4429,
+    "price_position_52w": 35.24,
+    "revenue_growth": 36.0,
+    "operating_margin": 28.11,
+    "debt_ratio": 29.99,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-28",
+        "title": "2Q26 Re: 기대를 뛰어넘는 가파른 성장",
+        "target_price": 320000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "2Q26Re: 계속되는 신제품 효과",
+        "target_price": 280000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "이익 레벨업, 하반기가 더 기대되는 이유",
+        "target_price": 280000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "Top-Tier에 걸맞은 실적. 경쟁사 대비 저평가",
+        "target_price": 280000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "신규 제품이 바꾼 이익 체급",
+        "target_price": 290000
+      }
+    ]
+  }
+}

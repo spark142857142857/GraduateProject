@@ -1,0 +1,59 @@
+{
+  "ticker": "055550",
+  "name": "신한지주",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 100700.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "PER 9.8배, PBR 0.83배로 저평가 지표를 보이나 ROE 8.4%는 자본수익률이 낮아 실질적 가치창출 능력이 제한적",
+    "2026 1분기 영업이익 +10.8% 증가는 긍정적이나 부채비율 1228.5%로 극도로 높아 재무 안정성이 심각하게 훼손된 상태",
+    "52주 내 현재 위치 81.2%로 고점 근처에 위치하면서 최근 1개월 수익률 +4.46%이나 거래량 -13.66% 감소로 상승 모멘텀 약화 신호",
+    "영업현금흐름 미공시로 실제 현금 창출 능력을 검증할 수 없어 순이익의 질적 평가 불가능"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 9.85,
+    "pbr": 0.83,
+    "roe": 8.43,
+    "market_cap": 47.3,
+    "momentum_1m": 4.4606,
+    "volume_change": -13.6573,
+    "price_position_52w": 81.19,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1228.55,
+    "dividend_yield": 3.01,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-24",
+        "title": "환원 수익률 7% 내외로 투자매력 확보",
+        "target_price": 137000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review: 견조한 실적 바탕으로 목표 ROE..",
+        "target_price": 134000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "M&A 이슈가 단기 주가 흐름에 영향을 미칠 전..",
+        "target_price": 135000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "기대되는 10월 자사주 매입 발표",
+        "target_price": 140000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "더 좋아질 이익과 높아진 주주환원 매력",
+        "target_price": 132000
+      }
+    ]
+  }
+}

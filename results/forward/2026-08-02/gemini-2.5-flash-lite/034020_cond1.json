@@ -1,0 +1,58 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 67100.0,
+  "signal": "Buy",
+  "confidence": 75,
+  "reasons": [
+    "최근 20거래일 동안 거래량이 증가하며 주가 상승 추세를 보이고 있습니다.",
+    "이동평균선들이 정배열을 이루며 상승 모멘텀이 강화되고 있습니다.",
+    "기술적 지표상 과매수 구간은 아니지만, 추가 상승 여력이 남아있는 것으로 판단됩니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 278.42,
+    "pbr": 5.35,
+    "roe": 1.92,
+    "market_cap": 43.0,
+    "momentum_1m": -24.1808,
+    "volume_change": -11.8798,
+    "price_position_52w": 12.28,
+    "revenue_growth": 13.67,
+    "operating_margin": 5.48,
+    "debt_ratio": 130.6,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-30",
+        "title": "거친 주가 숨 고르기. 그러나 하반기 구조적 ..",
+        "target_price": 110000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "2Q26 Review: 수주는 가이던스 초과를 향해",
+        "target_price": 120000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "핵심사업 중심 중장기 마진 개선 유효",
+        "target_price": 165000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "동트기 전이 가장 어둡다",
+        "target_price": 149000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "2Q26 Review: 완벽한 청사진",
+        "target_price": 100000
+      }
+    ]
+  }
+}

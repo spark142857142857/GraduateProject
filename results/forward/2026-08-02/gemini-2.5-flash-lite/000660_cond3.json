@@ -1,0 +1,58 @@
+{
+  "ticker": "000660",
+  "name": "SK하이닉스",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 1718000.0,
+  "signal": "Sell",
+  "confidence": 75,
+  "reasons": [
+    "최근 1개월 수익률이 -32.89%로 큰 폭의 하락세를 보이고 있어 단기적인 하락 압력이 지속될 가능성이 있습니다.",
+    "현재가(1,718,000원)는 52주 최고가(2,919,000원) 대비 약 41% 하락한 수준으로, 기술적 반등 가능성도 있으나 최근 하락 추세가 강하게 나타나고 있습니다.",
+    "애널리스트 리포트의 목표주가는 현재가 대비 높은 수준이지만, 이는 장기적인 관점이며 최근 1개월의 급격한 주가 하락은 단기적인 투자 심리 위축을 시사합니다."
+  ],
+  "cond": "cond3",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": 15.99,
+    "pbr": 7.61,
+    "roe": 47.59,
+    "market_cap": 1255.0,
+    "momentum_1m": -32.8906,
+    "volume_change": 15.7598,
+    "price_position_52w": 55.09,
+    "revenue_growth": 198.07,
+    "operating_margin": 71.53,
+    "debt_ratio": 35.56,
+    "dividend_yield": 0.4,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "시간의 문제",
+        "target_price": 3700000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "2Q26 Re: 귀에 걸면 귀걸이 코에 걸면 코걸이",
+        "target_price": 3100000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "2Q26 Review HBM4와 LTA로 이어질 실적 모멘..",
+        "target_price": 4000000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "LTA가 불러올 나비효과",
+        "target_price": 3150000
+      },
+      {
+        "date": "2026-07-30",
+        "title": "새로운 펀더멘털에도 주가는 과락",
+        "target_price": 3600000
+      }
+    ]
+  }
+}

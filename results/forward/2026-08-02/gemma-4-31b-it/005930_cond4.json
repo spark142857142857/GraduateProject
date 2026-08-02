@@ -1,0 +1,58 @@
+{
+  "ticker": "005930",
+  "name": "삼성전자",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 262500.0,
+  "signal": "Buy",
+  "confidence": 95,
+  "reasons": [
+    "2026년 1분기 영업이익이 전년 동기 대비 756.1% 증가하고 영업이익률 42.8%라는 압도적인 실적 성장세를 기록함",
+    "최근 5건의 애널리스트 리포트 목표주가가 최저 390,000원에서 최고 560,000원으로 현재가(262,500원) 대비 매우 높은 상승 여력을 제시함",
+    "부채비율 30.1%의 낮은 재무 리스크와 40.3조원의 강력한 영업현금흐름을 통해 재무적 안정성이 매우 높음"
+  ],
+  "cond": "cond4",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": 20.94,
+    "pbr": 3.73,
+    "roe": 17.81,
+    "market_cap": 1534.6,
+    "momentum_1m": -16.5342,
+    "volume_change": -0.2517,
+    "price_position_52w": 66.28,
+    "revenue_growth": 69.16,
+    "operating_margin": 42.75,
+    "debt_ratio": 30.15,
+    "dividend_yield": 1.5,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "3Q26 실적 전망치 상향",
+        "target_price": 390000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "2Q26 Review 변하지 않은 메모리 호황",
+        "target_price": 500000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "품격을 보여줬다",
+        "target_price": 560000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "명확한 주주환원 의지",
+        "target_price": 450000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "무시할 실적이 아니다",
+        "target_price": 460000
+      }
+    ]
+  }
+}

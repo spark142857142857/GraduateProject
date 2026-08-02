@@ -1,0 +1,58 @@
+{
+  "ticker": "006400",
+  "name": "삼성SDI",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 397000.0,
+  "signal": "Neutral",
+  "confidence": 40,
+  "reasons": [
+    "최근 1개월 수익률이 -19.14%로 급락 중이며 거래량 또한 감소하고 있어 단기 하락 추세가 강함",
+    "현재 재무 상태가 적자(PER 해당없음)로 펀더멘털 측면의 리스크가 존재함",
+    "최근 리포트들이 일제히 흑자전환을 전망하며 현재가 대비 매우 높은 목표주가를 제시하고 있어 기술적 지표와 분석가 전망이 강하게 충돌함"
+  ],
+  "cond": "cond3",
+  "model": "gemma-4-31b-it",
+  "context_used": {
+    "per": null,
+    "pbr": 1.31,
+    "roe": null,
+    "market_cap": 32.0,
+    "momentum_1m": -19.1446,
+    "volume_change": -5.632,
+    "price_position_52w": 40.58,
+    "revenue_growth": 12.58,
+    "operating_margin": null,
+    "debt_ratio": null,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "Strong Buy, 하반기에도 흑자 지속 전망",
+        "target_price": 667000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "예상보다 빨라진 흑전",
+        "target_price": 690000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "바뀐 것이 하나도 없음",
+        "target_price": 1000000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "SS가 좋은 날",
+        "target_price": 800000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "흑자전환, 다음은 본업",
+        "target_price": 620000
+      }
+    ]
+  }
+}

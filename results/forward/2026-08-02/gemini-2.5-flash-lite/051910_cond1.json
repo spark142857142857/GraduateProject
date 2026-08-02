@@ -1,0 +1,38 @@
+{
+  "ticker": "051910",
+  "name": "LG화학",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 258000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "LG화학의 최근 20거래일 주가 추세는 뚜렷한 상승 또는 하락 모멘텀을 보여주지 않고 횡보하는 경향을 보입니다.",
+    "현재가 258,000원은 과거 주요 지지선 또는 저항선과의 명확한 관계를 형성하지 않아 단기적인 방향성을 예측하기 어렵습니다.",
+    "제공된 정보만으로는 향후 20거래일 동안 주가 상승 또는 하락을 강하게 지지할 만한 명확한 펀더멘털 또는 기술적 지표가 부족합니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 0.58,
+    "roe": null,
+    "market_cap": 18.2,
+    "momentum_1m": -7.8571,
+    "volume_change": -29.6188,
+    "price_position_52w": 12.94,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 119.71,
+    "dividend_yield": 0.6,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-23",
+        "title": "더디지만 그래도 조금씩 회복되는 첨단소재",
+        "target_price": 370000
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "ticker": "034020",
+  "name": "두산에너빌리티",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 67100.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "PER 278.4는 극도로 높은 수준으로, 현재 주가가 실적 대비 과도하게 평가되어 있음을 시사한다.",
+    "52주 최저가 57,400원 대비 현재가 67,100원이지만 최고가 136,400원 대비 51% 하락한 상태로, 강한 하락 추세 중에 있다.",
+    "영업현금흐름이 -5,655억원으로 심각하게 악화되었으며, 부채비율 130.6%와 함께 재무 건전성이 크게 악화되어 있다.",
+    "최근 1개월 수익률 -24.18%와 거래량 변화율 -11.88%는 투자자 심리 악화와 매도 압력을 반영한다.",
+    "ROE 1.9%는 극히 낮은 수준으로, 실적 개선에도 불구하고 주주가치 창출 능력이 매우 제한적이다."
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 278.42,
+    "pbr": 5.35,
+    "roe": 1.92,
+    "market_cap": 43.0,
+    "momentum_1m": -24.1808,
+    "volume_change": -11.8798,
+    "price_position_52w": 12.28,
+    "revenue_growth": 13.67,
+    "operating_margin": 5.48,
+    "debt_ratio": 130.6,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-30",
+        "title": "거친 주가 숨 고르기. 그러나 하반기 구조적 ..",
+        "target_price": 110000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "2Q26 Review: 수주는 가이던스 초과를 향해",
+        "target_price": 120000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "핵심사업 중심 중장기 마진 개선 유효",
+        "target_price": 165000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "동트기 전이 가장 어둡다",
+        "target_price": 149000
+      },
+      {
+        "date": "2026-07-28",
+        "title": "2Q26 Review: 완벽한 청사진",
+        "target_price": 100000
+      }
+    ]
+  }
+}

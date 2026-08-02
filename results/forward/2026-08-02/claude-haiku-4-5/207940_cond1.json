@@ -1,0 +1,58 @@
+{
+  "ticker": "207940",
+  "name": "삼성바이오로직스",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 1485000.0,
+  "signal": "Neutral",
+  "confidence": 45,
+  "reasons": [
+    "현재가 1,485,000원 외에 제공된 구체적인 재무 지표, 기술적 분석 데이터, 시장 데이터가 부재하여 방향성 판단의 근거가 불충분함",
+    "주가 추세, PER/PBR 등 밸류에이션 지표, 거래량 변화, 이동평균선 등 기술적 신호가 제시되지 않아 상승 또는 하락 근거를 객관적으로 판단할 수 없음",
+    "바이오로직스 기업의 특성상 파이프라인 진행 상황, 임상 결과, 규제 승인 등의 이벤트 정보 없이는 향후 20거래일 주가 방향을 확신할 수 없음"
+  ],
+  "cond": "cond1",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 51.27,
+    "pbr": 8.68,
+    "roe": 16.93,
+    "market_cap": 68.7,
+    "momentum_1m": 6.3754,
+    "volume_change": 3.4611,
+    "price_position_52w": 33.52,
+    "revenue_growth": 25.77,
+    "operating_margin": 46.2,
+    "debt_ratio": 51.4,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-27",
+        "title": "수주 우려는 완화, 성장축은 확장",
+        "target_price": 2100000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Re: 3분기부터 시작될 성장 랠리",
+        "target_price": 1950000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review; 방향성을 믿고 갈 때",
+        "target_price": 1900000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "체급을 키우기 위한 약간의 성장통 (2Q26 Rev..",
+        "target_price": 2050000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "분기 최대 실적 달성, 3Q 쉬어가도 성장은 지..",
+        "target_price": 2000000
+      }
+    ]
+  }
+}

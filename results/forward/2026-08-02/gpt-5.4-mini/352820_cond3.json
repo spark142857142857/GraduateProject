@@ -1,0 +1,58 @@
+{
+  "ticker": "352820",
+  "name": "HYBE",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 168800.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "현재가가 52주 최저가 163,000원에 매우 근접해 52주 내 위치가 2.4%로 기술적으로는 과매도 구간에 가까워 단기 반등 여지는 있으나, 이것만으로 상승을 확신하기는 어렵습니다.",
+    "최근 1개월 수익률이 -17.25%로 추세가 약하고, 거래량 변화율 23.24%는 변동성 확대를 시사하지만 방향성 자체는 아직 불명확합니다.",
+    "애널리스트 리포트의 목표주가가 320,000~350,000원으로 현재가 대비 높지만, 최근 주가가 실적과 반대로 움직였다는 코멘트가 있어 20거래일 내 즉각적인 상승을 단정하기 어렵습니다."
+  ],
+  "cond": "cond3",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": null,
+    "pbr": 2.17,
+    "roe": null,
+    "market_cap": 7.3,
+    "momentum_1m": -17.2549,
+    "volume_change": 23.2392,
+    "price_position_52w": 2.4,
+    "revenue_growth": 39.5,
+    "operating_margin": -28.15,
+    "debt_ratio": 64.25,
+    "dividend_yield": 0.13,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-29",
+        "title": "The Show Must Go On!",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "2Q26 Review: 보고 있는 것과 봐야 할 것",
+        "target_price": 320000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "실적 서프라이즈에도 이해할 수 없는 셀온",
+        "target_price": 350000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "실적과 반대로 가는 주가",
+        "target_price": 340000
+      },
+      {
+        "date": "2026-07-29",
+        "title": "두 자릿수 마진 회복",
+        "target_price": 330000
+      }
+    ]
+  }
+}

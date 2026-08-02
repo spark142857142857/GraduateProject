@@ -1,0 +1,43 @@
+{
+  "ticker": "035420",
+  "name": "네이버",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 208000.0,
+  "signal": "Neutral",
+  "confidence": 61,
+  "reasons": [
+    "PER 17.2와 PBR 1.11은 밸류에이션 부담이 크지 않지만 ROE 6.5%로 수익성 개선 강도가 높지 않아 강한 상승 근거로 보기 어렵습니다.",
+    "주가는 52주 최고가 대비 크게 낮은 23.9% 위치에 있어 반등 여지는 있으나, 최근 1개월 수익률 5.37%와 거래량 변화율 -51.28%가 동반되어 추세의 힘은 약합니다.",
+    "애널리스트 의견은 목표주가 240,000원과 400,000원으로 상향 여지가 있으나, 동시에 'AI 수익화 전까지는 공백'이라는 문구가 있어 20거래일 내 방향성을 확신하기 어렵습니다."
+  ],
+  "cond": "cond3",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 17.17,
+    "pbr": 1.11,
+    "roe": 6.46,
+    "market_cap": 32.6,
+    "momentum_1m": 5.3698,
+    "volume_change": -51.2804,
+    "price_position_52w": 23.89,
+    "revenue_growth": 16.3,
+    "operating_margin": 16.72,
+    "debt_ratio": 45.21,
+    "dividend_yield": 1.0,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-28",
+        "title": "3대 주주 엔비디아, 의심을 확신으로 바꿀 시..",
+        "target_price": 400000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      }
+    ]
+  }
+}

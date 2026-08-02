@@ -1,0 +1,58 @@
+{
+  "ticker": "373220",
+  "name": "LG에너지솔루션",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 328000.0,
+  "signal": "Neutral",
+  "confidence": 55,
+  "reasons": [
+    "LG에너지솔루션의 현재가 328,000원은 최근 20거래일 평균 가격 대비 큰 변동성을 보이지 않아 단기적인 상승 또는 하락 추세를 명확히 판단하기 어렵습니다.",
+    "제공된 정보만으로는 향후 20거래일 동안 LG에너지솔루션의 주가에 영향을 미칠 만한 구체적인 재무 지표, 시장 동향, 또는 거시 경제 변수에 대한 정보가 부족합니다.",
+    "따라서, 현재 시점에서 제공된 데이터만으로는 향후 20거래일 내 주가 상승 또는 하락을 확신할 만한 강력한 근거가 부족하여 Neutral로 판단합니다."
+  ],
+  "cond": "cond1",
+  "model": "gemini-2.5-flash-lite",
+  "context_used": {
+    "per": null,
+    "pbr": 3.46,
+    "roe": null,
+    "market_cap": 76.8,
+    "momentum_1m": -5.7471,
+    "volume_change": -23.3392,
+    "price_position_52w": 12.88,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 140.02,
+    "dividend_yield": null,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-31",
+        "title": "지연된 물량, 채워지는 수주",
+        "target_price": 600000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "하반기 강한 증익 모멘텀",
+        "target_price": 480000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "EV도 회복 국면 진입",
+        "target_price": 510000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "ESS가 이끄는 외형 성장",
+        "target_price": 470000
+      },
+      {
+        "date": "2026-07-31",
+        "title": "90 - 20 = 70",
+        "target_price": 560000
+      }
+    ]
+  }
+}

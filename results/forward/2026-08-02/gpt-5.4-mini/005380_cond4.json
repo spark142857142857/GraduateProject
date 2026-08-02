@@ -1,0 +1,58 @@
+{
+  "ticker": "005380",
+  "name": "현대차",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 388000.0,
+  "signal": "Neutral",
+  "confidence": 66,
+  "reasons": [
+    "최근 1개월 수익률이 -20.41%이고 거래량 변화율도 -27.01%로 단기 모멘텀이 약해 20거래일 내 추가 상승을 강하게 기대하기 어렵습니다.",
+    "PER 11.2, PBR 0.86은 밸류에이션 부담이 크지 않지만 ROE 7.7%와 1분기 영업이익 -30.8% 감소는 수익성 개선이 아직 충분히 확인되지 않았음을 시사합니다.",
+    "애널리스트 리포트의 목표주가는 570,000~840,000원으로 현재가 388,000원 대비 높지만, 이는 중기 개선 기대에 가깝고 단기 주가 방향을 단정할 만큼의 근거는 아닙니다."
+  ],
+  "cond": "cond4",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 11.2,
+    "pbr": 0.86,
+    "roe": 7.68,
+    "market_cap": 79.4,
+    "momentum_1m": -20.4103,
+    "volume_change": -27.0063,
+    "price_position_52w": 33.39,
+    "revenue_growth": 3.45,
+    "operating_margin": 5.47,
+    "debt_ratio": 190.28,
+    "dividend_yield": 1.9,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-30",
+        "title": "NDR 후기: 실적 저점 확인과 로보틱스",
+        "target_price": 840000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "실적은 저점, 시선은 로봇",
+        "target_price": 840000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "상반기 부정적 영향은 해소되는 중",
+        "target_price": 760000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review: 바닥을 찍고, 하반기 레벨업",
+        "target_price": 740000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Re: 하반기 OPM 회복 발판 마련",
+        "target_price": 570000
+      }
+    ]
+  }
+}

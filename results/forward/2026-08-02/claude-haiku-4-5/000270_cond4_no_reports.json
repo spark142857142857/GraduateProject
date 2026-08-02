@@ -1,0 +1,58 @@
+{
+  "ticker": "000270",
+  "name": "기아",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 131900.0,
+  "signal": "Sell",
+  "confidence": 72,
+  "reasons": [
+    "영업이익이 전년동기 대비 -26.7% 감소하여 수익성 악화 추세가 명확하며, 매출 증가(+5.3%)에도 불구하고 영업이익률이 7.5%로 낮은 수준을 유지 중",
+    "최근 1개월 수익률 -6.78%와 거래량 변화율 -8.21%로 하락 모멘텀이 형성되어 있고, 52주 최저가 대비 현재 위치가 31.5%로 여전히 약세 국면에 위치",
+    "PER 7.3은 저평가로 보이나 ROE 11.5%와 영업이익 감소세를 감안하면 저평가가 정당화되는 상황이며, 부채비율 70.9%로 재무 레버리지가 높아 추가 악재 시 취약성 노출 가능"
+  ],
+  "cond": "cond4_no_reports",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 7.32,
+    "pbr": 0.84,
+    "roe": 11.48,
+    "market_cap": 51.5,
+    "momentum_1m": -6.7845,
+    "volume_change": -8.2093,
+    "price_position_52w": 31.52,
+    "revenue_growth": 5.3,
+    "operating_margin": 7.47,
+    "debt_ratio": 70.93,
+    "dividend_yield": 4.2,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-27",
+        "title": "아쉬운 2분기. 하반기 HEV 생산 확대를 기대",
+        "target_price": 190000
+      },
+      {
+        "date": "2026-07-27",
+        "title": "2Q26 Re: 과도기적 성장의 모순",
+        "target_price": 190000
+      },
+      {
+        "date": "2026-07-27",
+        "title": "강력한 xEV 포트폴리오 보유",
+        "target_price": 200000
+      },
+      {
+        "date": "2026-07-27",
+        "title": "판매왕의 고민",
+        "target_price": 240000
+      },
+      {
+        "date": "2026-07-27",
+        "title": "본업과 미래 사업에서 모두 기대되는 26.2H",
+        "target_price": 240000
+      }
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "ticker": "035420",
+  "name": "네이버",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 208000.0,
+  "signal": "Neutral",
+  "confidence": 48,
+  "reasons": [
+    "52주 내 현재 위치 23.9%로 저점 근처에 있어 반등 가능성이 있으나, 동시에 고점 대비 27.5% 하락한 상태로 하락 추세의 연장 가능성도 존재",
+    "거래량 변화율 -51.28%로 급격히 감소하여 상승 모멘텀의 약화를 시사하고 있어 단기 상승 근거가 제한적",
+    "PER 17.2, PBR 1.11은 합리적 수준이나 ROE 6.5%는 낮은 수익성을 반영하고 있어 펀더멘탈 개선 신호 부재",
+    "최근 1개월 수익률 5.37%의 소폭 반등이 있으나, 거래량 동반 부족으로 지속성을 확신하기 어려움"
+  ],
+  "cond": "cond2",
+  "model": "claude-haiku-4-5",
+  "context_used": {
+    "per": 17.17,
+    "pbr": 1.11,
+    "roe": 6.46,
+    "market_cap": 32.6,
+    "momentum_1m": 5.3698,
+    "volume_change": -51.2804,
+    "price_position_52w": 23.89,
+    "revenue_growth": 16.3,
+    "operating_margin": 16.72,
+    "debt_ratio": 45.21,
+    "dividend_yield": 1.0,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-28",
+        "title": "3대 주주 엔비디아, 의심을 확신으로 바꿀 시..",
+        "target_price": 400000
+      },
+      {
+        "date": "2026-07-10",
+        "title": "실적 견조하나, AI 수익화 전까지는 공백",
+        "target_price": 240000
+      }
+    ]
+  }
+}

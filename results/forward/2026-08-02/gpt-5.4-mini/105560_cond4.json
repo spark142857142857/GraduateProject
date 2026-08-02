@@ -1,0 +1,58 @@
+{
+  "ticker": "105560",
+  "name": "KB금융",
+  "date": "2026-08-02",
+  "context_date": "2026-08-02",
+  "price": 168500.0,
+  "signal": "Buy",
+  "confidence": 78,
+  "reasons": [
+    "PER 10.4배와 PBR 1.05배는 밸류에이션 부담이 크지 않고, ROE 10.1%로 자기자본이익률도 양호해 20거래일 관점에서 하방보다 상방 여지가 더 큽니다.",
+    "최근 1개월 수익률이 6.31%로 단기 모멘텀이 살아 있고, 현재 주가는 52주 최고가 대비 아직 77.9% 수준이라 추가 상승 여력이 남아 있습니다.",
+    "최근 30일 애널리스트 리포트의 목표주가가 205,000~235,000원으로 현재가 168,500원보다 높고, 1분기 영업이익이 전년동기 대비 18.9% 증가해 실적과 주주환원 기대가 주가를 지지합니다."
+  ],
+  "cond": "cond4",
+  "model": "gpt-5.4-mini",
+  "context_used": {
+    "per": 10.44,
+    "pbr": 1.05,
+    "roe": 10.06,
+    "market_cap": 59.8,
+    "momentum_1m": 6.3091,
+    "volume_change": -4.3205,
+    "price_position_52w": 77.93,
+    "revenue_growth": null,
+    "operating_margin": null,
+    "debt_ratio": 1257.11,
+    "dividend_yield": 3.2,
+    "fiscal_period": "2026 1분기",
+    "report_name": "분기보고서",
+    "recent_reports": [
+      {
+        "date": "2026-07-24",
+        "title": "기말 배당으로 이연된 하반기 재원",
+        "target_price": 226000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "2Q26 Review: 업계 최고 수준의 자본력이 주..",
+        "target_price": 210000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "전 계열사 고른 손익 개선. 총주주환원율도 5..",
+        "target_price": 220000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "조달비용 상승 우려 선반영",
+        "target_price": 235000
+      },
+      {
+        "date": "2026-07-24",
+        "title": "이익과 주주환원 모두 가장 편안한 선택지",
+        "target_price": 205000
+      }
+    ]
+  }
+}
