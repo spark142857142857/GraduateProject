@@ -29,5 +29,8 @@ results/forward_demo/
 # 심사 방어 준비용 개인 문서 (push 안 함)
 docs/defense_qa.md
 
+# 외부 LLM 리뷰용 컨텍스트 브리프 (개인 작업용, push 안 함)
+docs/app_context_for_gpt.md
+
 # 중간보고서 초안·양식 (개인 제출용, push 안 함)
 docs/*중간보고서*

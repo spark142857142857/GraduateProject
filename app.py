@@ -10,10 +10,12 @@ LLM 기반 주식 투자 신호 시스템 — Streamlit 앱
 """
 
 import glob
+import concurrent.futures
 import json
 import os
 import re
 import sys
+import threading
 from datetime import datetime
 
 import pandas as pd
@@ -30,7 +32,7 @@ sys.path.insert(0, os.path.join(_src, "experiment"))
 sys.path.insert(0, _src)
 
 from utils import TICKERS, EXPERIMENT_DIR, FORWARD_DIR, ANALYSIS_DIR
-from compare import COND_LABELS, COND_ORDER, DEFAULT_MODEL
+from compare import COND_LABELS, DEFAULT_MODEL
 
 # ── 페이지 설정 ────────────────────────────────────────────
 st.set_page_config(
@@ -93,6 +95,14 @@ def _check_dart_cache() -> str:
 # ── 상수 ──────────────────────────────────────────────────
 # 연구용 조건(cond4_no_reports, cond4_blind)은 개별 분석 UI 미노출 — 사용자 편의 조건만 표시
 UI_CONDS = ["cond1", "cond2", "cond3", "cond4"]
+
+# 화면에 노출하는 조건 — 보고서가 다루는 5개로 한정한다.
+# COND_ORDER(= EXPERIMENTS 전체)를 그대로 쓰면 보조 실험(reports_only·dart_only·cond4_blind)을
+# 실행한 뒤부터 결과가 화면에 섞여 나온다. 미완료 조건이 성과표에 뜨면 설명 부담만 생긴다.
+REPORT_CONDS = ["cond1", "cond2", "cond3", "cond4", "cond4_no_reports"]
+
+# 조건별 Buy 표본이 이 값 미만이면 평균이 크게 흔들려 성능으로 읽으면 안 된다 (cond1이 대표적)
+SMALL_SAMPLE_N = 30
 
 # 개별 분석용 모델 목록 — 앵커(DEFAULT_MODEL)/gemma가 우선(앞 배치), gpt/claude는 별도 키·호출 비용 필요
 UI_MODELS = [DEFAULT_MODEL, "gemma-4-31b-it", "gpt-5.4-mini", "claude-haiku-4-5"]
@@ -215,15 +225,19 @@ def list_forward_models(date: str) -> list[str]:
 
 
 @st.cache_data(show_spinner=False)
-def load_forward_signals(date: str, model: str, file_names: tuple[str, ...]) -> pd.DataFrame:
+def load_forward_signals(
+    date: str,
+    model: str,
+    file_keys: tuple[tuple[str, int, int], ...],
+) -> pd.DataFrame:
     """forward 캐시 JSON들 → long DataFrame(ticker/name/cond/signal/confidence).
 
     cond에 언더스코어 포함(cond4_no_reports) → 파일명 파싱 대신 JSON 본문에서 읽음.
-    손상 파일은 개별 skip. file_names가 캐시 키에 포함 — 탭1에서 새 신호가
-    생성되면(파일 추가) 즉시 재로드되고, 불변 폴더는 재로드 없음.
+    손상 파일은 개별 skip. (파일명, 수정시각, 크기)가 캐시 키에 포함되어
+    파일 추가뿐 아니라 동일 파일을 덮어쓴 경우에도 즉시 재로드된다.
     """
     rows = []
-    for fname in file_names:
+    for fname, _, _ in file_keys:
         try:
             with open(os.path.join(FORWARD_DIR, date, model, fname), encoding="utf-8") as f:
                 d = json.load(f)
@@ -237,6 +251,36 @@ def load_forward_signals(date: str, model: str, file_names: tuple[str, ...]) -> 
         except Exception:
             continue
     return pd.DataFrame(rows)
+
+
+@st.cache_resource
+def forward_job_runtime():
+    """세션 간 공유하는 forward 실행기와 진행 중 작업 레지스트리."""
+    return concurrent.futures.ThreadPoolExecutor(max_workers=2), {}, threading.Lock()
+
+
+def run_forward_and_demote(run_forward, ticker: str, cond: str, model: str, batch_path: str) -> dict:
+    """forward 실행 후 결과를 즉시 시연 폴더로 격리.
+
+    화면이 3분 후 타임아웃되거나 브라우저 세션이 끊겨도 이 워커는
+    run_forward가 끝난 직후 demote까지 수행하므로 정식 평가 경로에 남지 않는다.
+    """
+    result = run_forward(ticker, cond, model)
+    if not demote_to_demo(batch_path):
+        raise RuntimeError("시연 결과를 forward_demo로 격리하지 못했습니다.")
+    return result
+
+
+def model_column_rows(models: list[str], per_row: int = 2):
+    """모델 목록을 per_row개씩 끊어 (컬럼, 모델) 쌍으로 내보낸다.
+
+    st.columns(len(models))로 한 줄에 몰면 gpt/claude 백테스트가 끝나 4모델이 됐을 때
+    표가 읽을 수 없을 만큼 좁아진다. 줄을 나눠도 좌우 대조는 유지된다.
+    """
+    for i in range(0, len(models), per_row):
+        cols = st.columns(per_row)
+        for col, m in zip(cols, models[i:i + per_row]):
+            yield col, m
 
 
 def list_analysis_models() -> list[str]:
@@ -309,7 +353,6 @@ with tab1:
 
     # ── 분석 실행 ──────────────────────────────────────────
     if analyze_btn:
-        import concurrent.futures
         from forward_test import run_forward
         from forward_verify import verify_ticker
 
@@ -317,11 +360,6 @@ with tab1:
         # 결과가 그대로 남아 새로 선택한 종목의 결과처럼 보인다
         st.session_state.pop("fw_result", None)
         st.session_state.pop("fw_meta", None)
-
-        # 직전 클릭이 타임아웃된 뒤 백그라운드 워커가 뒤늦게 정식 경로에 쓴 파일 회수.
-        # 이동에 성공한 항목만 목록에서 제거(아직 안 쓰였으면 다음 클릭에서 재시도)
-        _pending = st.session_state.get("fw_demo_pending", [])
-        st.session_state["fw_demo_pending"] = [p for p in _pending if not demote_to_demo(p)]
 
         # 캐시 판별 — run_forward는 캐시 반환 여부를 알려주지 않으므로 호출 전에
         # 저장 경로 존재를 직접 확인한다 (forward_test.py의 경로 규약과 동일).
@@ -343,45 +381,62 @@ with tab1:
                     _status.write(f"**{selected_name}** 시연 캐시 사용 — LLM 재호출 없이 반환합니다.")
                     with open(_demo_path, encoding="utf-8") as _f:
                         result = json.load(_f)
+                elif _was_cached:
+                    # 정식 배치 캐시는 직접 읽는다. run_forward를 거치지 않아 워커 생성도 없다.
+                    _status.write(f"**{selected_name}** 당일 정식 배치 캐시 확인 — LLM 재호출 없이 반환합니다.")
+                    with open(_batch_path, encoding="utf-8") as _f:
+                        result = json.load(_f)
                 else:
-                    if _was_cached:
-                        _status.write(f"**{selected_name}** 당일 정식 배치 캐시 확인 — LLM 재호출 없이 반환합니다.")
+                    # DART 법인코드 점검은 실제로 수집이 필요한 경우에만
+                    # (캐시 반환 경로는 DART를 쓰지 않는다 — 함수 docstring 참고)
+                    _dart_warn = _check_dart_cache()
+                    if _dart_warn:
+                        st.warning(f"DART 초기화 경고: {_dart_warn}")
+
+                    _executor, _jobs, _jobs_lock = forward_job_runtime()
+                    _job_key = (_today_str, selected_ticker, selected_cond, selected_model)
+                    with _jobs_lock:
+                        # 완료된 실패 작업은 제거해 다음 클릭에서 재시도할 수 있게 한다.
+                        _done_keys = [k for k, f in _jobs.items() if f.done()]
+                        for _key in _done_keys:
+                            _jobs.pop(_key, None)
+
+                        _future = _jobs.get(_job_key)
+                        if _future is None:
+                            _future = _executor.submit(
+                                run_forward_and_demote,
+                                run_forward,
+                                selected_ticker,
+                                selected_cond,
+                                selected_model,
+                                _batch_path,
+                            )
+                            _jobs[_job_key] = _future
+                            _already_running = False
+                        else:
+                            _already_running = True
+
+                    if _already_running:
+                        _status.write(f"**{selected_name}** 동일 분석이 이미 진행 중 — 기존 작업을 기다립니다.")
                     else:
-                        # DART 법인코드 점검은 실제로 수집이 필요한 경우에만
-                        # (캐시 반환 경로는 DART를 쓰지 않는다 — 함수 docstring 참고)
-                        _dart_warn = _check_dart_cache()
-                        if _dart_warn:
-                            st.warning(f"DART 초기화 경고: {_dart_warn}")
                         _status.write(f"**{selected_name}** 실시간 데이터 수집 중 (FDR / DART)...")
 
-                    # with 블록 대신 shutdown(wait=False) — with exit은 워커 완료까지 블로킹해
-                    # Future.result(timeout=)의 타임아웃이 무의미해짐
-                    _ex = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-                    _future = _ex.submit(run_forward, selected_ticker, selected_cond, selected_model)
                     try:
                         result = _future.result(timeout=180)   # 최대 3분
                     except concurrent.futures.TimeoutError:
-                        # 워커가 살아 있어 나중에 정식 경로에 쓸 수 있다 → 회수 목록에 등록
-                        if not _was_cached:
-                            st.session_state.setdefault("fw_demo_pending", []).append(_batch_path)
                         _status.update(label="시간 초과", state="error", expanded=True)
                         st.error(
                             "분석 시간이 초과되었습니다 (3분). "
                             "FDR/DART API 미응답 또는 모델 rate-limit 재시도 대기일 수 있습니다. "
-                            "백그라운드 호출이 완료되면 캐시에 저장되므로, 잠시 후 다시 시도하면 즉시 표시될 수 있습니다."
+                            "백그라운드 작업은 계속되며 완료 즉시 시연 캐시로 격리됩니다. "
+                            "잠시 후 다시 시도하면 기존 작업 또는 캐시 결과를 사용합니다."
                         )
-                    finally:
-                        _ex.shutdown(wait=False)  # 진행 중 워커를 기다리지 않고 즉시 반환
 
                 if result is not None:
                     _status.write("LLM 신호 분석 완료!")
 
-                    # 이번 클릭으로 새로 생성된 신호만 격리 — 주간 배치 캐시는 건드리지 않는다
-                    if not _was_cached and not _demo_cached:
-                        demote_to_demo(_batch_path)
-                        _source = "new"
-                    else:
-                        _source = "batch" if _was_cached else "demo"
+                    # 신규 결과는 워커가 반환하기 전에 이미 시연 폴더로 격리되어 있다.
+                    _source = "batch" if _was_cached else ("demo" if _demo_cached else "new")
 
                     # 입력 검증(forward_verify) — get_price 호출이 있어 렌더링마다 돌면
                     # 위젯 조작 때마다 느려진다. 분석 시점에 1회만 수행해 결과를 저장
@@ -470,6 +525,12 @@ with tab1:
         st.markdown(signal_badge(fw["signal"]), unsafe_allow_html=True)
         st.markdown(f"**신뢰도**: {fw['confidence']}%")
         st.progress(fw["confidence"] / 100)
+        # 재현성을 위해 temperature=0으로 고정한 결과 신뢰도가 좁은 대역에 몰린다.
+        # 여러 종목을 눌러도 같은 값이 나오는 이유를 화면에서 먼저 밝혀 오해를 막는다.
+        st.caption(
+            "temperature=0은 재현성을 위한 설정이며, 신뢰도는 모델별로 일부 값에 집중되는 경향이 있습니다. "
+            "모델 간 직접 비교나 주요 성과 판단에는 사용하지 않고 보조 정보로만 확인합니다."
+        )
 
         st.divider()
 
@@ -530,7 +591,6 @@ with tab1:
             rev_growth = ctx.get("revenue_growth")
             op_margin  = ctx.get("operating_margin")
             debt       = ctx.get("debt_ratio")
-            div_yield  = ctx.get("dividend_yield")
 
             col_a.metric(
                 "매출 성장률 (YoY)",
@@ -540,7 +600,9 @@ with tab1:
             col_b2.metric("영업이익률",  fmt_val(op_margin, suffix="%"))
             col_c2.metric("부채비율",   fmt_val(debt, suffix="%"))
 
-            st.metric("배당수익률", fmt_val(div_yield, suffix="%"))
+            # 배당수익률은 표시하지 않는다. 사업연도말 기준가 산출이라 증권사 값과 평균 42% 벌어지고
+            # (prove.md 각도 1), 애초에 LLM 컨텍스트에 넣지 않는 필드다. 화면에 두면 모델이 본 값으로
+            # 오인되고, 값 자체가 이상해 설명 부담만 생긴다.
 
             st.divider()
 
@@ -553,11 +615,11 @@ with tab1:
             # 모델 셀렉트박스는 forward 기준(전 모델)이라 백테스트 미완료 모델도 고를 수 있다.
             # 단순 "결과 없음"이면 누락처럼 보이므로 완료 모델을 함께 안내
             _bt_models = list_backtest_models(fw_cond)
+            # 시연 중 관객에게 보일 화면이라 CLI 실행 명령은 넣지 않는다
             st.info(
                 f"**{fw_model}**은 {fw_cond} 백테스트가 아직 완료되지 않아 과거 성과를 표시할 수 없습니다. "
-                f"(백테스트 완료 모델: {', '.join(_bt_models) if _bt_models else '없음'} · "
-                f"forward 신호 생성은 전 모델 가능) "
-                f"직접 실행하려면 `python src/experiment/llm_experiment.py --cond {fw_cond} --model {fw_model}`."
+                f"백테스트 완료 모델은 {', '.join(_bt_models) if _bt_models else '없음'}이며, "
+                f"forward 신호 생성은 전 모델에서 가능합니다."
             )
         else:
             ticker_df = get_ticker_backtest(bt_df, fw["ticker"])
@@ -596,9 +658,12 @@ with tab1:
                     f"{sell_hr:.1f}%" if sell_hr is not None else "N/A",
                     help="Sell 신호 후 20거래일 수익률 < 0 비율",
                 )
+                # Buy/Sell/Neutral을 모두 섞은 평균이라 신호 성능이 아니다.
+                # 앞 두 칸이 성능 지표라 라벨이 모호하면 세 번째 성능 지표로 읽힌다
                 col_bt3.metric(
-                    "평균 20일 수익률",
+                    "전체 신호 평균 수익률",
                     f"{avg_ret:+.2f}%",
+                    help="Buy, Sell, Neutral을 모두 포함한 평균입니다. 신호 성능이 아니라 해당 종목이 그 기간에 얼마나 움직였는지에 가깝습니다.",
                 )
 
                 # 신호별 상세 테이블
@@ -608,19 +673,34 @@ with tab1:
                         .agg(건수="count", 평균수익률="mean")
                         .round(2)
                     )
+                    stats["방향 적중률(%)"] = pd.NA
                     for sig, g in ticker_df.groupby("signal")["return_20d"]:
-                        hr = (g < 0).mean() if sig == "Sell" else (g > 0).mean()
-                        stats.loc[sig, "히트율"] = round(hr * 100, 2)
+                        if sig == "Buy":
+                            stats.loc[sig, "방향 적중률(%)"] = round((g > 0).mean() * 100, 2)
+                        elif sig == "Sell":
+                            stats.loc[sig, "방향 적중률(%)"] = round((g < 0).mean() * 100, 2)
                     st.dataframe(stats)
 
-                # 시계열 차트
-                with st.expander("수익률 추이"):
-                    chart_df = (
-                        ticker_df[["signal_date", "return_20d", "signal"]]
-                        .sort_values("signal_date")
-                        .set_index("signal_date")
+                # 시계열 차트 — signal로 색을 나눠야 "언제 무슨 신호였는지"가 보인다.
+                # 선 하나로 그리면 수익률 곡선일 뿐 신호 정보가 사라진다
+                with st.expander("신호별 수익률 추이"):
+                    chart_df = ticker_df[["signal_date", "return_20d", "signal"]].copy()
+                    # 문자열 그대로 두면 x축이 36개 범주로 잘려 나온다 — 시간축으로 변환
+                    chart_df["signal_date"] = pd.to_datetime(chart_df["signal_date"], errors="coerce")
+                    chart_df = chart_df.sort_values("signal_date")
+                    _signal_order = ["Buy", "Neutral", "Sell"]
+                    for _sig in _signal_order:
+                        chart_df[_sig] = chart_df["return_20d"].where(chart_df["signal"] == _sig)
+                    st.scatter_chart(
+                        chart_df,
+                        x="signal_date",
+                        y=_signal_order,
+                        color=[SIGNAL_STYLE[sig][2] for sig in _signal_order],
+                        x_label="신호일",
+                        y_label="20일 수익률 (%)",
+                        height=280,
                     )
-                    st.line_chart(chart_df[["return_20d"]])
+                    st.caption("점 하나가 신호 한 건입니다. 색은 신호 종류, 세로축은 그 신호 이후 20거래일 수익률입니다.")
 
 
 # ═══════════════════════════════════════════════════════════
@@ -647,8 +727,15 @@ with tab2:
             sel_fw_model = col_fm.selectbox("모델", fw_models, index=_default_idx)
 
             _fw_folder = os.path.join(FORWARD_DIR, sel_date, sel_fw_model)
-            _file_names = tuple(sorted(f for f in os.listdir(_fw_folder) if f.endswith(".json")))
-            sig_df = load_forward_signals(sel_date, sel_fw_model, _file_names)
+            _file_keys = []
+            for _fname in sorted(f for f in os.listdir(_fw_folder) if f.endswith(".json")):
+                _fpath = os.path.join(_fw_folder, _fname)
+                try:
+                    _stat = os.stat(_fpath)
+                    _file_keys.append((_fname, _stat.st_mtime_ns, _stat.st_size))
+                except OSError:
+                    continue
+            sig_df = load_forward_signals(sel_date, sel_fw_model, tuple(_file_keys))
 
             if sig_df.empty:
                 st.info(f"{sel_date} 캐시에 신호 데이터가 없습니다.")
@@ -656,22 +743,33 @@ with tab2:
         if not sig_df.empty:
             st.caption(f"**{sel_date}** 생성 캐시 기준 · {sig_df['ticker'].nunique()}종목 × {sig_df['cond'].nunique()}조건 (API 호출 없음)")
 
-            # 신호 분포 요약
+            # 신호 분포 요약 (보조 실험 조건은 제외 — REPORT_CONDS 주석 참고)
             dist = pd.crosstab(sig_df["cond"], sig_df["signal"])
-            dist = dist.reindex(index=[c for c in COND_ORDER if c in dist.index],
+            dist = dist.reindex(index=[c for c in REPORT_CONDS if c in dist.index],
                                 columns=[s for s in ("Buy", "Neutral", "Sell") if s in dist.columns])
+            dist.index = [COND_LABELS.get(c, c) for c in dist.index]
             st.markdown("**신호 분포 (조건 × 신호)**")
             st.dataframe(dist, width="stretch")
 
             # 종목 × 조건 신호 매트릭스
             st.markdown("**종목별 신호 매트릭스**")
+            # 색상 범례 — 셀 배경색만 있고 그 의미가 화면에 없었다
+            _legend = "  ".join(
+                f'<span style="background:{bg};color:{fg};padding:2px 10px;'
+                f'border-radius:4px;font-size:0.85rem;">{sig}</span>'
+                for sig, (_, bg, fg) in SIGNAL_STYLE.items()
+            )
+            st.markdown(f"{_legend}　셀 안의 숫자는 신뢰도입니다.", unsafe_allow_html=True)
+
             mat_df = sig_df.copy()
             mat_df["종목"] = mat_df["name"] + " (" + mat_df["ticker"] + ")"
             mat_df["cell"] = mat_df["signal"] + " " + mat_df["confidence"].astype(str) + "%"
             # 잔류 중복 파일(수동 백업본 등) 방어 — pivot은 중복 인덱스에서 ValueError
             mat_df = mat_df.drop_duplicates(subset=["ticker", "cond"], keep="last")
             pivot = mat_df.pivot(index="종목", columns="cond", values="cell")
-            pivot = pivot[[c for c in COND_ORDER if c in pivot.columns]]
+            pivot = pivot[[c for c in REPORT_CONDS if c in pivot.columns]]
+            # 컬럼명을 한글 라벨로 — 탭1·탭3은 COND_LABELS를 쓰는데 여기만 raw 키였다
+            pivot.columns = [COND_LABELS.get(c, c) for c in pivot.columns]
             # TICKERS 정의 순서로 행 정렬
             row_order = [f"{name} ({ticker})" for name, ticker in TICKERS.items() if f"{name} ({ticker})" in pivot.index]
             pivot = pivot.reindex(row_order).fillna("-")
@@ -697,24 +795,34 @@ with tab3:
 
         # ── A. Buy 신호 성과 — 모델 비교 ────────────────────
         st.subheader("🎯 Buy 신호 성과 — 모델 비교 (20거래일)")
-        buy_cols = st.columns(len(an_models))
         BUY_RENAME = {
             "label": "조건", "n": "신호수", "mean": "평균수익률(%)", "hit_rate": "Hit(%)",
             "sharpe": "Sharpe", "mean_excess": "초과수익(%)", "hit_rate_excess": "초과Hit(%)",
             "conf_mean": "평균신뢰도",
         }
-        for col, m in zip(buy_cols, an_models):
+        _small_notes: list[str] = []
+        for col, m in model_column_rows(an_models):
             with col:
                 st.markdown(f"**{m}**")
                 comp = load_analysis_csv(m, "all_comparison.csv")
                 if comp is None:
                     st.caption("해당 모델 결과 없음")
                     continue
-                buy = comp[(comp["signal"] == "Buy") & (comp["label"].isin(COND_ORDER))].copy()
+                buy = comp[(comp["signal"] == "Buy") & (comp["label"].isin(REPORT_CONDS))].copy()
+                # 표본이 작은 조건은 평균이 크게 흔들린다 — 아래에 한 줄로 모아 경고
+                for _lb, _n in zip(buy["label"], buy["n"]):
+                    if _n < SMALL_SAMPLE_N:
+                        _small_notes.append(f"{m} {COND_LABELS.get(_lb, _lb)} {int(_n)}건")
                 buy["label"] = buy["label"].map(lambda k: COND_LABELS.get(k, k))
                 # 구 스키마 CSV 방어 — 존재하는 컬럼만 선택 (섹션 B와 동일 패턴)
                 buy = buy[[c for c in BUY_RENAME if c in buy.columns]].rename(columns=BUY_RENAME)
                 st.dataframe(buy.set_index("조건").round(2), width="stretch")
+
+        if _small_notes:
+            st.caption(
+                f"⚠️ 매수 신호가 {SMALL_SAMPLE_N}건 미만인 조건({', '.join(_small_notes)})은 "
+                "평균이 크게 흔들리므로 성능으로 해석하지 마십시오."
+            )
 
         st.divider()
 
@@ -726,8 +834,7 @@ with tab3:
             "sharpe": "Sharpe", "excess_mean": "초과수익(%)", "excess_hit_rate": "초과Hit(%)",
             "excess_sharpe": "초과Sharpe",
         }
-        full_cols = st.columns(len(an_models))
-        for col, m in zip(full_cols, an_models):
+        for col, m in model_column_rows(an_models):
             with col:
                 st.markdown(f"**{m}**")
                 full = load_analysis_csv(m, "full_comparison.csv")
@@ -762,16 +869,31 @@ with tab3:
                     help="two-sided 검정 — p<0.05는 '차이가 유의함'을 의미하며, 방향(우위/열위)은 평균 차이 부호 기준",
                 )
 
+            # 원본 컬럼명(group_a, n_a, effect_size_type 등)이 그대로 노출되던 것을 한글화.
+            # 섹션 A·B는 rename을 하는데 여기만 raw였다
+            SIG_RENAME = {
+                "group_a": "비교 대상", "group_b": "기준", "n_a": "n(대상)", "n_b": "n(기준)",
+                "metric": "지표", "metric_type": "구분",
+                "mean_a": "평균(대상)", "mean_b": "평균(기준)", "mean_diff": "평균차",
+                "test": "검정", "statistic": "통계량", "p_value": "p값",
+                "effect_size": "효과크기", "effect_size_type": "효과크기 종류",
+                "significance": "유의",
+            }
+            METRIC_LABELS = {"return_20d": "20일 절대수익", "excess_return_20d": "20일 초과수익"}
+
             core = sig[sig["category"] == "core"].copy()
+            core["group_a"] = core["group_a"].map(lambda k: COND_LABELS.get(k, k))
+            core["group_b"] = core["group_b"].map(lambda k: COND_LABELS.get(k, k))
+            core["metric"]  = core["metric"].map(lambda k: METRIC_LABELS.get(k, k))
+            core = core[[c for c in SIG_RENAME if c in core.columns]].rename(columns=SIG_RENAME)
             styled = core.style.map(
                 lambda v: "background-color:#d4edda" if isinstance(v, (int, float)) and v < 0.05 else "",
-                subset=["p_value"],
+                subset=["p값"],
             )
             st.dataframe(styled, width="stretch", hide_index=True)
-            st.caption("유의 수준: *** p<0.001 · ** p<0.01 · * p<0.05 · . p<0.10 · ns 비유의")
-
-            with st.expander("전체 검정 결과 (보조 비교 포함)"):
-                st.dataframe(sig, width="stretch", hide_index=True)
+            st.caption("유의 수준: *** p<0.001, ** p<0.01, * p<0.05, . p<0.10, ns 비유의")
+            # 보조 비교(전체 검정 결과) 표는 미노출. 아직 실행이 끝나지 않은 조건이 섞여
+            # "이건 뭐냐"는 설명 부담만 생긴다. 핵심 비교만 보여준다.
 
         # ── D. 연도별·시장국면별 분석 ───────────────────────
         with st.expander("📅 연도별·시장국면별 분석 (breakdown)"):
