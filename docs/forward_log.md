@@ -263,7 +263,49 @@ app.py 분석 버튼은 `run_forward`를 그대로 호출하므로 시연 중 �
 
 ---
 
-## 다음 실행 체크리스트 (매주 일요일)
+## 2026-08-07 (forward 신호를 쓴 분석 — 신규 실행 없음)
+
+`results/forward/`에 이미 쌓인 4배치를 **백테스트와 대조**하는 데 사용했다. 신규 신호 생성이나
+API 호출은 없다. 성과가 아닌 **신호 분포**만 쓰므로 20거래일 성숙과 무관하게 지금 가능했다.
+
+### 관찰 — cond1에서 Sell은 그대로, Buy만 사라진다
+
+flash-lite cond1을 백테스트(2023-2025, 모델 cutoff 이전 가능)와 forward(2026-07~08,
+cutoff 이후)에서 대조했다.
+
+| 신호 | 백테스트 (720건) | forward (80건) |
+|------|----------------|---------------|
+| Buy | 한화에어로 14 · 알테오젠 4 · 기아 2 · 두산 2 | HD현대중공업 1 · 두산 1 |
+| Sell | 에코프로비엠 33 · HYBE 21 · 카카오 17 · 크래프톤 17 · LG화학 1 · HD현대 1 | 에코프로비엠 4 · HYBE 4 · 카카오 2 · 크래프톤 2 · LG화학 1 |
+
+- **Sell 상위 4종목이 순서까지 일치한다.** 3년 전 구간과 지금 구간에서 같은 종목을 같은
+  순서로 팔라고 한다 → 시점 무관한 **종목 평판 prior**로 해석
+- **백테스트 Buy를 지배하던 한화에어로·알테오젠이 forward 4배치 전부 Neutral**이다
+  (Buy 0건) → 결과를 아는 구간에서만 특정 종목에 Buy가 몰렸다는 뜻
+
+나머지 3모델은 forward cond1도 전량 Neutral(claude는 +거절 17)로 백테스트와 동일해
+대조 가능한 모델은 flash-lite뿐이다.
+
+상세와 교란 요인은 [experiments_log.md](experiments_log.md) "백테스트 vs forward 대조" 참고.
+
+---
+
+## 남은 실행 — 1회뿐
+
+**주간 반복은 08-02로 종료됐다.** 아래 한 줄만 남았다.
+
+```bash
+python src/experiment/forward_eval.py          # 2026-08-10 전후, 1회
+```
+
+- 신규 신호 생성 없음 · **API 비용 없음**. 이미 생성된 4배치(07-12/19/26, 08-02)의
+  20거래일 성과를 채운다
+- 실행 후 [experiments_log.md](experiments_log.md) "백테스트 vs forward 대조" Part B의
+  표 3·4에 숫자를 채운다
+- ⚠️ Claude API는 6차 실행 중 한도를 소진했다가 상향했다. `forward_eval.py`는 API를 쓰지
+  않으므로 무관하다
+
+<details><summary>참고: 종료된 주간 워크플로우 (재개 시에만 필요)</summary>
 
 ```bash
 python src/collect/crawl.py                    # ① 리포트 최신화 (필수 — 자동 안 됨)
@@ -272,8 +314,9 @@ python src/experiment/forward_run_all.py --model gemma-4-31b-it
 python src/experiment/forward_run_all.py --model gpt-5.4-mini
 python src/experiment/forward_run_all.py --model claude-haiku-4-5
 python src/experiment/forward_verify.py        # 입력 정보 신선도·정합성 점검
-# (4주 뒤부터) python src/experiment/forward_eval.py
 ```
 
 - Claude cond1 소수 실패는 예상된 패턴 — 재시도 없이 결측 처리
 - 실패/이상 패턴 발견 시 이 문서에 날짜별로 추가
+
+</details>

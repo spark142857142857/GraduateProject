@@ -32,6 +32,16 @@ EXPERIMENTS = {
 - 사용 가능한 컨텍스트 빌더: `"financials"` / `"reports"` / `"dart_fundamentals"`
 - 단독 기여도(`reports_only`, `dart_only`)는 "그 카테고리만 있을 때", LOO(`cond4_no_reports`)는 "전체에서 그 카테고리만 뺐을 때"로 해석이 다름
 
+> **실행 범위 (2026-08-07 확정)**: 정의는 위와 같으나 **실제 실행·보고 대상은
+> `cond1`~`cond4` + `cond4_no_reports` 5개뿐**이다.
+> - `reports_only` · `dart_only`: 미실행 보조 실험
+> - `cond4_blind`: **미채택**. 종목명을 가려도 시가총액·현재가로 부분 식별이 가능해 완전한
+>   blind가 성립하지 않는다. 사전학습 편향 검증은 **cond1 신호의 종목 편중 분석**으로
+>   대체했다 ([experiments_log.md](docs/experiments_log.md) "cond1 사전학습 편향 검증").
+>
+> 앱은 `REPORT_CONDS`(app_ui/shared.py)로 화면 노출을 이 5개로 제한한다. 보조 실험을
+> 실행하면 결과가 자동으로 섞여 나오는 것을 막기 위함이다.
+
 ### 각 cond별 LLM 프롬프트 실제 전달 항목
 
 | cond | 섹션 | 항목 |
@@ -57,7 +67,7 @@ EXPERIMENTS = {
 
 | 변수 | 현재값 | 설명 |
 |---|---|---|
-| `MODEL` | `"gemini-2.5-flash-lite"` | 사용할 모델명 (앵커·주력). 멀티모델 비교 세트는 아래 참고 |
+| `MODEL` | `"gemini-2.5-flash-lite"` | 기본 모델명 (앵커·주력). `--model`로 덮어쓴다. 4모델 전부 백테스트 완료 — 아래 참고 |
 | `temperature` | `0.0` | 샘플링 온도. 0이면 결정적(재현 가능) — 2차 실험부터 재현성 확보를 위해 0.0 고정 |
 | `HOLD_SHORT` | `5` | 단기 수익률 측정 기간 (거래일) |
 | `HOLD_LONG` | `20` | 장기 수익률 측정 기간 (거래일) |
@@ -65,16 +75,25 @@ EXPERIMENTS = {
 
 > **논문 주의:** 현재 `temperature=0.0`으로 고정 — 재현성 확보. API 수준의 완전한 결정론적 출력은 보장되지 않을 수 있음.
 
-**멀티모델 비교 세트 (예산 5만원 상한, 백테스트·forward 동일 모델):**
+**멀티모델 비교 세트 — 4종 전부 백테스트 완료 (2026-08-07, 6차 실험):**
 
-| 역할 | 모델 | 1회 비용(5조건×720콜) | 반복 |
+| 역할 | 모델 ID | 백테스트 | 결측 |
 |---|---|---|---|
-| 앵커·주력 | `gemini-2.5-flash-lite` | ~$0.67 | 개발 내내 반복 |
-| 오픈·금융평판 | `gemma` 계열 (AI Studio) | 무료(rate-limit) | 반복 |
-| OpenAI 검증 | `gpt-5.4-mini` 계열 | ~$6.7 | 최종 1회 |
-| Anthropic 검증 | `claude-haiku-4-5` | ~$7.8 | 최종 1회 |
+| 앵커·주력 | `gemini-2.5-flash-lite` | 3,600 / 3,600 | 0 |
+| 오픈·금융평판 | `gemma-4-31b-it` | 3,600 / 3,600 | 0 |
+| OpenAI 검증 | `gpt-5.4-mini` | 3,600 / 3,600 | 0 |
+| Anthropic 검증 | `claude-haiku-4-5` | 3,403 / 3,600 | 197 (cond1 응답 거절) |
 
-> Sonnet/Opus/Gemini Pro 등은 1회 $23~$39로 예산 초과 → 제외. Gemini·Gemma는 `MODEL` 문자열 교체, GPT·Claude는 `call_llm`에 provider 분기 필요. 정확한 ID는 실행 시점 재확인.
+> **백테스트 추가 실험 없음 (2026-08-07 확정)** — 4모델로 종결. Sonnet/Opus/Gemini Pro 등은
+> 1회 $23~$39로 예산 초과라 애초에 제외했다.
+>
+> **실행 시 주의 (6차 실측)**
+> - GPT의 429는 30초 재시도 3회로 **복구되지 않는다**(1차 실행에서 84회 = 28건 × 3). 체크포인트가
+>   (ticker, signal_date) 단위 재개를 보장하므로 **같은 명령 재실행이 유일한 복구 수단**이다.
+> - Claude는 컨텍스트가 없는 cond1에서 약 27% 응답을 거절한다(forward 관측 25%와 일치).
+>   `temperature=0`이라 재시도해도 같은 거절이 나오므로 결측으로 처리한다. cond2~cond4_no_reports는
+>   거절 0건이다.
+> - 모델 ID는 실행 시점에 재확인할 것. `gpt-5.4-mini`는 `--test`로 `temperature=0` 수용을 확인했다.
 
 ### Sharpe Ratio 계산
 
