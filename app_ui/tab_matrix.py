@@ -5,7 +5,7 @@ import streamlit as st
 
 from app_ui.shared import (
     COND_LABELS, DEFAULT_MODEL, REPORT_CONDS, SIGNAL_STYLE, TICKERS,
-    fmt_metric, list_backtest_models, load_backtest_results,
+    fmt_metric, list_matrix_models, load_signal_matrix,
 )
 
 
@@ -16,41 +16,6 @@ def signal_cell_style(v) -> str:
             if v.startswith(sig):
                 return f"background-color:{bg};color:{fg}"
     return ""
-
-
-def list_matrix_models() -> list[str]:
-    """REPORT_CONDS 중 하나라도 백테스트 결과가 있는 모델 목록."""
-    models: set[str] = set()
-    for cond in REPORT_CONDS:
-        models.update(list_backtest_models(cond))
-    return sorted(models)
-
-
-@st.cache_data(ttl=300, show_spinner=False)
-def load_signal_matrix(model: str) -> pd.DataFrame:
-    """조건별 백테스트 결과를 long DataFrame으로 합친다.
-
-    탭2 매트릭스의 소스. forward 캐시를 쓰지 않는 이유는 ① 신호 생성을 2026-08-02로
-    종료해 시간이 갈수록 낡은 날짜가 화면에 남고 ② forward를 앱에서 다루지 않기로 한
-    결정(TODO "미채택 — forward 성과 탭")과 어긋나기 때문. 백테스트 기간(2023-01~2025-12)은
-    설계상 고정이라 낡지 않고, 주력 근거를 원자료 수준에서 보여준다는 이점도 있다.
-    """
-    frames = []
-    for cond in REPORT_CONDS:
-        df = load_backtest_results(cond, model)
-        if df is None or df.empty:
-            continue
-        keep = [c for c in ("ticker", "name", "signal_date", "signal", "confidence", "return_20d")
-                if c in df.columns]
-        d = df[keep].copy()
-        d["cond"] = cond
-        frames.append(d)
-    if not frames:
-        return pd.DataFrame()
-    out = pd.concat(frames, ignore_index=True)
-    # 저장 형식이 int일 수 있어 zero-pad로 통일 (get_ticker_backtest와 같은 이유)
-    out["ticker"] = out["ticker"].astype(str).str.zfill(6)
-    return out
 
 
 def signal_hit(signal: str, ret: float | None) -> str:
