@@ -308,6 +308,77 @@ def load_analysis_csv(model: str, filename: str) -> pd.DataFrame | None:
         return None
 
 
+def fmt_metric(v, decimals: int = 2, signed: bool = False) -> str:
+    """표 셀 포맷. 결측(n=1의 Sharpe 등)은 'nan'이 아니라 '-'로 낸다."""
+    if v is None or pd.isna(v):
+        return "-"
+    return f"{v:+.{decimals}f}" if signed else f"{v:.{decimals}f}"
+
+
+def build_strategy_table(comp: pd.DataFrame) -> tuple[pd.DataFrame, list[str], list[str]]:
+    """all_comparison → '무기술 벤치마크 + 베이스라인 + 조건별 Buy' 단일 비교표.
+
+    full_comparison.csv를 그대로 쓰면 조건 행이 다섯 줄 모두 소수점까지 같은 값이 된다.
+    그 행은 Buy/Neutral/Sell을 합친 전 신호(720건)라 어느 조건이든 동일한
+    (종목, 신호일) 집합이 되기 때문이다. 버그가 아니라 구조적 결과다.
+    게다가 베이스라인 행은 Buy만 집계돼(compare.py가 베이스라인 신호를 전부 Buy로 처리)
+    조건 행과 비교 축이 어긋나 있었다.
+
+    그래서 여기서는 ① 조건을 **Buy 기준으로 통일**해 베이스라인과 축을 맞추고,
+    ② 값이 같던 전 신호 행은 **'시장참여 벤치마크(무기술)' 한 줄**로 접는다.
+    벤치마크가 한 줄로 서면 "cond Buy > 벤치마크"가 단순 상승장 편승이 아닌
+    종목 선별 효과라는 논증이 화면에서 바로 읽힌다.
+
+    Returns:
+        (표, 소표본 경고 라벨, 벤치마크에서 제외된 조건 안내)
+    """
+    rows: list[dict] = []
+    small: list[str] = []
+    notes: list[str] = []
+
+    def add(label: str, r: pd.Series | None, mark_small: bool = False) -> None:
+        if r is None:
+            rows.append({"전략": label, "신호수": "0", "평균수익률(%)": "신호 없음",
+                         "Hit(%)": "-", "Sharpe": "-", "초과수익(%)": "-", "초과Hit(%)": "-"})
+            return
+        n = int(r["n"])
+        flag = mark_small and n < SMALL_SAMPLE_N
+        if flag:
+            small.append(f"{label} {n}건")
+        rows.append({
+            "전략":          label + (" ⚠️" if flag else ""),
+            "신호수":        f"{n:,}",
+            "평균수익률(%)": fmt_metric(r["mean"], signed=True),
+            "Hit(%)":        fmt_metric(r["hit_rate"], 1),
+            "Sharpe":        fmt_metric(r["sharpe"]),
+            "초과수익(%)":   fmt_metric(r.get("mean_excess"), signed=True),
+            "초과Hit(%)":    fmt_metric(r.get("hit_rate_excess"), 1),
+        })
+
+    # ① 무기술 벤치마크 — 전 신호 행. 조건 간 동일하므로 표본이 가장 큰 것 하나만 쓴다.
+    #    Claude cond1처럼 응답 거절로 n이 줄어든 조건은 부분집합이라 벤치마크가 아니다.
+    total = comp[comp["signal"] == "전체"]
+    if not total.empty:
+        full_n = int(total["n"].max())
+        add("시장참여 벤치마크 (무기술)", total[total["n"] == full_n].iloc[0])
+        short = total[total["n"] < full_n]
+        for _lb, _n in zip(short["label"], short["n"]):
+            notes.append(f"{COND_LABELS.get(_lb, _lb)} {int(_n)}건")
+
+    # ② 베이스라인 — compare.py가 신호 구분 없이 전부 Buy로 집계
+    for key in ("Consensus", "GoldenCross"):
+        r = comp[(comp["label"] == key) & (comp["signal"] == "Buy")]
+        if not r.empty:
+            add(COND_LABELS.get(key, key), r.iloc[0])
+
+    # ③ LLM 조건 — Buy 기준으로 통일
+    for cond in REPORT_CONDS:
+        r = comp[(comp["label"] == cond) & (comp["signal"] == "Buy")]
+        add(COND_LABELS.get(cond, cond), r.iloc[0] if not r.empty else None, mark_small=True)
+
+    return pd.DataFrame(rows).set_index("전략"), small, notes
+
+
 # ── 메인 화면 ──────────────────────────────────────────────
 st.title("📈 LLM 기반 주식 투자 신호 시스템")
 st.caption("멀티모델 LLM 기반 | 향후 20거래일 방향성 예측")
@@ -809,14 +880,22 @@ with tab3:
                     st.caption("해당 모델 결과 없음")
                     continue
                 buy = comp[(comp["signal"] == "Buy") & (comp["label"].isin(REPORT_CONDS))].copy()
-                # 표본이 작은 조건은 평균이 크게 흔들린다 — 아래에 한 줄로 모아 경고
+                # 표본이 작은 조건은 평균이 크게 흔들린다 — 행에 ⚠️를 달고 아래에 한 줄로 모아 경고
+                _small_labels = set()
                 for _lb, _n in zip(buy["label"], buy["n"]):
                     if _n < SMALL_SAMPLE_N:
                         _small_notes.append(f"{m} {COND_LABELS.get(_lb, _lb)} {int(_n)}건")
-                buy["label"] = buy["label"].map(lambda k: COND_LABELS.get(k, k))
+                        _small_labels.add(_lb)
+                buy["label"] = buy["label"].map(
+                    lambda k: COND_LABELS.get(k, k) + (" ⚠️" if k in _small_labels else "")
+                )
                 # 구 스키마 CSV 방어 — 존재하는 컬럼만 선택 (섹션 B와 동일 패턴)
                 buy = buy[[c for c in BUY_RENAME if c in buy.columns]].rename(columns=BUY_RENAME)
-                st.dataframe(buy.set_index("조건").round(2), width="stretch")
+                # na_rep — Buy가 1건이면 Sharpe가 정의되지 않아 NaN이 그대로 노출됐다
+                st.dataframe(
+                    buy.set_index("조건").style.format(precision=2, na_rep="-"),
+                    width="stretch",
+                )
 
         if _small_notes:
             st.caption(
@@ -826,23 +905,40 @@ with tab3:
 
         st.divider()
 
-        # ── B. 베이스라인 대비 전체 성과 ────────────────────
-        st.subheader("⚖️ 베이스라인 대비 전체 성과 (전 신호, 20거래일)")
-        st.caption("컨센서스(애널리스트 투자의견)·골든크로스(기술분석)가 베이스라인")
-        FULL_RENAME = {
-            "strategy": "전략", "n": "신호수", "mean_ret": "평균수익률(%)", "hit_rate": "Hit(%)",
-            "sharpe": "Sharpe", "excess_mean": "초과수익(%)", "excess_hit_rate": "초과Hit(%)",
-            "excess_sharpe": "초과Sharpe",
-        }
+        # ── B. 벤치마크·베이스라인 대비 성과 ────────────────
+        st.subheader("⚖️ 벤치마크·베이스라인 대비 성과 (Buy 신호, 20거래일)")
+        st.caption(
+            "**시장참여 벤치마크**는 전 종목을 매월 사들여 20거래일 보유한 무기술 전략입니다. "
+            "LLM 조건이 이 줄을 넘어야 단순 상승장 편승이 아닌 종목 선별 효과로 볼 수 있습니다. "
+            "베이스라인은 컨센서스(애널리스트 투자의견)·골든크로스(기술분석)이며, "
+            "모든 줄이 **매수 방향 신호 기준**이라 서로 비교됩니다."
+        )
+        _b_small: list[str] = []
+        _b_notes: list[str] = []
         for col, m in model_column_rows(an_models):
             with col:
                 st.markdown(f"**{m}**")
-                full = load_analysis_csv(m, "full_comparison.csv")
-                if full is None:
+                comp = load_analysis_csv(m, "all_comparison.csv")
+                if comp is None:
                     st.caption("해당 모델 결과 없음")
                     continue
-                full = full[[c for c in FULL_RENAME if c in full.columns]].rename(columns=FULL_RENAME)
-                st.dataframe(full.set_index("전략").round(2), width="stretch")
+                tbl, small, notes = build_strategy_table(comp)
+                _b_small += [f"{m} {s}" for s in small]
+                _b_notes += [f"{m} {n}" for n in notes]
+                st.dataframe(tbl, width="stretch")
+
+        if _b_small:
+            st.caption(
+                f"⚠️ 매수 신호가 {SMALL_SAMPLE_N}건 미만인 조건({', '.join(_b_small)})은 "
+                "평균·Hit·Sharpe가 크게 흔들립니다. 성능으로 해석하지 마십시오 "
+                "(신호 1건이면 Sharpe는 정의되지 않아 `-`로 표시됩니다)."
+            )
+        if _b_notes:
+            st.caption(
+                f"ℹ️ 벤치마크 산출에서 제외한 조건: {', '.join(_b_notes)}. "
+                "모델이 응답을 거절해 전 신호 수가 줄어든 조건으로, 전체 표본의 부분집합이라 "
+                "무기술 벤치마크로 쓸 수 없습니다."
+            )
 
         st.divider()
 
