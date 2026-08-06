@@ -5,15 +5,18 @@ LLM 기반 주식 투자 신호 시스템 — Streamlit 앱
 
 탭 구성:
   ① 개별 종목 분석 — 종목·조건·모델 선택 후 실시간 신호 생성 (당일 캐시)
-  ② 전체 종목 한눈에 — forward 캐시(20종목×5조건) 신호 매트릭스 (API 호출 없음)
+  ② 백테스트 신호 매트릭스 — 특정 신호일의 20종목×5조건 판단과 실제 결과 (API 호출 없음)
   ③ 백테스트 성과·모델 비교 — results/analysis 기반 모델별 성과·유의성 (API 호출 없음)
+
+②는 forward 캐시가 아니라 results/experiment(백테스트)를 읽는다. forward는 신호 생성을
+2026-08-02로 종료해 시간이 갈수록 낡은 날짜가 화면에 남고, 앱에서 forward를 다루지 않기로
+한 결정과도 어긋나기 때문. 백테스트 기간(2023-01~2025-12)은 설계상 고정이라 낡지 않는다.
 """
 
 import glob
 import concurrent.futures
 import json
 import os
-import re
 import sys
 import threading
 from datetime import datetime
@@ -180,16 +183,50 @@ def signal_cell_style(v) -> str:
     return ""
 
 
-def list_forward_dates() -> list[str]:
-    """results/forward/ 하위의 날짜(YYYY-MM-DD) 폴더 목록 (최신순)."""
-    if not os.path.isdir(FORWARD_DIR):
-        return []
-    dates = [
-        d for d in os.listdir(FORWARD_DIR)
-        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", d)
-        and os.path.isdir(os.path.join(FORWARD_DIR, d))
-    ]
-    return sorted(dates, reverse=True)
+def list_matrix_models() -> list[str]:
+    """REPORT_CONDS 중 하나라도 백테스트 결과가 있는 모델 목록."""
+    models: set[str] = set()
+    for cond in REPORT_CONDS:
+        models.update(list_backtest_models(cond))
+    return sorted(models)
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def load_signal_matrix(model: str) -> pd.DataFrame:
+    """조건별 백테스트 결과를 long DataFrame으로 합친다.
+
+    탭2 매트릭스의 소스. forward 캐시를 쓰지 않는 이유는 ① 신호 생성을 2026-08-02로
+    종료해 시간이 갈수록 낡은 날짜가 화면에 남고 ② forward를 앱에서 다루지 않기로 한
+    결정(TODO "미채택 — forward 성과 탭")과 어긋나기 때문. 백테스트 기간(2023-01~2025-12)은
+    설계상 고정이라 낡지 않고, 주력 근거를 원자료 수준에서 보여준다는 이점도 있다.
+    """
+    frames = []
+    for cond in REPORT_CONDS:
+        df = load_backtest_results(cond, model)
+        if df is None or df.empty:
+            continue
+        keep = [c for c in ("ticker", "name", "signal_date", "signal", "confidence", "return_20d")
+                if c in df.columns]
+        d = df[keep].copy()
+        d["cond"] = cond
+        frames.append(d)
+    if not frames:
+        return pd.DataFrame()
+    out = pd.concat(frames, ignore_index=True)
+    # 저장 형식이 int일 수 있어 zero-pad로 통일 (get_ticker_backtest와 같은 이유)
+    out["ticker"] = out["ticker"].astype(str).str.zfill(6)
+    return out
+
+
+def signal_hit(signal: str, ret: float | None) -> str:
+    """신호 방향이 실제 20거래일 수익률과 맞았는지. Neutral은 방향이 없어 판정 제외."""
+    if ret is None or pd.isna(ret):
+        return ""
+    if signal == "Buy":
+        return " ✓" if ret > 0 else " ✗"
+    if signal == "Sell":
+        return " ✓" if ret < 0 else " ✗"
+    return ""
 
 
 def demote_to_demo(batch_path: str) -> bool:
@@ -214,43 +251,6 @@ def demote_to_demo(batch_path: str) -> bool:
         except OSError:
             break
     return True
-
-
-def list_forward_models(date: str) -> list[str]:
-    """해당 날짜 폴더의 모델 하위폴더 목록."""
-    base = os.path.join(FORWARD_DIR, date)
-    if not os.path.isdir(base):
-        return []
-    return sorted(d for d in os.listdir(base) if os.path.isdir(os.path.join(base, d)))
-
-
-@st.cache_data(show_spinner=False)
-def load_forward_signals(
-    date: str,
-    model: str,
-    file_keys: tuple[tuple[str, int, int], ...],
-) -> pd.DataFrame:
-    """forward 캐시 JSON들 → long DataFrame(ticker/name/cond/signal/confidence).
-
-    cond에 언더스코어 포함(cond4_no_reports) → 파일명 파싱 대신 JSON 본문에서 읽음.
-    손상 파일은 개별 skip. (파일명, 수정시각, 크기)가 캐시 키에 포함되어
-    파일 추가뿐 아니라 동일 파일을 덮어쓴 경우에도 즉시 재로드된다.
-    """
-    rows = []
-    for fname, _, _ in file_keys:
-        try:
-            with open(os.path.join(FORWARD_DIR, date, model, fname), encoding="utf-8") as f:
-                d = json.load(f)
-            rows.append({
-                "ticker":     str(d["ticker"]).zfill(6),
-                "name":       d["name"],
-                "cond":       d["cond"],
-                "signal":     d["signal"],
-                "confidence": d["confidence"],
-            })
-        except Exception:
-            continue
-    return pd.DataFrame(rows)
 
 
 @st.cache_resource
@@ -383,7 +383,7 @@ def build_strategy_table(comp: pd.DataFrame) -> tuple[pd.DataFrame, list[str], l
 st.title("📈 LLM 기반 주식 투자 신호 시스템")
 st.caption("멀티모델 LLM 기반 | 향후 20거래일 방향성 예측")
 
-tab1, tab2, tab3 = st.tabs(["🔍 개별 종목 분석", "📋 전체 종목 한눈에", "📊 백테스트 성과·모델 비교"])
+tab1, tab2, tab3 = st.tabs(["🔍 개별 종목 분석", "📋 백테스트 신호 매트릭스", "📊 백테스트 성과·모델 비교"])
 
 
 # ═══════════════════════════════════════════════════════════
@@ -775,76 +775,91 @@ with tab1:
 
 
 # ═══════════════════════════════════════════════════════════
-# 탭 2 — 전체 종목 한눈에 (forward 캐시 읽기 전용, API 호출 없음)
+# 탭 2 — 백테스트 신호 매트릭스 (results/experiment 읽기 전용, API 호출 없음)
 # ═══════════════════════════════════════════════════════════
 with tab2:
-    fw_dates = list_forward_dates()
-    if not fw_dates:
+    mx_models = list_matrix_models()
+    if not mx_models:
         st.info(
-            "forward 신호 캐시가 없습니다. "
-            "`python src/experiment/forward_run_all.py` 실행 후 확인하세요."
+            "백테스트 결과가 없습니다. "
+            "`python src/experiment/llm_experiment.py --cond <조건> --model <모델명>` 실행 후 확인하세요."
         )
     else:
-        col_fd, col_fm = st.columns(2)
-        sel_date = col_fd.selectbox("신호 생성 날짜", fw_dates, index=0)
-        fw_models = list_forward_models(sel_date)
+        col_mm, col_md = st.columns(2)
+        _midx = mx_models.index(DEFAULT_MODEL) if DEFAULT_MODEL in mx_models else 0
+        sel_mx_model = col_mm.selectbox("모델", mx_models, index=_midx, key="mx_model")
 
-        if not fw_models:
-            st.info(f"{sel_date} 폴더에 모델 하위폴더가 없습니다.")
-            sig_df = pd.DataFrame()
+        sig_df = load_signal_matrix(sel_mx_model)
+        if sig_df.empty:
+            st.info(f"{sel_mx_model}의 백테스트 결과를 읽을 수 없습니다.")
         else:
-            # 앵커 모델이 있으면 기본 선택 (폴더명 알파벳순이라 claude가 먼저 옴)
-            _default_idx = fw_models.index(UI_MODELS[0]) if UI_MODELS[0] in fw_models else 0
-            sel_fw_model = col_fm.selectbox("모델", fw_models, index=_default_idx)
+            # 최신 달이 기본 — 실험 종료 시점(2025-12)부터 거슬러 본다
+            mx_dates = sorted(sig_df["signal_date"].astype(str).unique(), reverse=True)
+            sel_mx_date = col_md.selectbox("신호일 (매월 첫 거래일)", mx_dates, index=0, key="mx_date")
 
-            _fw_folder = os.path.join(FORWARD_DIR, sel_date, sel_fw_model)
-            _file_keys = []
-            for _fname in sorted(f for f in os.listdir(_fw_folder) if f.endswith(".json")):
-                _fpath = os.path.join(_fw_folder, _fname)
-                try:
-                    _stat = os.stat(_fpath)
-                    _file_keys.append((_fname, _stat.st_mtime_ns, _stat.st_size))
-                except OSError:
-                    continue
-            sig_df = load_forward_signals(sel_date, sel_fw_model, tuple(_file_keys))
+            month_df = sig_df[sig_df["signal_date"].astype(str) == sel_mx_date]
 
-            if sig_df.empty:
-                st.info(f"{sel_date} 캐시에 신호 데이터가 없습니다.")
-
-        if not sig_df.empty:
-            st.caption(f"**{sel_date}** 생성 캐시 기준 · {sig_df['ticker'].nunique()}종목 × {sig_df['cond'].nunique()}조건 (API 호출 없음)")
+            st.caption(
+                f"백테스트 **{sel_mx_date}** 신호 · {month_df['ticker'].nunique()}종목 × "
+                f"{month_df['cond'].nunique()}조건 (API 호출 없음). "
+                "실험 기간 2023-01~2025-12의 매월 첫 거래일 중 하나를 골라 "
+                "조건별 판단이 어떻게 갈렸는지 원자료로 확인할 수 있습니다."
+            )
 
             # 신호 분포 요약 (보조 실험 조건은 제외 — REPORT_CONDS 주석 참고)
-            dist = pd.crosstab(sig_df["cond"], sig_df["signal"])
+            dist = pd.crosstab(month_df["cond"], month_df["signal"])
             dist = dist.reindex(index=[c for c in REPORT_CONDS if c in dist.index],
                                 columns=[s for s in ("Buy", "Neutral", "Sell") if s in dist.columns])
             dist.index = [COND_LABELS.get(c, c) for c in dist.index]
             st.markdown("**신호 분포 (조건 × 신호)**")
-            st.dataframe(dist, width="stretch")
+            st.dataframe(dist.fillna(0).astype(int), width="stretch")
 
             # 종목 × 조건 신호 매트릭스
             st.markdown("**종목별 신호 매트릭스**")
-            # 색상 범례 — 셀 배경색만 있고 그 의미가 화면에 없었다
             _legend = "  ".join(
                 f'<span style="background:{bg};color:{fg};padding:2px 10px;'
                 f'border-radius:4px;font-size:0.85rem;">{sig}</span>'
                 for sig, (_, bg, fg) in SIGNAL_STYLE.items()
             )
-            st.markdown(f"{_legend}　셀 안의 숫자는 신뢰도입니다.", unsafe_allow_html=True)
+            st.markdown(
+                f"{_legend}　셀은 `신호 신뢰도% 적중`입니다. "
+                "✓/✗는 신호 방향이 실제 20거래일 수익률과 맞았는지이며, "
+                "방향이 없는 Neutral은 판정하지 않습니다.",
+                unsafe_allow_html=True,
+            )
 
-            mat_df = sig_df.copy()
+            mat_df = month_df.copy()
             mat_df["종목"] = mat_df["name"] + " (" + mat_df["ticker"] + ")"
-            mat_df["cell"] = mat_df["signal"] + " " + mat_df["confidence"].astype(str) + "%"
-            # 잔류 중복 파일(수동 백업본 등) 방어 — pivot은 중복 인덱스에서 ValueError
+            mat_df["cell"] = (
+                mat_df["signal"] + " " + mat_df["confidence"].astype(int).astype(str) + "%"
+                + [signal_hit(s, r) for s, r in zip(mat_df["signal"], mat_df["return_20d"])]
+            )
             mat_df = mat_df.drop_duplicates(subset=["ticker", "cond"], keep="last")
             pivot = mat_df.pivot(index="종목", columns="cond", values="cell")
             pivot = pivot[[c for c in REPORT_CONDS if c in pivot.columns]]
-            # 컬럼명을 한글 라벨로 — 탭1·탭3은 COND_LABELS를 쓰는데 여기만 raw 키였다
             pivot.columns = [COND_LABELS.get(c, c) for c in pivot.columns]
+
+            # 실제 20거래일 수익률은 (종목, 신호일)만으로 정해져 조건과 무관하다.
+            # 조건별 셀에 반복해 넣으면 같은 값이 다섯 번 나오므로 열 하나로 분리한다
+            actual = (
+                month_df.drop_duplicates(subset=["ticker"])
+                .assign(종목=lambda d: d["name"] + " (" + d["ticker"] + ")")
+                .set_index("종목")["return_20d"]
+            )
+
             # TICKERS 정의 순서로 행 정렬
             row_order = [f"{name} ({ticker})" for name, ticker in TICKERS.items() if f"{name} ({ticker})" in pivot.index]
-            pivot = pivot.reindex(row_order).fillna("-")
+            pivot = pivot.reindex(row_order)
+            pivot["실제 20일 수익률"] = [
+                fmt_metric(actual.get(idx), signed=True) + "%" if not pd.isna(actual.get(idx)) else "-"
+                for idx in pivot.index
+            ]
+            pivot = pivot.fillna("-")
             st.dataframe(pivot.style.map(signal_cell_style), width="stretch", height=740)
+            st.caption(
+                "빈 칸(`-`)은 해당 조건에서 신호가 생성되지 않은 경우입니다. "
+                "Claude Haiku는 컨텍스트가 없는 cond1에서 응답을 거절해 빈 칸이 나타납니다."
+            )
 
 
 # ═══════════════════════════════════════════════════════════
@@ -858,10 +873,9 @@ with tab3:
             "`python src/experiment/compare.py --all --model <모델명>` 실행 후 확인하세요."
         )
     else:
-        # 탭2(forward)보다 모델 수가 적은 이유를 먼저 밝힌다 — 누락으로 오인되지 않도록
         st.caption(
             f"백테스트 완료 모델 {len(an_models)}종: {', '.join(an_models)}. "
-            "forward(탭2)는 더 많은 모델로 운영 중이며, 백테스트가 끝난 모델만 이 탭에 표시됩니다."
+            "탭1은 이 외의 모델로도 신호를 생성할 수 있으나, 분석 산출물이 있는 모델만 이 탭에 표시됩니다."
         )
 
         # ── A. Buy 신호 성과 — 모델 비교 ────────────────────
