@@ -13,6 +13,10 @@ docs_cache/
 # 앱 시연으로 생성된 forward 신호 (연구 표본 아님 — forward_eval 평가 대상에서 제외됨)
 results/forward_demo/
 
+# 앱에서 20종목 밖을 분석할 때 받아지는 리포트 캐시 (최근 30일치만).
+# 백테스트 입력인 20종목 CSV는 이미 추적 중이라 이 규칙의 영향을 받지 않는다.
+data/reports/*.csv
+
 # 데이터 파일
 *.png
 

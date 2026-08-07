@@ -2,6 +2,11 @@
 
 다섯 탭 중 유일하게 외부 API를 쓴다. 생성된 신호는 정식 평가 표본에 섞이지 않도록
 results/forward_demo/로 격리한다(demote_to_demo 참고).
+
+대상 종목은 백테스트 20종목이 아니라 KRX 상장 전 종목이다. 백테스트·forward는 방법을
+검증하는 통제 실험이고, 실제 분석은 아무 종목에나 적용되어야 하기 때문. 대신 20종목
+밖에서는 ① 과거 성과를 붙일 수 없고 ② 리포트 커버리지가 떨어지므로, 둘 다 화면에서
+명시한다(숨기면 부실을 감추는 것이 된다).
 """
 
 import concurrent.futures
@@ -9,16 +14,19 @@ import glob
 import json
 import os
 import threading
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 import streamlit as st
 
 from app_ui import ROOT_DIR
 from app_ui.shared import (
-    COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR, SIGNAL_STYLE, TICKERS,
+    COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR, REPORTS_DIR, SIGNAL_STYLE, TICKERS,
     UI_CONDS, UI_MODELS, load_backtest_results,
 )
+
+# 리포트를 입력에 포함하는 조건 — 리포트 0건이면 실질 입력이 줄어든다는 안내가 필요하다
+REPORT_CONDS_UI = ("cond3", "cond4")
 
 
 # ── DART 캐시 점검 (분석 버튼 클릭 시 1회) ────────────────
@@ -69,6 +77,53 @@ def _check_dart_cache() -> str:
         return ""
     except Exception as e:
         return f"DART 캐시 재생성 실패: {e}"
+
+
+# ── 종목 목록 ─────────────────────────────────────────────
+@st.cache_data(ttl=3600, show_spinner=False)  # 상장 목록은 하루 단위로만 바뀐다
+def load_krx_stocks() -> list[tuple[str, str]]:
+    """KRX 상장 종목 (표시 라벨, 티커) 목록. 시가총액 내림차순.
+
+    시총 순으로 정렬하는 이유는 셀렉트박스에서 검색 없이 훑을 때 아는 이름이
+    먼저 나와야 하기 때문. 라벨에 티커를 붙여 동명 종목이 겹치지 않게 한다.
+
+    조회 실패 시 백테스트 20종목으로 폴백한다 — 네트워크가 없어도 시연은 되어야 한다.
+    """
+    try:
+        import FinanceDataReader as fdr
+        df = fdr.StockListing("KRX").dropna(subset=["Code", "Name"])
+        if "Marcap" in df.columns:
+            df = df.sort_values("Marcap", ascending=False, na_position="last")
+        out = [(f"{n} ({c})", c) for c, n in zip(df["Code"], df["Name"])]
+        if out:
+            return out
+    except Exception:
+        pass
+    return [(f"{n} ({t})", t) for n, t in TICKERS.items()]
+
+
+def ensure_reports(ticker: str) -> None:
+    """리포트 CSV가 없으면 최근 30일치를 받아 저장한다.
+
+    get_today_context가 data/reports/{ticker}.csv를 직접 읽으므로, 백테스트 20종목
+    밖은 파일이 없어 cond3·cond4가 리포트 없이 돌아간다. 여기서 미리 채워 둔다.
+    30일치만 받는 이유는 forward가 그 창만 쓰기 때문(백테스트용 전체 이력은 crawl.py 담당).
+
+    실패해도 예외를 올리지 않는다 — 리포트는 없으면 없는 대로 분석이 성립하고,
+    화면에서 "리포트 없음"으로 안내된다.
+    """
+    path = os.path.join(REPORTS_DIR, f"{ticker}.csv")
+    if os.path.exists(path):
+        return
+    try:
+        from crawl import fetch_reports
+        since = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
+        recs = fetch_reports(ticker, since_date=since, max_pages=3)
+        if recs:
+            os.makedirs(REPORTS_DIR, exist_ok=True)
+            pd.DataFrame(recs).to_csv(path, index=False, encoding="utf-8-sig")
+    except Exception:
+        pass
 
 
 # ── 헬퍼 ──────────────────────────────────────────────────
@@ -141,10 +196,14 @@ def run_forward_and_demote(run_forward, ticker: str, cond: str, model: str, batc
 def render() -> None:
     col_t, col_c, col_m, col_b = st.columns([3, 3, 3, 2])
 
-    ticker_options = [f"{name} ({ticker})" for name, ticker in TICKERS.items()]
-    selected_label = col_t.selectbox("종목 선택", ticker_options, index=0)
-    selected_name, selected_ticker = selected_label.rsplit(" (", 1)
-    selected_ticker = selected_ticker.rstrip(")")
+    stocks = load_krx_stocks()
+    ticker_options = [lb for lb, _ in stocks]
+    _label_to_ticker = dict(stocks)
+    # 기본값은 삼성전자 — 시총 1위라 목록 선두이기도 하고 백테스트 이력이 있어 화면이 다 찬다
+    _t_idx = next((i for i, (_, t) in enumerate(stocks) if t == "005930"), 0)
+    selected_label  = col_t.selectbox("종목 선택", ticker_options, index=_t_idx)
+    selected_ticker = _label_to_ticker[selected_label]
+    selected_name   = selected_label.rsplit(" (", 1)[0]
 
     selected_cond = col_c.selectbox(
         "분석 조건",
@@ -170,6 +229,17 @@ def render() -> None:
         st.caption("이 모델은 해당 provider의 API 키(.env)와 소액의 호출 비용이 필요합니다.")
     else:
         st.caption("분석 시 최신 데이터 자동 갱신 후 선택한 모델의 API를 호출합니다.")
+
+    # 20종목은 백테스트로 검증된 구간, 그 밖은 같은 파이프라인을 처음 적용하는 종목이다.
+    # 고르기 전에 알려야 결과를 같은 무게로 읽지 않는다
+    if selected_ticker not in TICKERS.values():
+        # 종목명 뒤에 조사를 붙이지 않는다 — 2,872종목이면 받침 유무가 제각각이라
+        # "클래시스은"처럼 틀린 문장이 화면에 그대로 나온다
+        st.caption(
+            f"ℹ️ **{selected_name}** — 백테스트 검증 대상 20종목 밖입니다. 신호 생성은 동일한 "
+            "파이프라인으로 이뤄지지만 과거 성과 이력은 표시되지 않으며, 애널리스트 리포트가 "
+            "적거나 없을 수 있습니다."
+        )
 
     # ── 분석 실행 ──────────────────────────────────────────
     if analyze_btn:
@@ -207,6 +277,18 @@ def render() -> None:
                     with open(_batch_path, encoding="utf-8") as _f:
                         result = json.load(_f)
                 else:
+                    # get_today_context는 TICKERS에서 종목명을 찾고, 못 찾으면 티커 코드를
+                    # 그대로 이름으로 쓴다. 그 이름이 LLM 프롬프트에 들어가므로(cond1은
+                    # 종목명이 입력의 전부다) 20종목 밖은 "005490"을 회사명으로 받게 된다.
+                    # src/는 코드 동결이라 레지스트리에 이름을 주입해 해결한다.
+                    # 20종목은 이미 있는 항목이라 주입해도 값이 바뀌지 않는다.
+                    TICKERS.setdefault(selected_name, selected_ticker)
+
+                    # 리포트 CSV가 없으면 cond3·cond4가 리포트 없이 돌아간다. 먼저 채운다
+                    if selected_cond in REPORT_CONDS_UI:
+                        _status.write(f"**{selected_name}** 애널리스트 리포트 확인 중...")
+                        ensure_reports(selected_ticker)
+
                     # DART 법인코드 점검은 실제로 수집이 필요한 경우에만
                     # (캐시 반환 경로는 DART를 쓰지 않는다 — 함수 docstring 참고)
                     _dart_warn = _check_dart_cache()
@@ -395,7 +477,14 @@ def render() -> None:
                 rows.append({"제목": r["title"], "목표주가": tp_str})
             st.table(pd.DataFrame(rows))
         else:
-            st.caption("최근 30일 이내 리포트 없음")
+            # 조건은 리포트를 요구하는데 실제로는 빈 섹션이 들어갔다. 조용히 두면
+            # 화면상 cond4인데 입력은 cond2에 가까운 상태가 드러나지 않는다
+            st.warning(
+                "최근 30일 이내 애널리스트 리포트가 없어 이 섹션이 비어 있습니다. "
+                f"**{COND_LABELS[fw_cond]}**는 리포트를 입력에 포함하지만 이 종목은 해당 정보 없이 "
+                "판단했으므로, 실질적으로는 재무 정보 기반 판단에 가깝습니다. "
+                "커버리지가 낮은 종목에서 나타납니다."
+            )
 
         st.divider()
 
@@ -442,7 +531,12 @@ def render() -> None:
     ticker_df = get_ticker_backtest(bt_df, fw["ticker"])
 
     if ticker_df.empty:
-        st.caption(f"{fw['name']}의 {fw_cond} 이력 없음")
+        # 20종목 밖을 고르면 여기로 온다. 누락이 아니라 설계라는 것을 밝힌다
+        st.info(
+            f"**{fw['name']}** — 백테스트 검증 대상 20종목에 포함되지 않아 과거 성과 이력이 없습니다. "
+            "백테스트는 2023-01~2025-12 대형주 20종목으로 방법을 검증하는 통제 실험이고, "
+            "신호 생성은 같은 파이프라인으로 전 종목에 적용됩니다."
+        )
         return
 
     total   = len(ticker_df)
