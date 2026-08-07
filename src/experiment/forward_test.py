@@ -124,7 +124,11 @@ def run_forward(ticker: str, cond: str = "cond4", model: str = MODEL) -> dict:
         "per":               ctx.get("per"),
         "pbr":               ctx.get("pbr"),
         "roe":               ctx.get("roe"),
-        "market_cap":        round(ctx["market_cap"] / 1e12, 1) if ctx.get("market_cap") else None,
+        # 조원 단위. 소수 1자리로 저장하면 1000억 미만이 전부 0.0으로 뭉개져 화면에서
+        # "0.0조원"이 된다(20종목은 전부 1조 이상이라 드러나지 않던 문제). 자릿수를 늘려
+        # 억원 표기까지 복원할 수 있게 한다. LLM 프롬프트는 이 값이 아니라 ctx 원본을
+        # 쓰므로(context_builders) 신호에는 영향이 없다 — 화면 표시 전용 필드다.
+        "market_cap":        round(ctx["market_cap"] / 1e12, 4) if ctx.get("market_cap") else None,
         "momentum_1m":       ctx.get("momentum_1m"),
         "volume_change":     ctx.get("volume_change"),
         "price_position_52w": ctx.get("price_position_52w"),

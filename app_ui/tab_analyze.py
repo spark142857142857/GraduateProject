@@ -87,11 +87,21 @@ def load_krx_stocks() -> list[tuple[str, str]]:
     시총 순으로 정렬하는 이유는 셀렉트박스에서 검색 없이 훑을 때 아는 이름이
     먼저 나와야 하기 때문. 라벨에 티커를 붙여 동명 종목이 겹치지 않게 한다.
 
+    우선주는 제외한다. 우선주는 별도 종목코드를 갖지만 DART 재무제표는 보통주 기준
+    하나뿐이라 EPS가 매칭되지 않아 PER이 비고(삼성전자우처럼 시총 100조가 넘어도
+    마찬가지다), 발행주식수도 보통주 기준이라 시가총액이 어긋난다. 분석이 성립하지
+    않는 종목을 목록에 두면 시연에서 빈 화면을 고르게 된다.
+
+    판별은 KRX 종목코드 규약을 쓴다 — 보통주는 끝자리가 0이고 우선주는 5/7/9/K/L 등이다.
+    이름 규칙(`...우`로 끝남)은 성우·이오플로우·에코글로우 같은 보통주를 잘못 걸러낸다.
+    실측에서 코드 규칙으로 걸린 113개는 전부 이름에도 '우'가 들어가 오탐이 없었다.
+
     조회 실패 시 백테스트 20종목으로 폴백한다 — 네트워크가 없어도 시연은 되어야 한다.
     """
     try:
         import FinanceDataReader as fdr
         df = fdr.StockListing("KRX").dropna(subset=["Code", "Name"])
+        df = df[df["Code"].str[-1] == "0"]
         if "Marcap" in df.columns:
             df = df.sort_values("Marcap", ascending=False, na_position="last")
         out = [(f"{n} ({c})", c) for c, n in zip(df["Code"], df["Name"])]
@@ -139,6 +149,19 @@ def fmt_val(val, suffix="", decimals=1, na_str="N/A") -> str:
     if val is None or (isinstance(val, float) and pd.isna(val)):
         return na_str
     return f"{val:.{decimals}f}{suffix}"
+
+
+def fmt_market_cap(mc_jo) -> str:
+    """context_used의 시가총액(조원 단위) → 화면 표기. 프롬프트 쪽과 같은 기준.
+
+    1조 미만을 조원 소수 1자리로 쓰면 1000억 미만이 전부 "0.0조원"이 된다.
+    0은 구 형식(소수 1자리 저장) 캐시에서 뭉개진 값이므로 숫자로 내지 않는다.
+    """
+    if mc_jo is None or pd.isna(mc_jo) or mc_jo == 0:
+        return "N/A"
+    if mc_jo >= 1:
+        return f"{mc_jo:.1f}조원"
+    return f"{mc_jo * 1e4:,.0f}억원"
 
 
 def signal_badge(signal: str) -> str:
@@ -456,7 +479,7 @@ def render() -> None:
         col1.metric("PER",    fmt_val(ctx.get("per")))
         col2.metric("PBR",    fmt_val(ctx.get("pbr")))
         col3.metric("ROE",    fmt_val(ctx.get("roe"), suffix="%"))
-        col4.metric("시가총액", fmt_val(ctx.get("market_cap"), suffix="조원", decimals=1))
+        col4.metric("시가총액", fmt_market_cap(ctx.get("market_cap")))
 
         col5, col6, col7 = st.columns(3)
         col5.metric("52주 위치",      fmt_val(ctx.get("price_position_52w"), suffix="%"))

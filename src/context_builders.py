@@ -53,15 +53,12 @@ def build_financials(ticker: str, date: str) -> str:
         return ""
     row = row_df.iloc[0]
 
-    market_cap = row.get("market_cap")
-    market_cap_str = _fmt(market_cap / 1e12, 1) if not pd.isna(market_cap) else "N/A"
-
     return "\n".join([
         "[재무지표]",
         f"PER: {_fmt(row.get('per'), 1, na_str='해당없음(적자)')}",
         f"PBR: {_fmt(row.get('pbr'), 2)}",
         f"ROE: {_fmt(row.get('roe'), 1)}%",
-        f"시가총액: {market_cap_str}조원",
+        f"시가총액: {_fmt_market_cap(row.get('market_cap'))}",
         "",
         "[기술지표]",
         f"52주 최고가: {_fmt_price(row.get('high_52w'))}원",
@@ -121,6 +118,24 @@ def _fmt_amount(val) -> str:
     return f"{sign}{eok:,.0f}억원"
 
 
+def _fmt_market_cap(val) -> str:
+    """시가총액(원) → '419.5조원' / '1,740억원'. None/NaN → 'N/A'.
+
+    1조 미만을 조원 소수 1자리로 쓰면 1000억 미만 종목이 전부 '0.0조원'으로 뭉개진다.
+    _fmt_amount가 이익에 대해 같은 이유로 하는 처리와 기준을 맞춘 것이며,
+    시가총액은 음수가 없으므로 부호는 붙이지 않는다.
+
+    백테스트 20종목은 전부 시가총액 1조 이상이라 이 함수를 거쳐도 출력 문자열이
+    종전과 동일하다(스모크로 확인).
+    """
+    if val is None or pd.isna(val):
+        return "N/A"
+    jo = val / 1_000_000_000_000  # 원 → 조원 (1e12)
+    if jo >= 1:
+        return f"{jo:.1f}조원"
+    return f"{val / 100_000_000:,.0f}억원"  # 원 → 억원 (1e8)
+
+
 def _fmt_yoy(val, label: str = "전년比") -> str:
     """전년(동기)比 변화율 포맷. None/NaN → 빈 문자열."""
     if val is None or pd.isna(val):
@@ -148,14 +163,12 @@ def _dart_header_and_yoy(fiscal_period, report_name) -> tuple[str, str]:
 
 def build_financials_from_dict(ctx: dict) -> str:
     """ctx['per'/'pbr'/...] → [재무지표] 섹션 텍스트."""
-    mc = ctx.get("market_cap")
-    mc_str = _fmt(mc / 1e12, 1) if (mc is not None and not pd.isna(mc)) else "N/A"
     return "\n".join([
         "[재무지표]",
         f"PER: {_fmt(ctx.get('per'), 1, na_str='해당없음(적자)')}",
         f"PBR: {_fmt(ctx.get('pbr'), 2)}",
         f"ROE: {_fmt(ctx.get('roe'), 1)}%",
-        f"시가총액: {mc_str}조원",
+        f"시가총액: {_fmt_market_cap(ctx.get('market_cap'))}",
         "",
         "[기술지표]",
         f"52주 최고가: {_fmt_price(ctx.get('high_52w'))}원",
