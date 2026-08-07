@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 
 from app_ui.shared import (
-    ANALYSIS_DIR, COND_LABELS, REPORT_CONDS, SMALL_SAMPLE_N, fmt_metric,
+    ANALYSIS_DIR, COND_LABELS, DEFAULT_MODEL, REPORT_CONDS, SMALL_SAMPLE_N, fmt_metric,
 )
 
 
@@ -122,7 +122,7 @@ def render() -> None:
 
     st.caption(
         f"백테스트 완료 모델 {len(an_models)}종: {', '.join(an_models)}. "
-        "탭1은 이 외의 모델로도 신호를 생성할 수 있으나, 분석 산출물이 있는 모델만 이 탭에 표시됩니다."
+        "개별 종목 분석 탭은 이 외의 모델로도 신호를 생성할 수 있으나, 분석 산출물이 있는 모델만 이 탭에 표시됩니다."
     )
 
     # ── A. Buy 신호 성과 — 모델 비교 ────────────────────
@@ -205,7 +205,9 @@ def render() -> None:
 
     # ── C. 통계적 유의성 ────────────────────────────────
     st.subheader("📐 통계적 유의성 검정 (Buy 신호)")
-    sel_an_model = st.selectbox("검정 결과 모델", an_models, index=0)
+    # 목록이 알파벳순이라 index=0이면 claude가 잡힌다. 다른 탭과 같이 앵커 모델을 기본으로
+    _an_idx = an_models.index(DEFAULT_MODEL) if DEFAULT_MODEL in an_models else 0
+    sel_an_model = st.selectbox("검정 결과 모델", an_models, index=_an_idx)
     sig = load_analysis_csv(sel_an_model, "all_significance.csv")
     if sig is None:
         st.caption("해당 모델 검정 결과 없음")

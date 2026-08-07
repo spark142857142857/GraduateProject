@@ -1,6 +1,6 @@
-"""탭 1 — 개별 종목 분석 (오늘 기준 실시간 신호 생성, LLM API 호출).
+"""탭 2 — 개별 종목 분석 (오늘 기준 실시간 신호 생성, LLM API 호출).
 
-세 탭 중 유일하게 외부 API를 쓴다. 생성된 신호는 정식 평가 표본에 섞이지 않도록
+다섯 탭 중 유일하게 외부 API를 쓴다. 생성된 신호는 정식 평가 표본에 섞이지 않도록
 results/forward_demo/로 격리한다(demote_to_demo 참고).
 """
 
@@ -17,7 +17,7 @@ import streamlit as st
 from app_ui import ROOT_DIR
 from app_ui.shared import (
     COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR, SIGNAL_STYLE, TICKERS,
-    UI_CONDS, UI_MODELS, list_backtest_models, load_backtest_results,
+    UI_CONDS, UI_MODELS, load_backtest_results,
 )
 
 
@@ -29,9 +29,9 @@ def _check_dart_cache() -> str:
     오늘 날짜 캐시가 없거나 읽기 실패 시 구 캐시를 삭제하고
     OpenDartReader 초기화로 재생성(법인코드 ~11MB 다운로드).
 
-    호출 시점 주의: 앱 시작 시가 아니라 탭1 분석 버튼에서 호출한다.
+    호출 시점 주의: 앱 시작 시가 아니라 이 탭의 분석 버튼에서 호출한다.
     날짜가 바뀐 첫 실행이면 재생성에 수십 초가 걸리는데, DART가 필요 없는
-    탭2·탭3(캐시 읽기 전용)까지 그 대기에 묶이기 때문.
+    나머지 네 탭(캐시 읽기 전용)까지 그 대기에 묶이기 때문.
     @st.cache_resource라 프로세스당 1회만 수행된다.
 
     Returns:
@@ -87,7 +87,7 @@ def fmt_val(val, suffix="", decimals=1, na_str="N/A") -> str:
 
 
 def signal_badge(signal: str) -> str:
-    _, bg, fg = SIGNAL_STYLE.get(signal, ("", "#e2e3e5", "#383d41"))
+    bg, fg = SIGNAL_STYLE.get(signal, ("#e2e3e5", "#383d41"))
     label = {"Buy": "매수 (Buy)", "Sell": "매도 (Sell)", "Neutral": "중립 (Neutral)"}.get(signal, signal)
     return (
         f'<div style="background:{bg};color:{fg};padding:20px 30px;'
@@ -433,15 +433,10 @@ def render() -> None:
     bt_df = load_backtest_results(fw_cond, fw_model)
 
     if bt_df is None:
-        # 모델 셀렉트박스는 forward 기준(전 모델)이라 백테스트 미완료 모델도 고를 수 있다.
-        # 단순 "결과 없음"이면 누락처럼 보이므로 완료 모델을 함께 안내
-        _bt_models = list_backtest_models(fw_cond)
+        # 4모델 × 5조건 전부 완료돼 정상 경로에서는 도달하지 않는다. 결과 파일이 없거나
+        # 깨졌을 때 화면이 비는 대신 이유를 알리는 방어 분기.
         # 시연 중 관객에게 보일 화면이라 CLI 실행 명령은 넣지 않는다
-        st.info(
-            f"**{fw_model}**은 {fw_cond} 백테스트가 아직 완료되지 않아 과거 성과를 표시할 수 없습니다. "
-            f"백테스트 완료 모델은 {', '.join(_bt_models) if _bt_models else '없음'}이며, "
-            f"forward 신호 생성은 전 모델에서 가능합니다."
-        )
+        st.info(f"**{fw_model}**의 {fw_cond} 백테스트 결과 파일을 읽을 수 없어 과거 성과를 표시할 수 없습니다.")
         return
 
     ticker_df = get_ticker_backtest(bt_df, fw["ticker"])
@@ -466,11 +461,12 @@ def render() -> None:
 
     buy_hr   = hit_rate(buy_df, "Buy")
     sell_hr  = hit_rate(sell_df, "Sell")
-    avg_ret  = ticker_df["return_20d"].mean()
 
     st.caption(f"조건: **{COND_LABELS[fw_cond]}** | 모델: **{fw_model}** | 총 **{total}**개월 백테스트 이력")
 
-    col_bt1, col_bt2, col_bt3 = st.columns(3)
+    # 신호 성능 지표만 둔다. Buy/Sell/Neutral을 섞은 전체 평균은 종목의 기간 등락에 가까워
+    # 옆 두 칸과 나란히 두면 세 번째 성능 지표로 읽힌다 — 아래 상세 통계에서 신호별로 본다
+    col_bt1, col_bt2 = st.columns(2)
     col_bt1.metric(
         "Buy 히트율",
         f"{buy_hr:.1f}%" if buy_hr is not None else "N/A",
@@ -480,13 +476,6 @@ def render() -> None:
         "Sell 히트율",
         f"{sell_hr:.1f}%" if sell_hr is not None else "N/A",
         help="Sell 신호 후 20거래일 수익률 < 0 비율",
-    )
-    # Buy/Sell/Neutral을 모두 섞은 평균이라 신호 성능이 아니다.
-    # 앞 두 칸이 성능 지표라 라벨이 모호하면 세 번째 성능 지표로 읽힌다
-    col_bt3.metric(
-        "전체 신호 평균 수익률",
-        f"{avg_ret:+.2f}%",
-        help="Buy, Sell, Neutral을 모두 포함한 평균입니다. 신호 성능이 아니라 해당 종목이 그 기간에 얼마나 움직였는지에 가깝습니다.",
     )
 
     # 신호별 상세 테이블
@@ -518,7 +507,7 @@ def render() -> None:
             chart_df,
             x="signal_date",
             y=_signal_order,
-            color=[SIGNAL_STYLE[sig][2] for sig in _signal_order],
+            color=[SIGNAL_STYLE[sig][1] for sig in _signal_order],
             x_label="신호일",
             y_label="20일 수익률 (%)",
             height=280,

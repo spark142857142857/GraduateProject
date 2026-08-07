@@ -1,4 +1,4 @@
-"""탭 2 — 백테스트 신호 매트릭스 (results/experiment 읽기 전용, API 호출 없음)."""
+"""탭 1 — 백테스트 신호 매트릭스 (results/experiment 읽기 전용, API 호출 없음)."""
 
 import pandas as pd
 import streamlit as st
@@ -12,7 +12,7 @@ from app_ui.shared import (
 def signal_cell_style(v) -> str:
     """신호 매트릭스 셀 색상 — 'Buy 85%' 형태 문자열의 접두어로 판별."""
     if isinstance(v, str):
-        for sig, (_, bg, fg) in SIGNAL_STYLE.items():
+        for sig, (bg, fg) in SIGNAL_STYLE.items():
             if v.startswith(sig):
                 return f"background-color:{bg};color:{fg}"
     return ""
@@ -73,7 +73,7 @@ def render() -> None:
     _legend = "  ".join(
         f'<span style="background:{bg};color:{fg};padding:2px 10px;'
         f'border-radius:4px;font-size:0.85rem;">{sig}</span>'
-        for sig, (_, bg, fg) in SIGNAL_STYLE.items()
+        for sig, (bg, fg) in SIGNAL_STYLE.items()
     )
     st.markdown(
         f"{_legend}　셀은 `신호 신뢰도% 적중`입니다. "

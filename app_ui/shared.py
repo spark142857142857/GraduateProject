@@ -23,11 +23,11 @@ __all__ = [
 
 
 # ── 상수 ──────────────────────────────────────────────────
-# 연구용 조건(cond4_no_reports, cond4_blind)은 개별 분석 UI 미노출 — 사용자 편의 조건만 표시
+# 연구용 조건(cond4_no_reports)은 개별 분석 UI 미노출 — 사용자 편의 조건만 표시
 UI_CONDS = ["cond1", "cond2", "cond3", "cond4"]
 
 # 화면에 노출하는 조건 — 보고서가 다루는 5개로 한정한다.
-# COND_ORDER(= EXPERIMENTS 전체)를 그대로 쓰면 보조 실험(reports_only·dart_only·cond4_blind)을
+# COND_ORDER(= EXPERIMENTS 전체)를 그대로 쓰면 보조 실험(reports_only·dart_only)을
 # 실행한 뒤부터 결과가 화면에 섞여 나온다. 미완료 조건이 성과표에 뜨면 설명 부담만 생긴다.
 REPORT_CONDS = ["cond1", "cond2", "cond3", "cond4", "cond4_no_reports"]
 
@@ -37,10 +37,11 @@ SMALL_SAMPLE_N = 30
 # 개별 분석용 모델 목록 — 앵커(DEFAULT_MODEL)/gemma가 우선(앞 배치), gpt/claude는 별도 키·호출 비용 필요
 UI_MODELS = [DEFAULT_MODEL, "gemma-4-31b-it", "gpt-5.4-mini", "claude-haiku-4-5"]
 
+# 신호별 (배경색, 글자색) — 배지·매트릭스 셀·범례·산점도 색이 모두 여기서 나온다
 SIGNAL_STYLE = {
-    "Buy":     ("초록", "#d4edda", "#155724"),
-    "Sell":    ("빨강", "#f8d7da", "#721c24"),
-    "Neutral": ("회색", "#e2e3e5", "#383d41"),
+    "Buy":     ("#d4edda", "#155724"),
+    "Sell":    ("#f8d7da", "#721c24"),
+    "Neutral": ("#e2e3e5", "#383d41"),
 }
 
 # 앱 시연으로 생성된 신호의 격리 경로 — 정식 주간 배치(results/forward/)와 분리한다.
@@ -65,8 +66,8 @@ def load_backtest_results(cond: str, model: str) -> pd.DataFrame | None:
 def list_backtest_models(cond: str) -> list[str]:
     """해당 조건의 백테스트 결과가 실제로 존재하는 모델 목록.
 
-    forward는 UI_MODELS 전 모델로 신호를 만들 수 있으나 백테스트는 일부만
-    완료된 상태라, "결과 없음" 안내에서 어떤 모델이 가능한지 함께 제시한다.
+    폴더가 아니라 결과 CSV의 존재로 판정한다. 실행이 중단돼 빈 모델 폴더만 남은
+    경우 셀렉트박스에 뜨면 안 되기 때문.
     """
     base = os.path.join(EXPERIMENT_DIR, cond)
     if not os.path.isdir(base):
@@ -96,7 +97,7 @@ def list_matrix_models() -> list[str]:
 def load_signal_matrix(model: str) -> pd.DataFrame:
     """조건별 백테스트 결과를 long DataFrame으로 합친다.
 
-    탭2(신호 매트릭스)와 탭4(포트폴리오)가 공유하는 소스. forward 캐시를 쓰지 않는
+    탭1(신호 매트릭스)과 탭4(포트폴리오)가 공유하는 소스. forward 캐시를 쓰지 않는
     이유는 ① 신호 생성을 2026-08-02로 종료해 시간이 갈수록 낡은 날짜가 화면에 남고
     ② forward를 앱에서 다루지 않기로 한 결정(TODO "미채택 — forward 성과 탭")과
     어긋나기 때문. 백테스트 기간(2023-01~2025-12)은 설계상 고정이라 낡지 않고,
