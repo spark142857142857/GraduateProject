@@ -111,6 +111,26 @@ def build_strategy_table(comp: pd.DataFrame) -> tuple[pd.DataFrame, list[str], l
     return pd.DataFrame(rows).set_index("전략"), small, notes
 
 
+def localize_breakdown(df: pd.DataFrame) -> pd.DataFrame:
+    """breakdown CSV의 원본 영문 컬럼·조건 코드를 화면 표기로 바꾼다.
+
+    섹션 A·B·C는 모두 한글화하는데 이 표만 CSV 그대로 나와, 펼치면 앞 섹션과
+    표기가 어긋났다. 컬럼 구성이 바뀌어도 죽지 않게 존재하는 것만 골라 바꾼다.
+    """
+    BD_RENAME = {
+        "bucket": "구간", "cond": "조건", "signal": "신호", "n": "건수",
+        "share_pct": "비중(%)",
+        "abs_mean": "절대수익 평균(%)", "abs_median": "절대수익 중앙값(%)", "abs_hit": "절대 Hit(%)",
+        "excess_mean": "초과수익 평균(%)", "excess_median": "초과수익 중앙값(%)",
+        "excess_hit": "초과 Hit(%)",
+        "bench_abs": "벤치 절대수익(%)", "bench_excess": "벤치 초과수익(%)",
+    }
+    out = df.copy()
+    if "cond" in out.columns:
+        out["cond"] = out["cond"].map(lambda k: COND_LABELS.get(k, k))
+    return out[[c for c in BD_RENAME if c in out.columns]].rename(columns=BD_RENAME)
+
+
 def render() -> None:
     an_models = list_analysis_models()
     if not an_models:
@@ -251,7 +271,7 @@ def render() -> None:
         )
         st.dataframe(styled, width="stretch", hide_index=True)
         st.caption("유의 수준: *** p<0.001, ** p<0.01, * p<0.05, . p<0.10, ns 비유의")
-        # 보조 비교(전체 검정 결과) 표는 미노출. 아직 실행이 끝나지 않은 조건이 섞여
+        # 보조 비교(category != core) 표는 미노출. 보고서가 다루지 않는 조합까지 나와
         # "이건 뭐냐"는 설명 부담만 생긴다. 핵심 비교만 보여준다.
 
     # ── D. 연도별·시장국면별 분석 ───────────────────────
@@ -260,9 +280,9 @@ def render() -> None:
         regime = load_analysis_csv(sel_an_model, "breakdown_regime.csv")
         if yearly is not None:
             st.markdown("**연도별**")
-            st.dataframe(yearly, width="stretch", hide_index=True)
+            st.dataframe(localize_breakdown(yearly), width="stretch", hide_index=True)
         if regime is not None:
             st.markdown("**시장 국면별 (상승/하락)**")
-            st.dataframe(regime, width="stretch", hide_index=True)
+            st.dataframe(localize_breakdown(regime), width="stretch", hide_index=True)
         if yearly is None and regime is None:
             st.caption("해당 모델 breakdown 결과 없음")
