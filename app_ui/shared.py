@@ -14,7 +14,7 @@ from compare import COND_LABELS, DEFAULT_MODEL
 
 __all__ = [
     "TICKERS", "EXPERIMENT_DIR", "FORWARD_DIR", "ANALYSIS_DIR", "REPORTS_DIR",
-    "COND_LABELS", "DEFAULT_MODEL",
+    "COND_LABELS", "DEFAULT_MODEL", "BACKTEST_TICKERS",
     "UI_CONDS", "REPORT_CONDS", "SMALL_SAMPLE_N", "UI_MODELS",
     "SIGNAL_STYLE", "FORWARD_DEMO_DIR",
     "load_backtest_results", "list_backtest_models", "fmt_metric",
@@ -23,6 +23,12 @@ __all__ = [
 
 
 # ── 상수 ──────────────────────────────────────────────────
+# 백테스트 대상 20종목의 티커 — import 시점에 고정한다.
+# tab_analyze가 20종목 밖을 분석할 때 종목명을 TICKERS에 주입하므로(그 이름이 LLM
+# 프롬프트에 들어가야 한다) TICKERS는 실행 중에 커진다. "실험 대상 종목인가" 판정에
+# TICKERS를 그대로 쓰면 한 번 분석한 종목이 20종목처럼 취급돼 버린다.
+BACKTEST_TICKERS = frozenset(TICKERS.values())
+
 # 연구용 조건(cond4_no_reports)은 개별 분석 UI 미노출 — 사용자 편의 조건만 표시
 UI_CONDS = ["cond1", "cond2", "cond3", "cond4"]
 

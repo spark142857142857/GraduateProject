@@ -3,7 +3,7 @@
 다섯 탭 중 유일하게 외부 API를 쓴다. 생성된 신호는 정식 평가 표본에 섞이지 않도록
 results/forward_demo/로 격리한다(demote_to_demo 참고).
 
-대상 종목은 백테스트 20종목이 아니라 KRX 상장 전 종목이다. 백테스트·forward는 방법을
+대상 종목은 백테스트 20종목이 아니라 KRX 상장 보통주 전 종목이다. 백테스트·forward는 방법을
 검증하는 통제 실험이고, 실제 분석은 아무 종목에나 적용되어야 하기 때문. 대신 20종목
 밖에서는 ① 과거 성과를 붙일 수 없고 ② 리포트 커버리지가 떨어지므로, 둘 다 화면에서
 명시한다(숨기면 부실을 감추는 것이 된다).
@@ -21,8 +21,8 @@ import streamlit as st
 
 from app_ui import ROOT_DIR
 from app_ui.shared import (
-    COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR, REPORTS_DIR, SIGNAL_STYLE, TICKERS,
-    UI_CONDS, UI_MODELS, load_backtest_results,
+    BACKTEST_TICKERS, COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR, REPORTS_DIR,
+    SIGNAL_STYLE, TICKERS, UI_CONDS, UI_MODELS, load_backtest_results,
 )
 
 # 리포트를 입력에 포함하는 조건 — 리포트 0건이면 실질 입력이 줄어든다는 안내가 필요하다
@@ -113,18 +113,35 @@ def load_krx_stocks() -> list[tuple[str, str]]:
 
 
 def ensure_reports(ticker: str) -> None:
-    """리포트 CSV가 없으면 최근 30일치를 받아 저장한다.
+    """20종목 밖 종목의 리포트 캐시를 당일 기준으로 확보한다.
 
-    get_today_context가 data/reports/{ticker}.csv를 직접 읽으므로, 백테스트 20종목
-    밖은 파일이 없어 cond3·cond4가 리포트 없이 돌아간다. 여기서 미리 채워 둔다.
-    30일치만 받는 이유는 forward가 그 창만 쓰기 때문(백테스트용 전체 이력은 crawl.py 담당).
+    get_today_context가 data/reports/{ticker}.csv를 직접 읽으므로, 파일이 없으면
+    cond3·cond4가 리포트 없이 돌아간다. 30일치만 받는 이유는 forward가 그 창만 쓰기
+    때문이다(백테스트용 전체 이력은 crawl.py 담당).
+
+    **파일이 있어도 오늘 받은 것이 아니면 다시 받는다.** 예전에 받아둔 파일은 그때의
+    30일 창이라, 시간이 지나면 get_today_context가 보는 창(오늘 기준 30일)과 겹치지
+    않아 리포트가 있는 종목이 "리포트 없음"으로 나온다. 제출·시연이 수집일보다 몇 달
+    뒤라 실제로 발생하는 경로다. 판정은 파일 수정시각으로 하며(마지막 리포트 날짜로
+    하면 원래 리포트가 뜸한 종목을 매번 다시 받게 된다) 하루 1회로 제한된다.
+
+    백테스트 20종목은 건드리지 않는다. 그 CSV는 실험 입력이고 crawl.py가 전체 이력을
+    관리하는 파일이라, 앱이 30일치로 덮어쓰면 실험 데이터를 훼손한다.
 
     실패해도 예외를 올리지 않는다 — 리포트는 없으면 없는 대로 분석이 성립하고,
     화면에서 "리포트 없음"으로 안내된다.
     """
-    path = os.path.join(REPORTS_DIR, f"{ticker}.csv")
-    if os.path.exists(path):
+    # TICKERS가 아니라 BACKTEST_TICKERS로 판정한다. 분석 시 종목명을 TICKERS에
+    # 주입하므로, TICKERS로 보면 한 번 분석한 종목이 20종목으로 취급돼 이후 영영
+    # 리포트를 받지 않는다
+    if ticker in BACKTEST_TICKERS:
         return
+
+    path = os.path.join(REPORTS_DIR, f"{ticker}.csv")
+    today = datetime.today().date()
+    if os.path.exists(path) and datetime.fromtimestamp(os.path.getmtime(path)).date() == today:
+        return
+
     try:
         from crawl import fetch_reports
         since = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
@@ -132,6 +149,10 @@ def ensure_reports(ticker: str) -> None:
         if recs:
             os.makedirs(REPORTS_DIR, exist_ok=True)
             pd.DataFrame(recs).to_csv(path, index=False, encoding="utf-8-sig")
+        elif os.path.exists(path):
+            # 30일 내 리포트가 없는데 옛 파일이 남아 있으면 그 옛 행이 계속 읽힌다.
+            # 빈 CSV를 쓰면 get_today_context의 read_csv가 터지므로 파일을 지운다
+            os.remove(path)
     except Exception:
         pass
 
@@ -255,8 +276,8 @@ def render() -> None:
 
     # 20종목은 백테스트로 검증된 구간, 그 밖은 같은 파이프라인을 처음 적용하는 종목이다.
     # 고르기 전에 알려야 결과를 같은 무게로 읽지 않는다
-    if selected_ticker not in TICKERS.values():
-        # 종목명 뒤에 조사를 붙이지 않는다 — 2,872종목이면 받침 유무가 제각각이라
+    if selected_ticker not in BACKTEST_TICKERS:
+        # 종목명 뒤에 조사를 붙이지 않는다 — 2,700종목이면 받침 유무가 제각각이라
         # "클래시스은"처럼 틀린 문장이 화면에 그대로 나온다
         st.caption(
             f"ℹ️ **{selected_name}** — 백테스트 검증 대상 20종목 밖입니다. 신호 생성은 동일한 "
