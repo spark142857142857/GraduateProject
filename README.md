@@ -3,7 +3,7 @@
 LLM을 활용해 한국 주식 종목의 **매수/매도 신호를 생성**하고, 백테스팅으로 그 유효성을 검증하는 시스템.  
 백테스팅 실험 외에 오늘 날짜 기준 실시간 신호를 생성하는 **Forward Test**와 **Streamlit 대시보드**를 포함한다.
 
-**목차**: [개요](#개요) · [실험 설계](#실험-설계) · [프로젝트 구조](#프로젝트-구조) · [실행 방법](#실행-방법) · [환경변수](#환경변수-env) · [실험 변수](#실험-변수)
+**목차**: [개요](#개요) · [실험 설계](#실험-설계) · [프로젝트 구조](#프로젝트-구조) · [실행 방법](#실행-방법)
 
 ---
 
@@ -46,15 +46,13 @@ LLM에 제공하는 재무 컨텍스트 조합을 달리하며 최적 구성을 
 
 ### 결과
 
-4모델 × 5조건 백테스트 **14,203건** 완료. 핵심은 cond4 Buy가 애널리스트 컨센서스를 4모델 중
-3모델에서 유의하게 상회한다는 것, 애널리스트 리포트 추가는 4모델 전부 비유의라는 것,
-그리고 종목명만 준 cond1의 종목 편중이 재무 데이터를 주면 무작위 기대값으로 수렴한다는
-것(p=6.9×10⁻¹⁰)이다. 다만 포트폴리오로 운용하면 어느 모델도 무기술 벤치마크를 넘지 못한다.
+백테스트 **14,203건**(4모델 × 5조건) 완료. cond4 Buy는 애널리스트 컨센서스를 4모델 중
+3모델에서 유의하게 상회하고, 리포트 추가는 4모델 전부 비유의하며, cond1의 종목 편중은
+재무 데이터를 주면 무작위 기대값으로 수렴한다. 포트폴리오로 운용하면 무기술 벤치마크를
+넘지는 못한다.
 
-수치와 검정 결과는 [docs/experiments_log.md](docs/experiments_log.md),
-데이터 정확성 검증은 [docs/prove.md](docs/prove.md),
-Forward Test 운영 이력은 [docs/forward_log.md](docs/forward_log.md),
-남은 작업·한계는 [docs/TODO.md](docs/TODO.md)에 있다.
+수치·검정 결과는 [experiments_log.md](docs/experiments_log.md), 나머지 문서는 아래
+프로젝트 구조의 `docs/` 참고.
 
 ---
 
@@ -104,12 +102,15 @@ stock_analysis/
 │   ├── baseline/                    # 대조군 수익률
 │   ├── experiment/cond{1-4}/        # LLM 실험 결과 (체크포인트 포함)
 │   ├── analysis/                    # 비교 분석 CSV
-│   └── forward/                     # Forward Test 결과 JSON
+│   ├── forward/                     # Forward Test 결과 JSON + evaluation.csv
+│   └── forward_demo/                # 앱 시연 신호 (평가 표본에서 제외, gitignore)
 ├── docs/
 │   ├── experiments_log.md           # 실험 일지 (백테스트)
-│   └── forward_log.md               # Forward Test 운영 일지
+│   ├── prove.md                     # 데이터 정확성 검증 (증권사 대조)
+│   ├── forward_log.md               # Forward Test 운영 일지
+│   └── TODO.md                      # 남은 작업·한계
 ├── docs_cache/                      # DART API 법인코드 캐시 (gitignore)
-├── EXPERIMENT_VARS.md               # 실험 변수 정리
+├── EXPERIMENT_VARS.md               # 실험 변수·프롬프트 설계
 ├── pyproject.toml                   # 의존성 정의 (uv)
 ├── uv.lock                          # 정확한 버전 고정 파일
 └── .env                             # 환경변수 (gitignore)
@@ -137,12 +138,15 @@ uv sync
 `.env` 파일을 생성하고 API 키를 입력한다.
 
 ```bash
-DARTS_API_KEY=your_dart_api_key
-GEMINI_API_KEY=your_gemini_api_key
-# 멀티모델 비교 시에만 추가 (쓰는 provider의 키만 필요 — lazy)
-OPENAI_API_KEY=your_openai_api_key
-ANTHROPIC_API_KEY=your_anthropic_api_key
+DARTS_API_KEY=your_dart_api_key           # DART OpenAPI (https://opendart.fss.or.kr)
+GEMINI_API_KEY=your_gemini_api_key        # Google Gemini/Gemma (앵커 모델)
+OPENAI_API_KEY=your_openai_api_key        # (선택) gpt-* 사용 시
+ANTHROPIC_API_KEY=your_anthropic_api_key  # (선택) claude-* 사용 시
 ```
+
+모델명 접두어로 provider가 정해진다 — `gemini-*`/`gemma-*`→Google, `gpt-*`→OpenAI,
+`claude-*`→Anthropic. 그 외 접두어는 지원하지 않는다(즉시 에러). 키는 **실제 쓰는
+provider의 것만** 있으면 된다.
 
 ### 2. 데이터 수집
 
@@ -202,7 +206,7 @@ python src/experiment/significance.py --all
 python src/experiment/breakdown.py
 ```
 
-**멀티모델**: 백테스팅·분석 모두 `--model`로 모델 지정 (기본값 앵커 `gemini-2.5-flash-lite`). 모델 접두어로 provider 자동 분기 (gemini/gemma→Google, gpt→OpenAI, claude→Anthropic). 교차 제공사는 `.env`에 `OPENAI_API_KEY`·`ANTHROPIC_API_KEY` 필요 (쓰는 provider만). 예: `python src/experiment/llm_experiment.py --cond cond4 --model claude-haiku-4-5`.
+**멀티모델**: 백테스팅·분석 모두 `--model`로 모델을 지정한다(기본값 앵커 `gemini-2.5-flash-lite`). 예: `python src/experiment/llm_experiment.py --cond cond4 --model claude-haiku-4-5`.
 
 결과는 모델별로 분리 저장된다:
 - 실험: `results/experiment/{cond}/{model}/{latest|날짜}/`
@@ -220,15 +224,18 @@ python src/experiment/breakdown.py
 
 ### 6. Forward Test
 
-오늘 날짜 기준으로 LLM 신호를 실시간 생성하고, 일정 기간 후 실제 수익률로 검증한다. 백테스팅과 **동일 모델·프롬프트**로 일관성을 유지한다 (앵커: gemini-2.5-flash-lite).
+백테스팅과 **동일 모델·프롬프트**로 오늘 날짜 기준 신호를 생성하고 20거래일 뒤 실제 수익률로 검증한다 (앵커: gemini-2.5-flash-lite).
 
-**주간 워크플로우 (일요일 저녁 권장):**
+> **신호 생성은 2026-08-02 배치로 종료했다.** 아래 ①~③은 더 이상 실행하지 않는다. 남은
+> 작업은 이미 생성된 4배치(07-12 / 07-19 / 07-26 / 08-02)를 한 주 간격으로 평가하는 ④뿐이며,
+> `forward_eval.py`는 LLM을 호출하지 않고 주가로 수익률만 계산하므로 **API 비용이 0**이고
+> 사전 수집도 필요 없다.
 
 ```bash
 python src/collect/crawl.py                # ① 애널리스트 리포트 최신화 (증분) — cond3/4에 필요
 python src/experiment/forward_run_all.py   # ② 전 종목 × 5조건 신호 생성 (DART는 자동 갱신)
 python src/experiment/forward_verify.py    # ③ 넣은 정보 신선도·정합성 점검 (현재가·ROE·리포트·DART)
-# (4주 뒤부터) python src/experiment/forward_eval.py   # ④ 성숙분 실제 수익률·적중 평가
+python src/experiment/forward_eval.py      # ④ 성숙분 실제 수익률·적중 평가 — 현재 유일하게 실행
 ```
 
 단일 종목 테스트: `python src/experiment/forward_test.py --ticker 005930 --cond cond3`
@@ -236,7 +243,6 @@ python src/experiment/forward_verify.py    # ③ 넣은 정보 신선도·정합
 - 신호 저장: `results/forward/{날짜}/{model}/{ticker}_{cond}.json` (당일 동일 ticker+cond+model은 캐시 반환)
 - 평가 저장: `results/forward/evaluation.csv` — 미성숙(20거래일 미경과) 신호는 pending
 - 주간 반복 시 20거래일 보유구간이 겹쳐 표본이 독립이 아니므로 **실전 참고용** (유의성 검정은 백테스트가 담당)
-- ⚠️ **리포트는 자동 갱신 안 됨** → forward 전 반드시 `crawl.py` 실행 (안 하면 cond3/4가 빈 리포트). `forward_verify.py`가 리포트 0건 시 경고.
 - ✅ **백테스트 데이터 비오염**: forward는 재무지표·DART를 모두 **인메모리로 계산**하며 `data/financials/`·`data/dart_fundamentals/`에 쓰지 않는다 → 백테스트 데이터(2023-2025)가 순수하게 유지됨. 리포트만 `crawl.py`로 증분 갱신(백테스트는 신호일 30일 창으로 필터하여 무영향).
 
 ### 7. Streamlit 대시보드
@@ -256,46 +262,11 @@ streamlit run app.py
 | ④ 포트폴리오 백테스트 | 신호대로 운용했을 때의 누적 곡선 + MDD + 연환산 변동성. 거래비용 왕복 0.25% 토글 | 없음 |
 | ⑤ 조건 간 신호 전이 | 컨텍스트 추가로 판단이 어떻게 바뀌었나. 3×3 전이표 + 부호검정·Wilcoxon(짝 비교) | 없음 |
 
-> 탭②에서 생성된 신호는 `results/forward_demo/`로 격리되어 정식 평가 표본(`forward_eval.py`)에
-> 섞이지 않는다. 임의 시점·임의 종목 클릭이 통계를 오염시키는 것을 차단하기 위함이다.
->
-> 탭①은 forward 캐시가 아니라 백테스트 결과를 읽는다. forward는 신호 생성을 2026-08-02로
-> 종료해 시간이 지나면 낡은 날짜가 화면에 남지만, 백테스트 기간(2023-01~2025-12)은 설계상
-> 고정이라 낡지 않는다.
->
-> 매트릭스를 첫 탭에 둔 이유는 개별 분석이 버튼을 누르기 전까지 빈 화면이기 때문이다. 앱을
-> 열자마자 20종목 × 5조건이 채워진 화면이 나오고, 비용이 드는 탭이 첫 화면에서 눌리지 않는다.
->
-> 화면 상단에는 투자 조언이 아니라는 고지를 상시 표시한다.
->
-> 우선주는 목록에서 제외한다. 별도 종목코드를 갖지만 DART 재무제표는 보통주 기준
-> 하나뿐이라 EPS가 매칭되지 않아 PER이 비고(삼성전자우처럼 시총 100조가 넘어도
-> 마찬가지), 발행주식수도 보통주 기준이라 시가총액이 어긋난다. 판별은 KRX 종목코드
-> 규약(보통주 끝자리 0)을 쓴다. 60종목 실측에서 "우리만 PER이 없는" 7건 중 5건이
-> 우선주였다.
->
-> **탭②의 대상은 백테스트 20종목이 아니라 KRX 상장 보통주 전 종목이다.** 백테스트와 forward는
-> 방법을 검증하는 통제 실험이고, 분석 자체는 임의 종목에 적용되어야 하기 때문이다. 다만
-> 20종목 밖에서는 ① 과거 성과 이력을 붙일 수 없고 ② 애널리스트 리포트 커버리지가 낮아
-> cond3·cond4의 리포트 섹션이 비는 경우가 있다. 둘 다 화면에서 명시한다. 리포트가 없는
-> 종목은 최근 30일치를 그 자리에서 수집하며(`crawl.fetch_reports`), 그래도 0건이면
-> "이 조건은 리포트를 포함하지만 해당 정보 없이 판단했다"고 경고를 띄운다.
+**탭②의 대상은 백테스트 20종목이 아니라 KRX 상장 보통주 전 종목이다.** 백테스트와 forward는
+방법을 검증하는 통제 실험이고 분석 자체는 임의 종목에 적용되어야 하기 때문이다. 20종목 밖은
+과거 성과 이력이 없고 리포트 커버리지도 낮은데, 둘 다 화면에서 명시한다. 우선주는 DART
+재무제표가 보통주 기준 하나뿐이라 PER·시가총액이 어긋나므로 목록에서 제외한다(근거는
+[prove.md](docs/prove.md) "각도 4").
 
----
-
-## 환경변수 (.env)
-
-```bash
-DARTS_API_KEY=your_dart_api_key           # DART OpenAPI 키 (https://opendart.fss.or.kr)
-GEMINI_API_KEY=your_gemini_api_key        # Google Gemini/Gemma API 키 (앵커 모델)
-OPENAI_API_KEY=your_openai_api_key        # (선택) gpt-* 모델 사용 시
-ANTHROPIC_API_KEY=your_anthropic_api_key  # (선택) claude-* 모델 사용 시
-```
-
-> 모델명 접두어로 provider가 정해진다: `gemini-*`/`gemma-*`→Google, `gpt-*`→OpenAI, `claude-*`→Anthropic. 그 외 접두어는 지원하지 않는다(즉시 에러). 키는 **실제 사용하는 provider의 것만** 있으면 된다.
-
----
-
-## 실험 변수
-
-조정 가능한 모든 실험 변수(LLM 모델, 온도, 보유 기간 등)는 [EXPERIMENT_VARS.md](EXPERIMENT_VARS.md) 참고.
+탭②에서 생성된 신호는 `results/forward_demo/`로 격리해 정식 평가 표본(`forward_eval.py`)에
+섞이지 않게 한다. 탭 순서·구성의 설계 근거는 [TODO.md](docs/TODO.md) 앱-5~9 항목에 있다.
