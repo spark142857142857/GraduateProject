@@ -8,9 +8,17 @@
 순이익·영업현금흐름의 절대액이 빠져 있다. 여기서는 `get_today_context`를 직접 불러
 파이프라인이 실제로 수집하는 값을 그대로 받는다(같은 함수를 forward_test도 쓴다).
 
-대상은 KRX 상장 보통주 전 종목이다. 현재 시점만 지원한다 — 임의 과거 날짜는 리포트와
-DART를 그 시점으로 되돌려야 하는데, 백테스트 파이프라인이 20종목에 대해서만 하는
-일이라 전 종목으로 열면 틀린 시점의 데이터를 내보낼 위험이 있다.
+대상은 KRX 상장 보통주 전 종목이다. 현재 시점만 지원한다 — 임의 과거 날짜는 DART를
+그 시점으로 되돌려야 하는데, 백테스트 파이프라인이 20종목에 대해서만 하는 일이라
+전 종목으로 열면 틀린 시점의 데이터를 내보낼 위험이 있다.
+
+**애널리스트 리포트는 다루지 않는다.** 리포트만 갱신 기준이 종목에 따라 갈리기 때문이다.
+ensure_reports는 백테스트 20종목을 건드리지 않는다(그 CSV는 crawl.py가 관리하는 실험
+입력이라 앱이 30일치로 덮어쓰면 실험 데이터가 훼손된다). 그래서 20종목은 crawl.py가
+마지막으로 돈 시점의 리포트가, 나머지는 오늘 받은 리포트가 나온다. 같은 화면에서 종목에
+따라 수집 기준이 다른 셈이고, 제출·시연이 수집일보다 몇 달 뒤라 그 격차가 그대로 드러난다.
+시세·재무·DART는 호출 시점에 새로 받으므로 이 문제가 없다. 기준이 흔들리는 항목 하나를
+빼서 화면 전체의 기준을 "지금 수집한 값"으로 통일한다.
 """
 
 import json
@@ -19,10 +27,7 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
-from app_ui.shared import (
-    BACKTEST_TICKERS, TICKERS,
-    check_dart_cache, ensure_reports, load_krx_stocks,
-)
+from app_ui.shared import BACKTEST_TICKERS, TICKERS, check_dart_cache, load_krx_stocks
 
 # (ctx 키, 표시 라벨) — 라벨에 단위를 박아둔다. get_today_context는 금액을 원 단위
 # 원시값으로 주므로(시가총액 1,350,490,358,448,000처럼) 단위를 안 적으면 읽을 수 없다.
@@ -60,11 +65,18 @@ def fetch_context(ticker: str, name: str) -> dict:
     get_today_context는 TICKERS에서 종목명을 역조회하고 못 찾으면 티커 코드를 이름으로
     쓴다. 화면 제목과 파일명에 "005490"이 찍히는 것을 막으려 이름을 주입한다
     (개별 분석 탭과 같은 이유이며, 20종목은 기존 항목이라 값이 바뀌지 않는다).
+
+    ensure_reports는 부르지 않는다. 리포트를 화면에도 파일에도 넣지 않으므로 받을 이유가
+    없고, 크롤링 한 번(실측 2.7~4.7초)이 빠져 조회가 그만큼 빨라진다. get_today_context는
+    리포트 CSV가 없으면 빈 목록으로 넘어가므로(os.path.exists 가드) 안전하다.
     """
     TICKERS.setdefault(name, ticker)
-    ensure_reports(ticker)
     from update import get_today_context
-    return get_today_context(ticker)
+    ctx = get_today_context(ticker)
+    # 디스크에 남아 있던 옛 리포트가 딸려 오므로 여기서 끊는다. 화면·파일 어디에도
+    # 흘러가지 않게 수집 직후 한 곳에서 제거한다
+    ctx.pop("recent_reports", None)
+    return ctx
 
 
 def build_frame(ctx: dict) -> pd.DataFrame:
@@ -77,7 +89,7 @@ def build_frame(ctx: dict) -> pd.DataFrame:
 
 
 def build_markdown(ctx: dict) -> str:
-    """사람이 읽는 브리핑. 리포트 목록까지 담는다(CSV는 중첩을 못 담는다)."""
+    """사람이 읽는 브리핑."""
     lines = [
         f"# {ctx['name']} ({ctx['ticker']})",
         "",
@@ -92,22 +104,12 @@ def build_markdown(ctx: dict) -> str:
         v = ctx.get(key)
         lines.append(f"| {label} | {'' if v is None or (isinstance(v, float) and pd.isna(v)) else v} |")
 
-    reports = ctx.get("recent_reports", [])
-    lines += ["", f"## 애널리스트 리포트 ({len(reports)}건)"]
-    if reports:
-        lines += ["", "| 날짜 | 제목 | 목표주가 |", "|---|---|---|"]
-        for r in reports:
-            tp = r.get("target_price")
-            lines.append(f"| {r.get('date', '')} | {r['title']} | {f'{tp:,}원' if tp else '-'} |")
-    else:
-        lines += ["", "최근 30일 이내 리포트가 없습니다. 커버리지가 낮은 종목에서 나타납니다."]
-
     lines += [
         "",
         "---",
         "",
-        "FinanceDataReader(시세·지표), DART 정기보고서(실적), 애널리스트 리포트를 "
-        f"{ctx['date']} 기준으로 수집한 값입니다. 금액은 원 단위 원시값입니다.",
+        f"FinanceDataReader(시세·지표)와 DART 정기보고서(실적)를 {ctx['date']} 기준으로 "
+        "수집한 값입니다. 금액은 원 단위 원시값입니다. 애널리스트 리포트는 포함하지 않습니다.",
     ]
     return "\n".join(lines)
 
@@ -131,9 +133,9 @@ def render() -> None:
     fetch_btn = col_b.button("📥 데이터 조회", width="stretch", type="primary")
 
     st.caption(
-        "선택한 종목의 시세·기술지표·재무지표·DART 실적·애널리스트 리포트를 **현재 시점 기준**으로 "
-        "수집합니다. **LLM을 호출하지 않아 API 비용이 들지 않습니다.** 대상은 백테스트 20종목이 "
-        "아니라 KRX 상장 보통주 전 종목이며, 커버리지가 낮은 종목은 일부 지표가 빌 수 있습니다."
+        "선택한 종목의 시세·기술지표·재무지표·DART 실적을 **현재 시점 기준**으로 수집합니다. "
+        "**LLM을 호출하지 않아 API 비용이 들지 않습니다.** 대상은 백테스트 20종목이 아니라 "
+        "KRX 상장 보통주 전 종목이며, 적자 종목의 PER처럼 정의되지 않는 값은 빈 칸으로 둡니다."
     )
 
     if fetch_btn:
@@ -158,10 +160,7 @@ def render() -> None:
     st.divider()
     st.subheader(f"{ctx['name']}  ({ctx['ticker']})")
     if ctx["ticker"] not in BACKTEST_TICKERS:
-        st.caption(
-            "ℹ️ 백테스트 검증 대상 20종목 밖입니다. 수집 파이프라인은 동일하지만 "
-            "애널리스트 리포트가 적거나 없을 수 있습니다."
-        )
+        st.caption("ℹ️ 백테스트 검증 대상 20종목 밖입니다. 수집 파이프라인은 동일합니다.")
 
     # ── 미리보기 ───────────────────────────────────────────
     st.markdown("**수집 지표**")
@@ -178,21 +177,11 @@ def render() -> None:
             shown = str(v)
         rows.append({"항목": label_, "값": shown})
     st.dataframe(pd.DataFrame(rows).set_index("항목"), width="stretch", height=460)
-    st.caption("화면은 읽기 쉽게 조원 단위로 줄여 보여줍니다. 내려받는 파일에는 원 단위 원시값이 들어갑니다.")
-
-    reports = ctx.get("recent_reports", [])
-    st.markdown(f"**애널리스트 리포트 ({len(reports)}건)**")
-    if reports:
-        st.dataframe(
-            pd.DataFrame([
-                {"날짜": r.get("date", ""), "제목": r["title"],
-                 "목표주가": f"{r['target_price']:,}원" if r.get("target_price") else "-"}
-                for r in reports
-            ]),
-            width="stretch", hide_index=True,
-        )
-    else:
-        st.caption("최근 30일 이내 리포트가 없습니다.")
+    st.caption(
+        "화면은 읽기 쉽게 조원 단위로 줄여 보여줍니다. 내려받는 파일에는 원 단위 원시값이 들어갑니다. "
+        "애널리스트 리포트는 포함하지 않습니다 — 종목에 따라 갱신 기준이 갈려 "
+        "여기 표시된 다른 값들과 수집 시점이 어긋나기 때문입니다."
+    )
 
     # ── 내려받기 ───────────────────────────────────────────
     st.divider()
@@ -215,7 +204,7 @@ def render() -> None:
         file_name=f"{stem}.json",
         mime="application/json",
         width="stretch",
-        help="수집 원본. 리포트 목록까지 중첩 구조 그대로 담깁니다.",
+        help="수집 원본을 구조 그대로 담습니다.",
     )
     col_md.download_button(
         "Markdown",

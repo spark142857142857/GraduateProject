@@ -1,8 +1,10 @@
-"""탭 4 — 포트폴리오 백테스트 (results/experiment 읽기 전용, API 호출 없음).
+"""탭 3 — 포트폴리오 백테스트 (results/experiment 읽기 전용, API 호출 없음).
 
-탭3이 "신호 하나의 평균 수익률"을 본다면 여기서는 그 신호대로 실제 운용했을 때의
-누적 곡선과 낙폭을 본다. 같은 데이터라도 평균과 복리는 다른 그림을 그린다 —
-신호를 적게 내는 모델은 평균이 좋아도 분산이 안 돼 포트폴리오가 흔들린다.
+앱에 남긴 유일한 검증 화면이다. "신호 하나의 평균 수익률"(마운트에서 제외한 tab_report가
+다루던 관점)이 아니라, 그 신호대로 실제 운용했을 때의 누적 곡선과 낙폭을 본다. 같은
+데이터라도 평균과 복리는 다른 그림을 그린다 — 신호를 적게 내는 모델은 평균이 좋아도
+분산이 안 돼 포트폴리오가 흔들린다. 거래비용 토글로 전후를 즉석에서 뒤집는 것은 정지
+이미지가 못 하는 일이라 이 화면만 남겼다(docs/app_scope.md).
 
 운용 규칙 (백테스트 데이터 구조에서 그대로 따라 나온다)
   · 매월 첫 거래일에 Buy 신호 종목을 동일가중 매수, 20거래일 보유 후 전량 청산
@@ -11,6 +13,7 @@
     Sell을 "보유 회피" 신호로 보는 프로젝트 서술과 맞춘다 (롱온리)
 """
 
+import altair as alt
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -131,10 +134,30 @@ def render() -> None:
         rows.append({"전략": label, **{k: v for k, v in stat.items() if k != "curve"}})
 
     # ── 누적 수익 곡선 ─────────────────────────────────────
+    # st.line_chart 대신 Altair를 쓴다. 내장 차트는 시간축을 Vega 기본 로케일로 찍어
+    # "April / July / October"처럼 영어 월 이름이 나오는데, 한국어 화면에서 영어가 남는
+    # 유일한 자리인 데다 포스터·발표 영상에 들어갈 그림이라 %Y-%m으로 고정한다.
+    # 범례 순서도 curves 삽입 순서(벤치마크 → 조건)로 못박는다 — 기본은 알파벳순이라
+    # 아래 요약표의 행 순서와 어긋난다.
     st.markdown("**누적 수익률 곡선**")
     chart_df = pd.DataFrame(curves)
     chart_df.index = pd.to_datetime(chart_df.index, errors="coerce")
-    st.line_chart(chart_df, x_label="신호일", y_label="누적 수익률 (%)", height=380)
+    # 필드명은 ASCII로 둔다 — Vega 필드 참조에서 안전하고, 화면 문구는 title로 준다
+    long_df = (
+        chart_df.rename_axis("date").reset_index()
+        .melt("date", var_name="strategy", value_name="cum_return")
+    )
+    curve_chart = alt.Chart(long_df).mark_line().encode(
+        # 눈금 개수는 지정하지 않는다. 고정하면 차트가 좁게 그려질 때 라벨이 그대로 겹치고,
+        # 비워두면 Vega가 폭에 맞춰 솎아낸다. "2024-01"은 45px로 Vega 기본 영어 라벨
+        # ("Jul"·"2024", 25px)보다 넓어 좁은 폭에서는 표시 개수가 줄어든다
+        x=alt.X("date:T", title="신호일", axis=alt.Axis(format="%Y-%m")),
+        y=alt.Y("cum_return:Q", title="누적 수익률 (%)"),
+        color=alt.Color("strategy:N", title=None, sort=list(curves.keys())),
+    )
+    # 폭은 Streamlit에 맡긴다. Altair spec에 width="container"를 박으면 Vega가 렌더 시점에
+    # 부모를 한 번만 재는데, 이 탭은 초기 로드에서 숨겨져 있어 0으로 측정된다(실측)
+    st.altair_chart(curve_chart, width="stretch", height=380)
 
     # ── 성과·리스크 요약 ───────────────────────────────────
     st.markdown("**성과 · 리스크 요약**")
