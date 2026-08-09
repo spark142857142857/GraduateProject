@@ -117,9 +117,11 @@ def render() -> None:
         .reindex(index=SIGNALS, columns=SIGNALS)
         .fillna(0).astype(int)
     )
+    # 대각선은 배경색과 글자색을 함께 준다. 배경만 주면 글자가 테마 기본색으로 남아
+    # 다크 테마에서 연회색 배경 위 흰 글자가 되어 유지 건수가 안 보인다
     st.dataframe(
         ct.style.apply(
-            lambda s: ["background-color:#e2e3e5" if s.name == c else "" for c in s.index],
+            lambda s: ["background-color:#e2e3e5;color:#383d41" if s.name == c else "" for c in s.index],
             axis=1,
         ),
         width="stretch",

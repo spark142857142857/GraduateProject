@@ -1,0 +1,53 @@
+# Streamlit 앱 테마 — 졸업작품 전시·시연 영상 기준으로 잡았다.
+#
+# 이 파일이 없으면 테마가 **실행 PC의 OS 다크모드 설정을 따라간다.** 발표장 노트북이
+# 다크로 맞춰져 있으면 앱도 다크로 뜨는데, 신호 배지(app_ui/shared.py SIGNAL_STYLE)는
+# 밝은 파스텔 배경 + 어두운 글자로 고정이라 화면이 무너진다. base를 못박아 시연 화면이
+# 실행 환경과 무관하게 항상 같게 나오도록 한다.
+#
+# 값 검증: streamlit 1.58.0 기준. theme.font 계열은 콜론이 없으면 문자열 전체가
+# CSS font-family 값으로 그대로 나가므로(streamlit/runtime/theme_util.py
+# _parse_font_config) 아래처럼 폴백 체인을 쓸 수 있다.
+
+[theme]
+base = "light"
+
+# 액센트 남색 — Streamlit 기본값(#FF4B4B)은 빨강이라 type="primary"인
+# "🔍 분석하기" 버튼이 Sell 배지 빨강과 의미가 겹쳤다. 신호 색(Buy 초록 / Sell 빨강)과
+# 안 겹치는 계열로 빼서 버튼·슬라이더·포커스링이 신호로 오독되지 않게 한다.
+primaryColor = "#1F4E79"
+
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F6F9"
+textColor = "#1A1D21"
+borderColor = "#E2E6EC"
+baseRadius = "0.5rem"
+
+# Pretendard가 설치돼 있으면 쓰고, 없으면 윈도우 기본 한글 폰트로 떨어진다.
+# 웹폰트 URL을 쓰지 않는 이유는 시연 자리에서 네트워크가 끊겨도 화면이 같아야 하기
+# 때문이다(다섯 탭 중 넷은 캐시 읽기 전용이라 오프라인에서도 돈다).
+font = "Pretendard, 'Malgun Gothic', sans-serif"
+
+# 제목 크기를 줄인다. 기본값은 h1 44px · h3 28px인데, 본문이 16px이고 탭 라벨이
+# 14px이라 낙차가 너무 컸다. 제목이 첫 화면 세로를 잡아먹어 탭이 아래로 밀리는
+# 원인이기도 했다. 순서는 h1~h6.
+headingFontSizes = ["2.1rem", "1.7rem", "1.4rem", "1.15rem", "1rem", "0.9rem"]
+
+# st.metric 값 기본 36px은 이 앱에서 너무 크다. 개별 분석 상단이 4열 metric인데
+# "사용 모델" 값이 "gemini-2.5-flash-lite"처럼 길어 36px로는 열 폭을 넘겨 줄바꿈된다.
+metricValueFontSize = "1.75rem"
+
+# 표가 화면의 대부분이라(조건별 성과·전이표·신호 매트릭스) 헤더를 본문과 분리하고
+# 위젯에 테두리를 준다. 프로젝터처럼 대비가 뭉개지는 환경에서 경계가 살아난다.
+dataframeHeaderBackgroundColor = "#EDF1F6"
+showWidgetBorder = true
+
+# 포트폴리오 탭 누적 곡선(벤치마크 + 조건 5개 = 6계열)용. 기본 팔레트는 3번째가
+# 빨강(#ff2b2b), 그 뒤에 초록이 들어 있어 곡선 색이 Buy·Sell 신호처럼 읽힌다.
+# 어느 계열에 무슨 색이 붙든 오독되지 않도록 초록·빨강을 통째로 뺀 6색을 쓴다.
+chartCategoricalColors = ["#1F4E79", "#4C8DFF", "#7B61FF", "#0F9AA8", "#E8833A", "#8C8C8C"]
+
+# 시연·촬영 때만 켜면 우상단 Deploy 버튼과 개발자 메뉴가 사라진다. 평소 개발 중에는
+# "Clear cache" 같은 항목까지 숨어 불편하므로 기본은 주석 처리해 둔다.
+# [client]
+# toolbarMode = "viewer"

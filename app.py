@@ -34,6 +34,22 @@ st.set_page_config(
     layout="wide",
 )
 
+# 여백 두 곳만 줄인다. 테마(config.toml)로는 지정할 수 없는 값이라 CSS로 처리한다.
+#   · 본문 상단 패딩 96px — 제목·캡션과 합쳐 720p 화면에서 탭이 나오기까지 284px을
+#     썼다. 탭이 첫 화면에 안 보이면 시연에서 앱 구조가 한 번에 안 읽힌다.
+#   · divider 상하 32px씩 64px — 개별 분석 탭에만 6개라 결과 화면에서 384px이
+#     순수 여백이었다. 구분선은 그대로 두고 간격만 줄인다.
+# hr은 st.divider()가 stMarkdownContainer 안에 내는 것뿐이라 스코프가 안전하다.
+st.markdown(
+    """
+    <style>
+      [data-testid="stMainBlockContainer"] { padding-top: 3rem; }
+      [data-testid="stMarkdownContainer"] hr { margin: 1.25rem 0; }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.title("📈 LLM 기반 주식 투자 신호 시스템")
 st.caption("멀티모델 LLM 기반 | 향후 20거래일 방향성 예측")
 st.caption(

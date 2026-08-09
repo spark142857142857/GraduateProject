@@ -265,8 +265,10 @@ def render() -> None:
         core["group_b"] = core["group_b"].map(lambda k: COND_LABELS.get(k, k))
         core["metric"]  = core["metric"].map(lambda k: METRIC_LABELS.get(k, k))
         core = core[[c for c in SIG_RENAME if c in core.columns]].rename(columns=SIG_RENAME)
+        # 배경색과 함께 글자색도 지정한다. 배경만 주면 글자는 테마 기본색을 그대로 쓰는데,
+        # 다크 테마에서는 그 색이 밝아 연녹색 배경 위 흰 글자가 되어 p값이 안 보인다
         styled = core.style.map(
-            lambda v: "background-color:#d4edda" if isinstance(v, (int, float)) and v < 0.05 else "",
+            lambda v: "background-color:#d4edda;color:#155724" if isinstance(v, (int, float)) and v < 0.05 else "",
             subset=["p값"],
         )
         st.dataframe(styled, width="stretch", hide_index=True)

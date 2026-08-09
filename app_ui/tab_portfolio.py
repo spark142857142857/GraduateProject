@@ -78,10 +78,11 @@ def render() -> None:
         )
         return
 
-    col_m, col_c = st.columns([3, 2])
+    # vertical_alignment="bottom" — 라벨 없는 체크박스를 옆 셀렉트박스에 맞춘다.
+    # 빈 div로 밀던 방식은 체크박스 높이(21px)와 셀렉트박스(40px)가 달라 8px쯤 어긋나 있었다.
+    col_m, col_c = st.columns([3, 2], vertical_alignment="bottom")
     _idx = models.index(DEFAULT_MODEL) if DEFAULT_MODEL in models else 0
     model = col_m.selectbox("모델", models, index=_idx, key="pf_model")
-    col_c.markdown("<div style='height:1.75em'></div>", unsafe_allow_html=True)
     apply_cost = col_c.checkbox(
         f"거래비용 반영 (왕복 {ROUND_TRIP_COST}%)",
         value=True,

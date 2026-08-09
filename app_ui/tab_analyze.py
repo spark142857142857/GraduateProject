@@ -238,7 +238,9 @@ def run_forward_and_demote(run_forward, ticker: str, cond: str, model: str, batc
 
 
 def render() -> None:
-    col_t, col_c, col_m, col_b = st.columns([3, 3, 3, 2])
+    # vertical_alignment="bottom" — 라벨 없는 버튼을 옆 셀렉트박스 baseline에 맞춘다.
+    # 예전에는 빈 div로 라벨 높이만큼 밀어냈는데, 위젯 높이가 바뀌면 같이 틀어지는 값이었다.
+    col_t, col_c, col_m, col_b = st.columns([3, 3, 3, 2], vertical_alignment="bottom")
 
     stocks = load_krx_stocks()
     ticker_options = [lb for lb, _ in stocks]
@@ -263,7 +265,6 @@ def render() -> None:
         index=0,
     )
 
-    col_b.markdown("<div style='height:1.75em'></div>", unsafe_allow_html=True)  # 버튼 세로 정렬
     analyze_btn = col_b.button("🔍 분석하기", width="stretch", type="primary")
 
     # provider 판별은 llm_experiment._provider와 동일하게 접두어 기준 — 모델 개명/추가에 안전
