@@ -3,19 +3,20 @@
 실행: streamlit run app.py
 
 탭 구성:
-  ① 백테스트 신호 매트릭스 — 특정 신호일의 20종목×5조건 판단과 실제 결과 (API 호출 없음)
-  ② 개별 종목 분석 — 종목·조건·모델 선택 후 실시간 신호 생성 (당일 캐시)
-  ③ 백테스트 성과·모델 비교 — results/analysis 기반 모델별 성과·유의성 (API 호출 없음)
-  ④ 포트폴리오 백테스트 — 신호대로 운용했을 때의 누적 곡선·MDD (API 호출 없음)
-  ⑤ 조건 간 신호 전이 — 컨텍스트 추가로 판단이 어떻게·옳게 바뀌었나 (API 호출 없음)
+  ① 개별 종목 분석 — 종목·조건·모델 선택 후 실시간 신호 생성 (당일 캐시)
+  ② 포트폴리오 백테스트 — 신호대로 운용했을 때의 누적 곡선·MDD (API 호출 없음)
 
-매트릭스를 앞에 두는 이유는 개별 분석이 버튼을 누르기 전까지 빈 화면이기 때문이다. 첫 탭이
-비어 있으면 앱이 무엇을 하는지 보이지 않고, 개별 분석은 유일하게 API 비용이 드는 탭이라
-첫 화면에서 눌리는 것도 바람직하지 않다.
+개별 분석을 앞에 두는 이유는 이것이 이 작품의 시스템 본체이기 때문이다. 나머지 화면은
+그 시스템을 검증한 결과이고, 검증 결과는 보고서와 발표 자료가 주로 맡는다.
 
-①은 forward 캐시가 아니라 results/experiment(백테스트)를 읽는다. forward는 신호 생성을
-2026-08-02로 종료해 시간이 갈수록 낡은 날짜가 화면에 남고, 앱에서 forward를 다루지 않기로
-한 결정과도 어긋나기 때문. 백테스트 기간(2023-01~2025-12)은 설계상 고정이라 낡지 않는다.
+**마운트에서 제외한 탭** (파일은 app_ui/에 그대로 있다)
+  · tab_matrix — 백테스트 신호 매트릭스 (20종목×5조건 원자료)
+  · tab_report — 백테스트 성과·모델 비교 (표 11개)
+  · tab_flip   — 조건 간 신호 전이 (짝 비교 검정)
+
+셋 다 인터랙션이 값을 더하지 않아 정지 화면 한 장으로 대체 가능하다고 보고 뺐다. 판단
+근거와 각 탭이 담던 내용의 행선지는 docs/app_scope.md에 있다. 되돌리려면 아래 import와
+st.tabs 목록에 다시 넣기만 하면 된다 — 모듈은 삭제하지 않았다.
 
 구현은 app_ui/ 아래 탭별 모듈에 있다. app_ui를 import하는 시점에 sys.path·.env
 부트스트랩이 먼저 실행된다(app_ui/__init__.py 참고).
@@ -23,7 +24,7 @@
 
 import streamlit as st
 
-from app_ui import tab_analyze, tab_flip, tab_matrix, tab_portfolio, tab_report
+from app_ui import tab_analyze, tab_portfolio
 
 # ── 페이지 설정 ────────────────────────────────────────────
 # 다른 st 명령보다 먼저 호출해야 한다. 위 import는 함수 정의와 데코레이터뿐이라
@@ -57,25 +58,13 @@ st.caption(
     "과거 성과는 미래 수익을 보장하지 않으며, 투자 판단과 그 결과에 대한 책임은 이용자 본인에게 있습니다."
 )
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📋 백테스트 신호 매트릭스",
+tab1, tab2 = st.tabs([
     "🔍 개별 종목 분석",
-    "📊 백테스트 성과·모델 비교",
     "💼 포트폴리오 백테스트",
-    "🔀 조건 간 신호 전이",
 ])
 
 with tab1:
-    tab_matrix.render()
-
-with tab2:
     tab_analyze.render()
 
-with tab3:
-    tab_report.render()
-
-with tab4:
+with tab2:
     tab_portfolio.render()
-
-with tab5:
-    tab_flip.render()

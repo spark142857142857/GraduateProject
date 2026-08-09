@@ -195,6 +195,133 @@ def signal_badge(signal: str) -> str:
     )
 
 
+# ── 수집 데이터 내보내기 ──────────────────────────────────
+# 화면에 이미 있는 값(fw)만 쓴다. API·DART 재호출이 없어 버튼이 즉시 반응한다.
+#
+# 한계를 분명히 해둔다. fw["context_used"]는 LLM 호출 이후 만들어지는 **화면 표시 전용**
+# 축약본이라, 프롬프트에 실제로 들어간 52주 최고/최저가와 매출·영업이익·순이익·
+# 영업현금흐름의 절대액이 들어 있지 않다. 그래서 이 파일은 "LLM에 투입된 컨텍스트"가
+# 아니라 "화면에 표시된 수집 지표"다. 절대액까지 내보내려면 get_today_context를 다시
+# 호출해야 하는데(약 6초 + DART 호출) 다운로드 버튼 뒤에 두기엔 무겁다.
+EXPORT_FIELDS = [
+    ("per",                "PER"),
+    ("pbr",                "PBR"),
+    ("roe",                "ROE(%)"),
+    ("market_cap",         "시가총액(조원)"),
+    ("price_position_52w", "52주내위치(%)"),
+    ("momentum_1m",        "1개월수익률(%)"),
+    ("volume_change",      "거래량변화율(%)"),
+    ("revenue_growth",     "매출성장률YoY(%)"),
+    ("operating_margin",   "영업이익률(%)"),
+    ("debt_ratio",         "부채비율(%)"),
+]
+
+
+def build_export_frame(fw: dict) -> pd.DataFrame:
+    """지표를 한 행짜리 wide 표로.
+
+    여러 종목을 받아 그대로 이어붙일 수 있는 형태를 택했다. 항목/값 long 형식은
+    사람이 읽기엔 낫지만 종목 간 비교로 쌓을 수 없다.
+
+    결측은 빈 칸으로 둔다. 20종목 밖에서는 PER 결측(적자)·리포트 0건이 정상이라
+    임의의 기본값으로 채우면 없는 값을 있는 것처럼 만든다.
+    """
+    ctx = fw.get("context_used", {})
+    row = {
+        "종목코드":   fw["ticker"],
+        "종목명":     fw["name"],
+        "기준일":     fw["date"],
+        "현재가":     fw["price"],
+        "신호":       fw["signal"],
+        "신뢰도(%)":  fw["confidence"],
+        "분석조건":   fw["cond"],
+        "모델":       fw.get("model", ""),
+    }
+    row.update({label: ctx.get(key) for key, label in EXPORT_FIELDS})
+    return pd.DataFrame([row])
+
+
+def build_export_markdown(fw: dict) -> str:
+    """사람이 읽는 브리핑. 리포트 목록과 판단 근거까지 담는다(CSV는 중첩을 못 담는다)."""
+    ctx = fw.get("context_used", {})
+    lines = [
+        f"# {fw['name']} ({fw['ticker']})",
+        "",
+        f"- 기준일: {fw['date']}",
+        f"- 현재가: {int(fw['price']):,}원",
+        f"- 신호: **{fw['signal']}** (신뢰도 {fw['confidence']}%)",
+        f"- 분석 조건: {COND_LABELS.get(fw['cond'], fw['cond'])}",
+        f"- 모델: {fw.get('model', '-')}",
+        "",
+        "## 판단 근거",
+    ]
+    lines += [f"- {r}" for r in fw.get("reasons", [])] or ["- (없음)"]
+
+    lines += ["", "## 수집 지표", "", "| 항목 | 값 |", "|---|---|"]
+    for key, label in EXPORT_FIELDS:
+        v = ctx.get(key)
+        lines.append(f"| {label} | {'' if v is None or pd.isna(v) else v} |")
+
+    reports = ctx.get("recent_reports", [])
+    lines += ["", f"## 애널리스트 리포트 ({len(reports)}건)"]
+    if reports:
+        lines += ["", "| 날짜 | 제목 | 목표주가 |", "|---|---|---|"]
+        for r in reports:
+            tp = r.get("target_price")
+            lines.append(f"| {r.get('date', '')} | {r['title']} | {f'{tp:,}원' if tp else '-'} |")
+    else:
+        lines.append("")
+        lines.append("최근 30일 이내 리포트가 없습니다. 커버리지가 낮은 종목에서 나타납니다.")
+
+    lines += [
+        "",
+        "---",
+        "",
+        "화면에 표시된 수집 지표입니다. LLM 프롬프트에 실제로 투입된 원문이 아니며, "
+        "매출·영업이익 등의 절대액과 52주 최고/최저가는 포함되지 않습니다.",
+    ]
+    return "\n".join(lines)
+
+
+def render_export_section(fw: dict) -> None:
+    """CSV / JSON / MD 내려받기 버튼 3개."""
+    st.subheader("⬇️ 수집 데이터 내려받기")
+    st.caption(
+        "이 종목에 대해 시스템이 수집·산출한 값입니다. 화면에 있는 값을 그대로 내보내므로 "
+        "추가 API 호출이 없습니다. 백테스트 20종목이 아니라 **KRX 상장 보통주 전 종목**이 대상이며, "
+        "커버리지가 낮은 종목에서는 일부 지표가 빈 칸일 수 있습니다."
+    )
+
+    stem = f"{fw['ticker']}_{fw['name']}_{fw['date']}"
+    col_csv, col_json, col_md = st.columns(3)
+
+    # utf-8-sig — 엑셀에서 한글 헤더가 깨지지 않게 (data/reports CSV와 같은 기준)
+    col_csv.download_button(
+        "CSV",
+        data=build_export_frame(fw).to_csv(index=False).encode("utf-8-sig"),
+        file_name=f"{stem}.csv",
+        mime="text/csv",
+        width="stretch",
+        help="지표 한 행. 여러 종목을 받아 이어붙이기 좋은 형식입니다.",
+    )
+    col_json.download_button(
+        "JSON",
+        data=json.dumps(fw, ensure_ascii=False, indent=2).encode("utf-8"),
+        file_name=f"{stem}.json",
+        mime="application/json",
+        width="stretch",
+        help="분석 결과 원본. 판단 근거와 리포트 목록까지 중첩 구조 그대로 담깁니다.",
+    )
+    col_md.download_button(
+        "Markdown",
+        data=build_export_markdown(fw).encode("utf-8"),
+        file_name=f"{stem}.md",
+        mime="text/markdown",
+        width="stretch",
+        help="사람이 읽는 브리핑 형식.",
+    )
+
+
 def demote_to_demo(batch_path: str) -> bool:
     """정식 forward 경로에 생긴 앱 시연 신호를 forward_demo/로 이동.
 
@@ -560,6 +687,11 @@ def render() -> None:
         # 오인되고, 값 자체가 이상해 설명 부담만 생긴다.
 
         st.divider()
+
+    # ── 6-b. 수집 데이터 내려받기 ──────────────────────
+    render_export_section(fw)
+
+    st.divider()
 
     # ── 7. 백테스팅 성과 ───────────────────────────────
     st.subheader("📉 백테스팅 성과")
