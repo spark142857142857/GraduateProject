@@ -154,7 +154,9 @@
   - [x] **모델 계획 완료**: 2026-07-05 4모델(flash-lite/gemma-4-31b-it/gpt-5.4-mini/claude-haiku-4-5) forward 실행 완료 — 상세는 [forward_log.md](forward_log.md)
   - [x] `forward_test.py`에 **model 필드 + 파일명(`{ticker}_{cond}_{model}.json`)** 추가 — 멀티모델 forward 파일 충돌 방지 (provider 분기 커밋에서 완료)
   - [x] **forward DART 인메모리 fetch 전환** — `_build_dart_row` 추출 후 `get_today_context`가 CSV 미기록·현재 FY 직접 조회. `data/dart_fundamentals/`는 2023-2025 순수 36행 유지(스모크로 CSV 불변 확인), write 경로(_update_dart_one) 동작 불변. reports는 라이브 유지.
-  - **주간 리듬(일요일 저녁)**: ① `crawl.py`(리포트 최신화) ② `forward_run_all.py`(생성) ③ `forward_verify.py`(입력 점검) ④(4주 뒤~) `forward_eval.py`(성숙 평가). ⚠️ **리포트 자동갱신 안 됨 → ① 필수**. 20d 보유 겹쳐 표본 비독립 → 실전 참고용(유의성은 백테스트)
+  - ~~**주간 리듬(일요일 저녁)**: ① `crawl.py`(리포트 최신화) ② `forward_run_all.py`(생성) ③ `forward_verify.py`(입력 점검)~~ → **신호 생성은 2026-08-02 배치로 종료**. ①②③은 더 이상 돌리지 않는다
+  - **남은 것은 평가뿐**: `forward_eval.py`를 2026-08-10부터 주 1회씩 4주. 이미 생성된 4배치(07-12 / 07-19 / 07-26 / 08-02)가 한 주 간격으로 20거래일 성숙되기 때문이다. **`forward_eval.py`는 LLM을 import하지 않고 주가로 수익률만 계산하므로 API 비용이 0이며, 사전에 crawl이나 생성을 돌릴 필요가 없다**
+  - 20d 보유가 겹쳐 표본이 비독립 → 실전 참고용(유의성 주장은 백테스트로만)
 - [ ] app.py 디자인 개선 (최후 — 발표/데모용)
   - [x] 전체 종목 한눈에 보기 탭 추가 (탭2 — forward 캐시 신호 매트릭스, API 호출 없음)
   - [x] **탭1 신뢰성 3건** (2026-07-29): ① 분석 실패 시 직전 종목 결과가 남던 stale 버그 제거 ② 생성 출처 배지(정식 배치 캐시 / 시연 캐시 / 신규 호출) ③ `forward_verify.verify_ticker` 재사용한 입력 검증 배지 — `get_price` 호출이 있어 렌더링마다 돌지 않도록 분석 시 1회만 수행 후 session_state 저장
