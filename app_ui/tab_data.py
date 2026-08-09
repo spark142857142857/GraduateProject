@@ -82,7 +82,7 @@ def fetch_context(ticker: str, name: str) -> dict:
 def build_frame(ctx: dict) -> pd.DataFrame:
     """지표를 한 행짜리 wide 표로. 여러 종목을 받아 그대로 이어붙일 수 있는 형태."""
     row = {"종목코드": ctx["ticker"], "종목명": ctx["name"], "기준일": ctx["date"]}
-    # 결측은 빈 칸으로 둔다. 적자면 PER이, 커버리지가 낮으면 리포트가 실제로 없다.
+    # 결측은 빈 칸으로 둔다. 적자면 PER이 정의되지 않는 것처럼 실제로 없는 값이라,
     # 임의의 기본값으로 채우면 없는 값을 있는 것처럼 만든다.
     row.update({label: ctx.get(key) for key, label in EXPORT_FIELDS})
     return pd.DataFrame([row])
@@ -145,7 +145,7 @@ def render() -> None:
                 warn = check_dart_cache()
                 if warn:
                     st.warning(f"DART 초기화 경고: {warn}")
-                status.write(f"**{name}** 시세·재무·DART·리포트 수집 중...")
+                status.write(f"**{name}** 시세·재무·DART 수집 중...")
                 st.session_state["dl_ctx"] = fetch_context(ticker, name)
                 status.update(label="수집 완료", state="complete", expanded=False)
             except Exception as e:
