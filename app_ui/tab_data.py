@@ -73,9 +73,14 @@ def fetch_context(ticker: str, name: str) -> dict:
     TICKERS.setdefault(name, ticker)
     from update import get_today_context
     ctx = get_today_context(ticker)
-    # 디스크에 남아 있던 옛 리포트가 딸려 오므로 여기서 끊는다. 화면·파일 어디에도
-    # 흘러가지 않게 수집 직후 한 곳에서 제거한다
-    ctx.pop("recent_reports", None)
+    # 내보내지 않는 항목은 수집 직후 한 곳에서 끊는다. 화면·CSV·JSON·MD 어디로도
+    # 흘러가지 않게 하려면 개별 출력부가 아니라 여기서 막아야 한다.
+    #   · recent_reports — 디스크에 남아 있던 옛 리포트가 딸려 온다 (위 docstring 참고)
+    #   · dividend_yield — 사업연도말 기준가로 산출해 증권사 값과 평균 42% 벌어진다
+    #     (prove.md 각도 1). LLM 프롬프트에도 넣지 않는 필드이고 개별 분석 화면에서도
+    #     같은 이유로 감춰 뒀는데, 데이터 파일로만 새어 나가면 기준이 어긋난다
+    for _drop in ("recent_reports", "dividend_yield"):
+        ctx.pop(_drop, None)
     return ctx
 
 
