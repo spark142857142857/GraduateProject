@@ -299,10 +299,17 @@ def render() -> None:
     # 조건·모델을 헤더에 명시 — 셀렉트박스를 바꾸고 재분석 안 한 상태에서
     # 아래 패널이 어떤 설정의 결과인지 오인하지 않도록
     st.subheader(f"{fw['name']}  ({fw['ticker']})")
+
+    # 조건은 원본 코드(cond4)가 아니라 사람이 읽는 이름으로 낸다. 다른 화면이 전부
+    # COND_LABELS를 쓰는데 여기만 raw였다. 다만 라벨 전체("cond4 (재무+리포트+DART)")는
+    # metric 값으로 넣기엔 길어 4열에서 줄바꿈되므로 괄호 안 설명만 쓰고 원본은 help에 둔다.
+    _cond_full  = COND_LABELS.get(fw_cond, fw_cond)
+    _cond_short = _cond_full.split("(", 1)[1].rstrip(")") if "(" in _cond_full else _cond_full
+
     col_p, col_d, col_cd, col_mo = st.columns(4)
     col_p.metric("현재가", f"{int(fw['price']):,}원")
     col_d.metric("분석 날짜", fw["date"])
-    col_cd.metric("분석 조건", fw_cond)
+    col_cd.metric("분석 조건", _cond_short, help=_cond_full)
     col_mo.metric("사용 모델", fw_model)
 
     # ── 1-b. 생성 출처 · 입력 검증 ─────────────────────
@@ -343,27 +350,30 @@ def render() -> None:
 
     st.divider()
 
-    # ── 2. 신호 박스 ───────────────────────────────────
-    st.markdown(signal_badge(fw["signal"]), unsafe_allow_html=True)
-    st.markdown(f"**신뢰도**: {fw['confidence']}%")
-    st.progress(fw["confidence"] / 100)
-    # 재현성을 위해 temperature=0으로 고정한 결과 신뢰도가 좁은 대역에 몰린다.
-    # 여러 종목을 눌러도 같은 값이 나오는 이유를 화면에서 먼저 밝혀 오해를 막는다.
-    st.caption(
-        "temperature=0은 재현성을 위한 설정이며, 신뢰도는 모델별로 일부 값에 집중되는 경향이 있습니다. "
-        "모델 간 직접 비교나 주요 성과 판단에는 사용하지 않고 보조 정보로만 확인합니다."
-    )
+    # ── 2. 신호와 근거 ─────────────────────────────────
+    # 나란히 둔다. 세로로 쌓으면 배지와 근거가 502px 떨어져(실측) "왜 이 신호인가"가
+    # 한 화면에 안 잡혔다. 발표 영상에서 한 컷으로 보여줘야 하는 자리다.
+    col_sig, col_rsn = st.columns([2, 3])
 
-    st.divider()
+    with col_sig:
+        st.markdown(signal_badge(fw["signal"]), unsafe_allow_html=True)
+        st.markdown(f"**신뢰도**: {fw['confidence']}%")
+        st.progress(fw["confidence"] / 100)
+        # 재현성을 위해 temperature=0으로 고정한 결과 신뢰도가 좁은 대역에 몰린다.
+        # 여러 종목을 눌러도 같은 값이 나오는 이유를 화면에서 먼저 밝혀 오해를 막는다.
+        st.caption(
+            "temperature=0은 재현성을 위한 설정이며, 신뢰도는 모델별로 일부 값에 집중되는 경향이 있습니다. "
+            "모델 간 직접 비교나 주요 성과 판단에는 사용하지 않고 보조 정보로만 확인합니다."
+        )
 
-    # ── 3. 투자 근거 ───────────────────────────────────
-    st.subheader("📋 투자 근거")
-    reasons = fw.get("reasons", [])
-    if reasons:
-        for r in reasons:
-            st.markdown(f"- {r}")
-    else:
-        st.caption("근거 없음")
+    with col_rsn:
+        st.subheader("📋 투자 근거")
+        reasons = fw.get("reasons", [])
+        if reasons:
+            for r in reasons:
+                st.markdown(f"- {r}")
+        else:
+            st.caption("근거 없음")
 
     st.divider()
 
