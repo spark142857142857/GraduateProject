@@ -392,6 +392,15 @@ def render() -> None:
         col6.metric("1개월 수익률",   fmt_val(ctx.get("momentum_1m"), suffix="%"))
         col7.metric("거래량 변화율",  fmt_val(ctx.get("volume_change"), suffix="%"))
 
+        # PER·PBR·ROE가 통째로 비면 모델도 그 값 없이 판단한 것이다. 리포트 0건일 때와
+        # 같은 이유로 밝힌다 — N/A만 늘어놓으면 수집 실패인지 원래 없는 값인지 모른다
+        if all(ctx.get(k) is None for k in ("per", "pbr", "roe")):
+            st.warning(
+                "**가치지표(PER·PBR·ROE)가 비어 있습니다.** 적자라 PER이 정의되지 않거나 "
+                "산출에 필요한 재무 항목이 없는 경우이며, 모델도 이 값들 없이 판단했습니다. "
+                "위 52주 위치·모멘텀·거래량은 정상 수집된 값입니다."
+            )
+
         st.divider()
 
     # ── 5. 최근 리포트 (cond3 이상) ────────────────────
@@ -438,6 +447,15 @@ def render() -> None:
         )
         col_b2.metric("영업이익률",  fmt_val(op_margin, suffix="%"))
         col_c2.metric("부채비율",   fmt_val(debt, suffix="%"))
+
+        # 보고서 기간·종류는 찾았는데 수치만 비는 경우가 있다(실측: 시총 하위 종목).
+        # 그러면 위 제목에 "2026 2분기 실적"만 뜨고 값은 전부 N/A라 고장처럼 보인다
+        if all(x is None for x in (rev_growth, op_margin, debt)):
+            st.warning(
+                "**DART 실적 수치를 읽지 못했습니다.** 정기보고서는 확인됐으나 값이 비어 있어 "
+                f"**{COND_LABELS[fw_cond]}**의 실적 항목이 입력에서 빠졌습니다. "
+                "모델은 이 값들 없이 판단했으며, 값이 0이라는 뜻이 아닙니다."
+            )
 
         # 배당수익률은 표시하지 않는다. 사업연도말 기준가 산출이라 증권사 값과 평균 42% 벌어지고
         # (prove.md 각도 1), 애초에 LLM 컨텍스트에 넣지 않는 필드다. 화면에 두면 모델이 본 값으로

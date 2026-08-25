@@ -58,6 +58,16 @@ EXPORT_FIELDS = [
 # 파일에는 원시값을 넣고 화면에만 조 단위 표기를 쓴다.
 _WON_KEYS = {"market_cap", "revenue", "operating_income", "net_income", "operating_cashflow"}
 
+# 결측 안내용 묶음. 소형주에서는 이 두 묶음이 통째로 비는 일이 잦은데(실측: 시총 하위
+# 3종목에서 20개 항목 중 11~12개 결측), 안내가 없으면 화면에 대시만 줄줄이 남아
+# 앱이 고장 난 것처럼 보인다. 특히 DART는 보고서 종류·기간은 찾아 놓고 수치만 비어서
+# "실적기준 2026 2분기"만 떠 있는 상태가 된다.
+_DART_NUMERIC_KEYS = (
+    "revenue", "operating_income", "net_income",
+    "operating_margin", "debt_ratio", "operating_cashflow",
+)
+_VALUATION_KEYS = ("per", "pbr", "roe")
+
 
 def fetch_context(ticker: str, name: str) -> dict:
     """실시간 수집. LLM은 부르지 않는다.
@@ -182,6 +192,32 @@ def render() -> None:
             shown = str(v)
         rows.append({"항목": label_, "값": shown})
     st.dataframe(pd.DataFrame(rows).set_index("항목"), width="stretch", height=460)
+
+    # 빈 칸이 많을 때 이유를 밝힌다. 0이 아니라 "수집하지 못했다"는 뜻이고, 내려받는
+    # 파일에도 빈 값으로 나간다는 점까지 알려야 파일을 잘못 읽지 않는다.
+    _no_dart = all(ctx.get(k) is None for k in _DART_NUMERIC_KEYS)
+    _no_val  = all(ctx.get(k) is None for k in _VALUATION_KEYS)
+    if _no_dart or _no_val:
+        _msg = []
+        if _no_dart:
+            _period = ctx.get("fiscal_period") or "최근 정기보고서"
+            _rname  = ctx.get("report_name")
+            _found  = f"{_period} {_rname}" if _rname else _period
+            _msg.append(
+                f"**DART 실적을 읽지 못했습니다.** 보고서({_found})는 확인됐으나 매출·영업이익·"
+                "순이익·부채비율·영업현금흐름 값이 비어 있습니다."
+            )
+        if _no_val:
+            _msg.append(
+                "**가치지표(PER·PBR·ROE)가 비어 있습니다.** 적자라 PER이 정의되지 않거나 "
+                "산출에 필요한 재무 항목이 없는 경우입니다."
+            )
+        st.warning(
+            " ".join(_msg)
+            + " 값이 0이라는 뜻이 아니라 **수집하지 못했다**는 뜻이며, 내려받는 파일에도 "
+            "빈 값으로 들어갑니다. 시가총액이 작은 종목에서 자주 나타납니다."
+        )
+
     st.caption(
         "화면은 읽기 쉽게 조원 단위로 줄여 보여줍니다. 내려받는 파일에는 원 단위 원시값이 들어갑니다. "
         "애널리스트 리포트는 포함하지 않습니다 — 종목에 따라 갱신 기준이 갈려 "
