@@ -296,25 +296,24 @@ def render() -> None:
     ctx = fw.get("context_used", {})
 
     # ── 1. 상단: 종목 정보 ─────────────────────────────
-    # 조건·모델을 헤더에 명시 — 셀렉트박스를 바꾸고 재분석 안 한 상태에서
-    # 아래 패널이 어떤 설정의 결과인지 오인하지 않도록
+    # metric은 "분석해서 나온 값"만 둔다. 조건·모델은 사용자가 방금 고른 설정이라
+    # 현재가·날짜와 성격이 다른데 metric으로 나란히 두면 같은 무게로 읽혔다.
+    # 아래 캡션(생성 출처·입력 검증)으로 옮겨 설정끼리 한 줄에 모은다 — 셀렉트박스를
+    # 바꾸고 재분석하지 않은 상태에서 어떤 설정의 결과인지 밝히려던 목적은 그대로다.
     st.subheader(f"{fw['name']}  ({fw['ticker']})")
 
-    # 조건은 원본 코드(cond4)가 아니라 사람이 읽는 이름으로 낸다. 다른 화면이 전부
-    # COND_LABELS를 쓰는데 여기만 raw였다. 다만 라벨 전체("cond4 (재무+리포트+DART)")는
-    # metric 값으로 넣기엔 길어 4열에서 줄바꿈되므로 괄호 안 설명만 쓰고 원본은 help에 둔다.
-    _cond_full  = COND_LABELS.get(fw_cond, fw_cond)
-    _cond_short = _cond_full.split("(", 1)[1].rstrip(")") if "(" in _cond_full else _cond_full
-
-    col_p, col_d, col_cd, col_mo = st.columns(4)
+    # 남는 열은 비워 둔다. 2열로 나누면 값이 짧은데 칸만 넓어져 허전하다
+    col_p, col_d, _col_rest = st.columns([1, 1, 2])
     col_p.metric("현재가", f"{int(fw['price']):,}원")
     col_d.metric("분석 날짜", fw["date"])
-    col_cd.metric("분석 조건", _cond_short, help=_cond_full)
-    col_mo.metric("사용 모델", fw_model)
 
-    # ── 1-b. 생성 출처 · 입력 검증 ─────────────────────
+    # ── 1-b. 설정 · 생성 출처 · 입력 검증 ──────────────
     # 캐시 재사용과 신규 호출이 화면상 동일해 "지금 호출한 결과인가"를
     # 구분할 수 없던 문제 보완. 검증은 forward_verify와 동일 기준.
+    # 조건은 원본 코드(cond4)가 아니라 COND_LABELS 이름으로 낸다 — 다른 화면이 전부
+    # 그렇게 쓰는데 여기만 raw였다. 캡션이라 라벨 전체를 줄바꿈 걱정 없이 쓸 수 있다.
+    _setting_txt = f"⚙️ {COND_LABELS.get(fw_cond, fw_cond)}  ·  {fw_model}"
+
     _meta = st.session_state.get("fw_meta")
     if _meta:
         _gt = _meta.get("gen_time")
@@ -342,7 +341,10 @@ def render() -> None:
                 f"리포트 {_vs.get('reports', 0)}건 · DART {_vs.get('dart', '-')})"
             )
 
-        st.caption(f"{_src_txt}  |  {_vf_txt}")
+        st.caption(f"{_setting_txt}  |  {_src_txt}  |  {_vf_txt}")
+    else:
+        # fw_meta 없이 fw_result만 남은 경우에도 설정은 반드시 보여야 한다
+        st.caption(_setting_txt)
         if _flags:
             with st.expander(f"입력 검증 플래그 상세 ({len(_flags)}건)"):
                 for _fl in _flags:
