@@ -342,13 +342,16 @@ def render() -> None:
             )
 
         st.caption(f"{_setting_txt}  |  {_src_txt}  |  {_vf_txt}")
-    else:
-        # fw_meta 없이 fw_result만 남은 경우에도 설정은 반드시 보여야 한다
-        st.caption(_setting_txt)
+
+        # 캡션은 플래그 "건수"만 알린다. 무엇이 걸렸는지는 여기서만 볼 수 있으므로
+        # 반드시 _meta가 있는 이 분기 안에 둔다(_flags는 위에서만 정의된다).
         if _flags:
             with st.expander(f"입력 검증 플래그 상세 ({len(_flags)}건)"):
                 for _fl in _flags:
                     st.markdown(f"- {_fl}")
+    else:
+        # fw_meta 없이 fw_result만 남은 경우에도 설정은 반드시 보여야 한다
+        st.caption(_setting_txt)
 
     st.divider()
 
