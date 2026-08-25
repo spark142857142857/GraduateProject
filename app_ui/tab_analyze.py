@@ -18,6 +18,7 @@ import os
 import threading
 from datetime import datetime
 
+import altair as alt
 import pandas as pd
 import streamlit as st
 
@@ -566,15 +567,50 @@ def render() -> None:
         chart_df["signal_date"] = pd.to_datetime(chart_df["signal_date"], errors="coerce")
         chart_df = chart_df.sort_values("signal_date")
         _signal_order = ["Buy", "Neutral", "Sell"]
-        for _sig in _signal_order:
-            chart_df[_sig] = chart_df["return_20d"].where(chart_df["signal"] == _sig)
-        st.scatter_chart(
-            chart_df,
-            x="signal_date",
-            y=_signal_order,
-            color=[SIGNAL_STYLE[sig][1] for sig in _signal_order],
-            x_label="신호일",
-            y_label="20일 수익률 (%)",
-            height=280,
+
+        # st.scatter_chart는 시간축 라벨을 Vega 기본 로케일로 찍어 "February March
+        # April"이 된다. 포트폴리오 누적 곡선에서 고친 것과 같은 문제이고, 이 차트도
+        # 발표 영상에 들어가는 자리라 Altair로 바꿔 %Y-%m으로 고정한다.
+        # 신호별 wide 컬럼으로 쪼개던 우회는 필요 없어져 걷어냈다 — 색을 signal 컬럼에
+        # 직접 매핑하면 범례 순서도 domain으로 못박힌다(기본은 알파벳순).
+        scatter = (
+            alt.Chart(chart_df)
+            .mark_circle(size=60, opacity=0.75)
+            .encode(
+                # 눈금을 Vega 자동에 맡기면 36개월치가 전부 찍혀 라벨(45px)이 간격
+                # (25px)보다 넓어 겹친다(실측). 영어 월 이름일 때도 같은 밀도였다.
+                # 6개월 간격으로 고정하면 5개가 남고 간격 110px로 벌어진다(실측).
+                #
+                # tab_portfolio는 반대로 눈금을 고정하지 않는다. 그 차트는 초기 로드에서
+                # 숨겨진 탭에 있어 측정 폭이 흔들리는데, 좁게 그려질 때 고정 눈금은
+                # 그대로 겹치기 때문이다. 이 차트는 항상 보이는 첫 탭이라 폭이 안정적이라
+                # (실측 1076px) 고정해도 안전하다.
+                x=alt.X(
+                    "signal_date:T",
+                    title="신호일",
+                    axis=alt.Axis(
+                        format="%Y-%m",
+                        tickCount={"interval": "month", "step": 6},
+                    ),
+                ),
+                y=alt.Y("return_20d:Q", title="20일 수익률 (%)"),
+                color=alt.Color(
+                    "signal:N",
+                    title=None,
+                    sort=_signal_order,
+                    scale=alt.Scale(
+                        domain=_signal_order,
+                        range=[SIGNAL_STYLE[sig][1] for sig in _signal_order],
+                    ),
+                ),
+                # st.scatter_chart는 툴팁을 기본 제공한다. Altair로 바꾸면서 빠지면
+                # 점 하나를 짚어 날짜·수익률을 읽던 동작이 사라지므로 명시한다
+                tooltip=[
+                    alt.Tooltip("signal_date:T", title="신호일", format="%Y-%m-%d"),
+                    alt.Tooltip("signal:N", title="신호"),
+                    alt.Tooltip("return_20d:Q", title="20일 수익률 (%)", format=".2f"),
+                ],
+            )
         )
+        st.altair_chart(scatter, width="stretch", height=280)
         st.caption("점 하나가 신호 한 건입니다. 색은 신호 종류, 세로축은 그 신호 이후 20거래일 수익률입니다.")
