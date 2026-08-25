@@ -12,7 +12,7 @@ import pandas as pd
 import streamlit as st
 
 from app_ui import ROOT_DIR
-from utils import TICKERS, EXPERIMENT_DIR, FORWARD_DIR, ANALYSIS_DIR, REPORTS_DIR
+from utils import TICKERS, EXPERIMENT_DIR, FORWARD_DIR, ANALYSIS_DIR, REPORTS_DIR, PRICE_DIR
 from compare import COND_LABELS, DEFAULT_MODEL
 
 __all__ = [
@@ -23,6 +23,7 @@ __all__ = [
     "load_backtest_results", "list_backtest_models", "fmt_metric",
     "list_matrix_models", "load_signal_matrix",
     "load_krx_stocks", "ensure_reports", "check_dart_cache",
+    "check_trading_halt", "HALT_MIN_DAYS",
 ]
 
 
@@ -256,3 +257,57 @@ def ensure_reports(ticker: str) -> None:
             os.remove(path)
     except Exception:
         pass
+
+
+# 거래정지·상장폐지 판정에 쓰는 최소 연속일수. 유동성이 낮은 종목은 하루 이틀쯤
+# 거래량 0이 나올 수 있어 단발성은 걸러야 한다. 5거래일(약 일주일) 연속이면
+# 일시적 소강이 아니라 거래 자체가 막힌 상태로 본다.
+HALT_MIN_DAYS = 5
+
+
+def check_trading_halt(ticker: str, min_days: int = HALT_MIN_DAYS) -> dict | None:
+    """시세 캐시 끝에서 거래량 0이 연속되는지 확인한다.
+
+    거래정지·상장폐지 종목은 FDR이 마지막 종가를 그대로 반복해서 돌려준다.
+    이노벡스(279060)가 2026-01-26부터 종가 115원·거래량 0으로 142거래일 고정된
+    것이 그 예다. 이 값이 그대로 컨텍스트에 들어가면 모멘텀·거래량 변화율이
+    전부 0이 되고, LLM은 그것을 "변동성이 없다"는 실제 관측으로 읽는다.
+
+    시세 캐시만 읽고 API는 호출하지 않는다. 캐시가 없으면(한 번도 조회한 적 없는
+    종목) 판정할 근거가 없으므로 None을 돌려준다 — 분석·조회를 한 번 거치면
+    캐시가 생기므로 다음 렌더에서 자연히 잡힌다.
+
+    Returns:
+        None: 캐시 없음 / 읽기 실패 / 정상 거래 중
+        dict: {"days": 연속 거래량 0 일수,
+               "last_traded": 마지막으로 거래가 있었던 날짜(str) 또는 None,
+               "price": 고정된 종가(float) 또는 None}
+    """
+    path = os.path.join(PRICE_DIR, f"{ticker}.csv")
+    if not os.path.exists(path):
+        return None
+
+    try:
+        df = pd.read_csv(path, usecols=["Date", "Close", "Volume"])
+    except Exception:
+        return None  # 형식이 다르거나 깨진 캐시는 판정하지 않는다
+    if df.empty:
+        return None
+
+    vol = pd.to_numeric(df["Volume"], errors="coerce").fillna(0)
+    zero_tail = 0
+    for v in reversed(vol.tolist()):
+        if v != 0:
+            break
+        zero_tail += 1
+
+    if zero_tail < min_days:
+        return None
+
+    traded = df.iloc[: len(df) - zero_tail]
+    last_close = pd.to_numeric(df["Close"], errors="coerce").iloc[-1]
+    return {
+        "days": zero_tail,
+        "last_traded": str(traded["Date"].iloc[-1]) if not traded.empty else None,
+        "price": None if pd.isna(last_close) else float(last_close),
+    }

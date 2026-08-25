@@ -24,7 +24,8 @@ import streamlit as st
 from app_ui.shared import (
     BACKTEST_TICKERS, COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR,
     SIGNAL_STYLE, TICKERS, UI_CONDS, UI_MODELS,
-    check_dart_cache, ensure_reports, load_backtest_results, load_krx_stocks,
+    check_dart_cache, check_trading_halt, ensure_reports,
+    load_backtest_results, load_krx_stocks,
 )
 
 # 리포트를 입력에 포함하는 조건 — 리포트 0건이면 실질 입력이 줄어든다는 안내가 필요하다
@@ -158,6 +159,24 @@ def render() -> None:
             f"ℹ️ **{selected_name}** — 백테스트 검증 대상 20종목 밖입니다. 신호 생성은 동일한 "
             "파이프라인으로 이뤄지지만 과거 성과 이력은 표시되지 않으며, 애널리스트 리포트가 "
             "적거나 없을 수 있습니다."
+        )
+
+    # 거래정지 종목은 시세가 마지막 종가에 고정돼 모멘텀·거래량 변화율이 전부 0이 된다.
+    # 그 상태로 분석하면 LLM은 0을 "변동성이 없다"는 관측으로 읽고 그럴듯한 근거까지
+    # 만들어낸다. 버튼 위가 아니라 여기(버튼 아래·결과 위)에 두는 이유는 한 자리로
+    # 두 시점을 덮기 때문이다 — 누르기 전에는 헛호출을 막고, 누른 뒤에는 결과 화면
+    # 위에 남아 수치가 왜 평평한지 설명한다. 캐시가 없어 판정 못 한 종목도 분석을
+    # 한 번 거치면 캐시가 생겨 다음 렌더에서 잡힌다.
+    _halt = check_trading_halt(selected_ticker)
+    if _halt:
+        _hp = f"{int(_halt['price']):,}원" if _halt["price"] is not None else "직전 종가"
+        _hl = f" 마지막 거래일은 {_halt['last_traded']}이고," if _halt["last_traded"] else ""
+        st.warning(
+            f"⛔ **{selected_name}** — 최근 {_halt['days']}거래일 연속 거래량이 0입니다. "
+            f"거래정지나 상장폐지로 시세가 멈춘 종목으로 보입니다.{_hl} "
+            f"현재가는 {_hp}에 고정돼 있습니다. 이 상태로 분석하면 모멘텀과 거래량 "
+            "변화율이 0으로 들어가고 모델은 그 0을 실제 관측으로 읽으므로, 신호를 "
+            "종목 판단에 쓰지 마십시오."
         )
 
     # ── 분석 실행 ──────────────────────────────────────────

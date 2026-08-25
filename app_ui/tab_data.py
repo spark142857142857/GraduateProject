@@ -27,7 +27,10 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
-from app_ui.shared import BACKTEST_TICKERS, TICKERS, check_dart_cache, load_krx_stocks
+from app_ui.shared import (
+    BACKTEST_TICKERS, TICKERS,
+    check_dart_cache, check_trading_halt, load_krx_stocks,
+)
 
 # (ctx 키, 표시 라벨) — 라벨에 단위를 박아둔다. get_today_context는 금액을 원 단위
 # 원시값으로 주므로(시가총액 1,350,490,358,448,000처럼) 단위를 안 적으면 읽을 수 없다.
@@ -176,6 +179,20 @@ def render() -> None:
     st.subheader(f"{ctx['name']}  ({ctx['ticker']})")
     if ctx["ticker"] not in BACKTEST_TICKERS:
         st.caption("ℹ️ 백테스트 검증 대상 20종목 밖입니다. 수집 파이프라인은 동일합니다.")
+
+    # 거래정지 종목은 시세가 마지막 종가에 고정된다. 아래 표와 내려받은 파일에는
+    # 그 고정값이 오늘 시세처럼 들어가므로, 값이 비어 있는 경우(결측 안내)와 달리
+    # 겉보기에는 멀쩡해 보인다. 수치를 읽기 전에 먼저 알린다.
+    _halt = check_trading_halt(ctx["ticker"])
+    if _halt:
+        _hp = f"{int(_halt['price']):,}원" if _halt["price"] is not None else "직전 종가"
+        _hl = f" 마지막 거래일은 {_halt['last_traded']}입니다." if _halt["last_traded"] else ""
+        st.warning(
+            f"⛔ 최근 {_halt['days']}거래일 연속 거래량이 0입니다. 거래정지나 상장폐지로 "
+            f"시세가 멈춘 종목으로 보입니다.{_hl} 아래 시세와 내려받는 파일에는 "
+            f"{_hp}에 고정된 값이 그대로 들어가며, 52주 위치·모멘텀·거래량 변화율도 "
+            "그 고정값에서 계산된 수치입니다."
+        )
 
     # ── 미리보기 ───────────────────────────────────────────
     st.markdown("**수집 지표**")
