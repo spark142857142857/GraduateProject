@@ -40,5 +40,6 @@ docs/app_context_for_gpt.md
 # 참고문헌 확정 기록 (심사 대비 메모 포함, push 안 함)
 docs/references.md
 
-# 중간보고서 초안·양식 (개인 제출용, push 안 함)
+# 중간·최종보고서 초안·양식 (개인 제출용, push 안 함)
 docs/*중간보고서*
+docs/*최종보고서*
