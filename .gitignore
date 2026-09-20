@@ -31,15 +31,7 @@ data/price/*.csv
 .vscode/
 .idea/
 
-# 심사 방어 준비용 개인 문서 (push 안 함)
-docs/defense_qa.md
-
-# 외부 LLM 리뷰용 컨텍스트 브리프 (개인 작업용, push 안 함)
-docs/app_context_for_gpt.md
-
-# 참고문헌 확정 기록 (심사 대비 메모 포함, push 안 함)
-docs/references.md
-
-# 중간·최종보고서 초안·양식 (개인 제출용, push 안 함)
-docs/*중간보고서*
-docs/*최종보고서*
+# 개인 문서 일체 (push 안 함, 드라이브 백업 대상)
+# 심사 방어 준비 메모, 외부 LLM 리뷰용 브리프, 참고문헌 확정 기록,
+# 중간·최종보고서 초안과 양식, 보고서 빌드 스크립트, 그림 원본이 여기 모여 있다.
+docs/private/
