@@ -150,7 +150,12 @@ def render() -> None:
         # ("Jul"·"2024", 25px)보다 넓어 좁은 폭에서는 표시 개수가 줄어든다
         x=alt.X("date:T", title="신호일", axis=alt.Axis(format="%Y-%m")),
         y=alt.Y("cum_return:Q", title="누적 수익률 (%)"),
-        color=alt.Color("strategy:N", title=None, sort=list(curves.keys())),
+        # 범례를 아래로 내리고 글자 수 제한(기본 160px)을 푼다. 오른쪽에 두면 "시장참여
+        # 벤치마크 (20…", "cond4 (재무+리포트+D…"처럼 잘렸고, 포스터에 그대로 들어가는 그림이다
+        color=alt.Color(
+            "strategy:N", title=None, sort=list(curves.keys()),
+            legend=alt.Legend(orient="bottom", columns=3, labelLimit=0),
+        ),
     )
     # 폭은 Streamlit에 맡긴다. Altair spec에 width="container"를 박으면 Vega가 렌더 시점에
     # 부모를 한 번만 재는데, 이 탭은 초기 로드에서 숨겨져 있어 0으로 측정된다(실측)

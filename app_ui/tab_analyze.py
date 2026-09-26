@@ -61,7 +61,7 @@ def fmt_market_cap(mc_jo) -> str:
     if mc_jo is None or pd.isna(mc_jo) or mc_jo == 0:
         return "N/A"
     if mc_jo >= 1:
-        return f"{mc_jo:.1f}조원"
+        return f"{mc_jo:,.1f}조원"   # 1350.5조원 → 1,350.5조원 (② 탭과 같은 쉼표 표기)
     return f"{mc_jo * 1e4:,.0f}억원"
 
 

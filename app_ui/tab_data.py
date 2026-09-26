@@ -190,12 +190,12 @@ def _render_data(ctx: dict, cond: str) -> None:
     # 요약 칸에는 단위를 값에 붙인다. 전체 지표 표는 라벨에 단위가 있어 붙이지 않는다
     _price = ctx.get("price")
     _mom   = ctx.get("momentum_1m")
-    m1, m2 = st.columns(2)
-    m1.metric("현재가", f"{int(_price):,}원" if _price is not None else "-")
-    m2.metric("시가총액", _fmt_market_cap_short(ctx.get("market_cap")))
-    m3, m4 = st.columns(2)
-    m3.metric("PER", _fmt_cell("per", ctx.get("per")))
-    m4.metric("1개월 수익률", f"{_mom:+.2f}%" if _mom is not None and not pd.isna(_mom) else "-")
+    # 한 줄에 하나씩 쌓는다. 2열로 두면 발표장 노트북 폭(열 폭 ~130px)에서 "286,5…"처럼
+    # 값이 잘렸다(실측). 옆 프롬프트가 560px이라 세로로 쌓아도 자리가 남는다
+    st.metric("현재가", f"{int(_price):,}원" if _price is not None else "-")
+    st.metric("시가총액", _fmt_market_cap_short(ctx.get("market_cap")))
+    st.metric("PER", _fmt_cell("per", ctx.get("per")))
+    st.metric("1개월 수익률", f"{_mom:+.2f}%" if _mom is not None and not pd.isna(_mom) else "-")
 
     with st.expander("전체 지표"):
         rows = [{"항목": lb, "값": _fmt_cell(k, ctx.get(k))} for k, lb in EXPORT_FIELDS]
