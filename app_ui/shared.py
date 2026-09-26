@@ -102,6 +102,14 @@ def explain_model_error(e: Exception) -> str | None:
     설정에 새 모델을 넣거나 직접 입력하면 가장 먼저 부딪히는 두 가지다(실측 2026-09-26).
     """
     msg = str(e)
+    # 크레딧 소진은 모델이 아니라 계정 문제다. Gemini는 무료 모델(gemma)까지 프로젝트 단위로
+    # 막는다(실측 2026-09-26: 402 "prepayment credits are depleted"). 모델을 바꿔도 안 되므로
+    # 다른 원인보다 먼저 가려 "다른 모델로 해 보라"는 쪽으로 읽히지 않게 한다
+    if "402" in msg or "credits are depleted" in msg or "insufficient_quota" in msg or "credit balance" in msg:
+        return ("API 크레딧이 소진되어 호출할 수 없습니다. 해당 회사 콘솔에서 결제 상태를 확인해 주세요. "
+                "같은 키를 쓰는 모델은 모두 막혀 있습니다.")
+    if "429" in msg or "RESOURCE_EXHAUSTED" in msg or "rate limit" in msg.lower():
+        return "호출 한도를 넘었습니다. 잠시 후 다시 시도해 주세요."
     if "temperature" in msg:
         # gpt-5.6-luna: "Only the default (1) value is supported"
         return ("이 모델은 temperature=0을 지원하지 않아 쓸 수 없습니다. "

@@ -105,13 +105,51 @@ def forward_job_runtime():
     return concurrent.futures.ThreadPoolExecutor(max_workers=2), {}, threading.Lock()
 
 
+# 워커 스레드별 마지막 LLM 호출 오류. run_forward는 호출이 3번 실패하면 원래 예외를 버리고
+# "LLM 3회 호출 실패"라는 RuntimeError만 던진다(src/ 동결). 그래서 화면이 크레딧 소진인지,
+# temperature 미지원인지, 없는 ID인지 가릴 수 없었다. 호출 지점에서 원래 예외를 적어 둔다
+_llm_error = threading.local()
+
+
+def _install_llm_error_capture() -> None:
+    """forward_test.call_llm을 감싸 실패 예외를 _llm_error.last에 남긴다. 동작은 그대로다.
+
+    forward_test가 모듈 import 시점에 call_llm을 자기 이름공간으로 가져오므로
+    llm_experiment가 아니라 forward_test의 속성을 바꿔야 run_forward에 먹힌다.
+    """
+    import forward_test
+    if getattr(forward_test.call_llm, "_app_error_capture", False):
+        return
+    original = forward_test.call_llm
+
+    def call_llm(prompt, model):
+        try:
+            return original(prompt, model)
+        except Exception as e:
+            _llm_error.last = e
+            raise
+
+    call_llm._app_error_capture = True
+    forward_test.call_llm = call_llm
+
+
 def run_forward_and_demote(run_forward, ticker: str, cond: str, model: str, batch_path: str) -> dict:
     """forward 실행 후 결과를 즉시 시연 폴더로 격리.
 
     화면이 3분 후 타임아웃되거나 브라우저 세션이 끊겨도 이 워커는
     run_forward가 끝난 직후 demote까지 수행하므로 정식 평가 경로에 남지 않는다.
+
+    호출이 끝내 실패하면 run_forward의 "3회 호출 실패" 대신 마지막 원래 예외를 올린다.
+    화면(explain_model_error)이 그 예외를 보고 이유를 사용자 말로 바꾼다.
     """
-    result = run_forward(ticker, cond, model)
+    _install_llm_error_capture()
+    _llm_error.last = None
+    try:
+        result = run_forward(ticker, cond, model)
+    except RuntimeError:
+        if _llm_error.last is not None:
+            raise _llm_error.last
+        raise
     if not demote_to_demo(batch_path):
         raise RuntimeError("시연 결과를 forward_demo로 격리하지 못했습니다.")
     return result
