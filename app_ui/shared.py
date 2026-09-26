@@ -5,6 +5,7 @@
 """
 
 import glob
+import re
 import os
 from datetime import datetime
 
@@ -18,7 +19,8 @@ from compare import COND_LABELS, DEFAULT_MODEL
 __all__ = [
     "TICKERS", "EXPERIMENT_DIR", "FORWARD_DIR", "ANALYSIS_DIR", "REPORTS_DIR",
     "COND_LABELS", "DEFAULT_MODEL", "BACKTEST_TICKERS",
-    "UI_CONDS", "REPORT_CONDS", "SMALL_SAMPLE_N", "UI_MODELS",
+    "UI_CONDS", "REPORT_CONDS", "SMALL_SAMPLE_N", "load_ui_models", "check_model_id",
+    "explain_model_error",
     "SIGNAL_STYLE", "FORWARD_DEMO_DIR",
     "load_backtest_results", "list_backtest_models", "fmt_metric",
     "list_matrix_models", "load_signal_matrix",
@@ -45,8 +47,22 @@ REPORT_CONDS = ["cond1", "cond2", "cond3", "cond4", "cond4_no_reports"]
 # 조건별 Buy 표본이 이 값 미만이면 평균이 크게 흔들려 성능으로 읽으면 안 된다 (cond1이 대표적)
 SMALL_SAMPLE_N = 30
 
-# 개별 분석용 모델 목록 — 앵커(DEFAULT_MODEL)/gemma가 우선(앞 배치), gpt/claude는 별도 키·호출 비용 필요
-UI_MODELS = [DEFAULT_MODEL, "gemma-4-31b-it", "gpt-5.4-mini", "claude-haiku-4-5"]
+# 개별 분석용 모델 목록은 config/models.toml에서 읽는다(load_ui_models). 새 모델이 나올 때마다
+# 소스를 고치지 않게 하려는 것이다. 파일이 없거나 깨졌을 때만 아래 4모델로 폴백한다.
+MODELS_CONFIG = os.path.join(ROOT_DIR, "config", "models.toml")
+
+# llm_experiment._provider가 받는 접두어. src/ 동결이라 여기에 없는 회사는 설정으로도 못 넣는다.
+# 목록에서 미리 걸러야 분석하기를 누른 뒤에야 ValueError를 보는 일이 없다
+_SUPPORTED_PREFIXES = ("gemini", "gemma", "gpt", "claude")
+
+_PAID_NOTE = "유료 API라 호출마다 비용이 듭니다."
+_FALLBACK_MODELS = [
+    {"id": DEFAULT_MODEL,      "label": DEFAULT_MODEL,      "note": "", "verified": True},
+    {"id": "gemma-4-31b-it",   "label": "gemma-4-31b-it",
+     "note": "gemma는 응답이 최대 3분 걸릴 수 있습니다.", "verified": True},
+    {"id": "gpt-5.4-mini",     "label": "gpt-5.4-mini",     "note": _PAID_NOTE, "verified": True},
+    {"id": "claude-haiku-4-5", "label": "claude-haiku-4-5", "note": _PAID_NOTE, "verified": True},
+]
 
 # 신호별 (배경색, 글자색) — 배지·매트릭스 셀·범례·산점도 색이 모두 여기서 나온다
 SIGNAL_STYLE = {
@@ -62,6 +78,90 @@ FORWARD_DEMO_DIR = os.path.join(os.path.dirname(FORWARD_DIR), "forward_demo")
 
 
 # ── 공용 로더 ─────────────────────────────────────────────
+_MODEL_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+
+
+def check_model_id(mid: str) -> str | None:
+    """직접 입력한 모델 ID 검사. 문제가 없으면 None, 있으면 화면에 낼 이유.
+
+    ID는 호출에만 쓰이는 게 아니라 results/forward_demo/{날짜}/{모델}/ 경로가 된다.
+    슬래시나 공백이 들어가면 경로가 깨지므로 영문·숫자·.-_만 받는다.
+    """
+    if not mid:
+        return "모델 ID를 입력해 주세요."
+    if not _MODEL_ID_RE.match(mid):
+        return "모델 ID에는 영문, 숫자, 점(.), 하이픈(-), 밑줄(_)만 쓸 수 있습니다."
+    if not mid.startswith(_SUPPORTED_PREFIXES):
+        return "gemini, gemma, gpt, claude로 시작하는 모델만 호출할 수 있습니다."
+    return None
+
+
+def explain_model_error(e: Exception) -> str | None:
+    """호출 실패 중 모델 탓인 것을 사용자 말로 바꾼다. 모르는 오류는 None(원문을 그대로 낸다).
+
+    설정에 새 모델을 넣거나 직접 입력하면 가장 먼저 부딪히는 두 가지다(실측 2026-09-26).
+    """
+    msg = str(e)
+    if "temperature" in msg:
+        # gpt-5.6-luna: "Only the default (1) value is supported"
+        return ("이 모델은 temperature=0을 지원하지 않아 쓸 수 없습니다. "
+                "실험과 같은 조건(temperature=0 고정)으로만 호출하기 때문입니다.")
+    if "not found" in msg.lower() or "does not exist" in msg.lower() or "404" in msg:
+        return "해당 회사에 없는 모델 ID입니다. 철자를 확인해 주세요."
+    return None
+
+
+def load_ui_models() -> tuple[list[dict], list[str]]:
+    """config/models.toml → (모델 항목 목록, 화면에 알릴 경고 목록).
+
+    각 항목은 {"id", "label", "note", "verified"}. 캐시하지 않고 매번 읽는다 — 몇 줄짜리
+    파일이라 비용이 없고, 그래야 파일에 한 줄 추가한 것이 재시작 없이 목록에 뜬다.
+
+    **앱이 죽으면 안 된다.** 파일이 없거나 TOML 문법이 깨졌거나 쓸 만한 항목이 하나도
+    없으면 4모델로 폴백하고 경고만 돌려준다. 항목 단위의 문제(id 없음, 미지원 접두어,
+    중복)는 그 항목만 빼고 이유를 알린다. enabled=false는 의도한 숨김이라 알리지 않는다.
+    """
+    import tomllib
+
+    warnings: list[str] = []
+    try:
+        with open(MODELS_CONFIG, "rb") as f:
+            entries = tomllib.load(f).get("model", [])
+    except FileNotFoundError:
+        return _FALLBACK_MODELS, ["모델 설정 파일(config/models.toml)이 없어 기본 4모델을 표시합니다."]
+    except (tomllib.TOMLDecodeError, OSError) as e:
+        return _FALLBACK_MODELS, [f"모델 설정 파일을 읽지 못해 기본 4모델을 표시합니다 ({e})."]
+
+    models: list[dict] = []
+    seen: set[str] = set()
+    for e in entries if isinstance(entries, list) else []:
+        if not isinstance(e, dict) or not e.get("enabled", True):
+            continue
+        mid = str(e.get("id", "")).strip()
+        if not mid:
+            warnings.append("id가 없는 항목을 건너뛰었습니다.")
+            continue
+        if not mid.startswith(_SUPPORTED_PREFIXES):
+            warnings.append(
+                f"{mid}은(는) 앱이 호출할 수 없는 모델이라 목록에서 뺐습니다 "
+                "(gemini, gemma, gpt, claude로 시작하는 모델만 지원)."
+            )
+            continue
+        if mid in seen:
+            continue
+        seen.add(mid)
+        models.append({
+            "id":       mid,
+            "label":    str(e.get("label") or mid),
+            "note":     str(e.get("note") or ""),
+            "verified": bool(e.get("verified", False)),
+        })
+
+    if not models:
+        return _FALLBACK_MODELS, warnings + ["모델 설정 파일에 쓸 수 있는 항목이 없어 기본 4모델을 표시합니다."]
+    return models, warnings
+
+
 @st.cache_data(ttl=300, show_spinner=False)  # 백테스팅 결과 5분 캐시 — 빈번한 파일 재로드 방지
 def load_backtest_results(cond: str, model: str) -> pd.DataFrame | None:
     """results/experiment/{cond}/{model}/latest/{cond}_results.csv 로드."""

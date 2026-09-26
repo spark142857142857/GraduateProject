@@ -24,10 +24,14 @@ import streamlit as st
 
 from app_ui.shared import (
     COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR,
-    SIGNAL_STYLE, UI_CONDS, UI_MODELS,
+    SIGNAL_STYLE, UI_CONDS,
     check_dart_cache, check_trading_halt, register_ticker,
-    load_backtest_results, load_krx_stocks,
+    check_model_id, explain_model_error,
+    load_backtest_results, load_krx_stocks, load_ui_models,
 )
+
+# 모델 셀렉트박스 맨 끝의 "직접 입력" 항목. 실제 모델 ID와 겹치지 않는 값이면 된다
+_CUSTOM_MODEL = "__custom__"
 
 # 리포트를 입력에 포함하는 조건 — 리포트 0건이면 실질 입력이 줄어든다는 안내가 필요하다
 REPORT_CONDS_UI = ("cond3", "cond4")
@@ -134,21 +138,53 @@ def render() -> None:
         index=3,  # cond4 기본
     )
 
+    # 목록은 config/models.toml에서 온다. 첫 항목이 기본 선택이다.
+    # 백테스트를 거치지 않은 모델은 고르기 전에 알 수 있게 이름 옆에 적는다
+    _models, _model_warnings = load_ui_models()
+    _model_meta = {m["id"]: m for m in _models}
+    _first_id = _models[0]["id"]
+
+    def _model_label(mid: str) -> str:
+        if mid == _CUSTOM_MODEL:
+            return "직접 입력"
+        m = _model_meta[mid]
+        suffix = " (기본)" if mid == _first_id else ""
+        if not m["verified"]:
+            suffix += " (백테스트 없음)"
+        return m["label"] + suffix
+
+    # 목록에 없는 모델은 "직접 입력"으로 ID를 쳐서 쓴다. 설정 파일을 고칠 줄 몰라도, 새 모델이
+    # 나온 날에도 바로 쓸 수 있게 하려는 것이다. 회사 모델 목록 API를 통째로 붙이지 않은 것은
+    # 거기에 음성·이미지·코드 전용 모델이 섞여 있어 목록에 떠도 호출이 안 되는 항목이 많기 때문이다
     selected_model = col_m.selectbox(
         "모델",
-        options=UI_MODELS,
-        format_func=lambda m: f"{m} (기본)" if m == UI_MODELS[0] else m,
+        options=list(_model_meta) + [_CUSTOM_MODEL],
+        format_func=_model_label,
         index=0,
     )
 
     analyze_btn = col_b.button("🔍 분석하기", width="stretch", type="primary")
 
-    # 사용자가 알아야 할 것만 적는다 — 기다리는 시간과 비용. 기본 모델은 둘 다 해당이
-    # 없어 비워 둔다. provider 판별은 llm_experiment._provider와 같은 접두어 기준
-    if selected_model.startswith("gemma"):
-        st.caption("gemma는 응답이 최대 3분 걸릴 수 있습니다.")
-    elif selected_model.startswith(("gpt", "claude")):
-        st.caption("유료 API라 호출마다 비용이 듭니다.")
+    # 입력 칸은 위 줄과 같은 비율의 열을 써서 "모델" 셀렉트박스 바로 아래에 둔다.
+    # 한 줄 전체로 펼치면 어느 칸에 딸린 입력인지 흐려진다.
+    # 문제는 입력 중에는 캡션으로, 버튼을 누르면 오류로 한 번만 알린다
+    _custom_err = None
+    if selected_model == _CUSTOM_MODEL:
+        _, _, _col_id, _ = st.columns([3, 3, 3, 2])
+        selected_model = _col_id.text_input(
+            "모델 ID", placeholder="예: gpt-5.5", key="custom_model_id",
+        ).strip()
+        _custom_err = check_model_id(selected_model)
+        if selected_model and _custom_err and not analyze_btn:
+            _col_id.caption(f"⚠️ {_custom_err}")
+
+    # 모델별 안내(기다리는 시간, 비용)는 설정 파일의 note에서 온다. 없으면 비워 둔다
+    _note = _model_meta.get(selected_model, {}).get("note")
+    if _note:
+        st.caption(_note)
+    # 설정 파일이 깨졌거나 호출할 수 없는 항목을 뺀 경우. 앱은 폴백으로 계속 돈다
+    for _w in _model_warnings:
+        st.caption(f"⚠️ {_w}")
 
     # 거래정지 종목은 시세가 마지막 종가에 고정돼 모멘텀·거래량 변화율이 전부 0이 된다.
     # 그 상태로 분석하면 LLM은 0을 "변동성이 없다"는 관측으로 읽고 그럴듯한 근거까지
@@ -165,6 +201,10 @@ def render() -> None:
         )
 
     # ── 분석 실행 ──────────────────────────────────────────
+    if analyze_btn and _custom_err:
+        st.error(_custom_err)
+        analyze_btn = False
+
     if analyze_btn:
         from forward_test import run_forward
         from forward_verify import verify_ticker
@@ -284,7 +324,8 @@ def render() -> None:
                     _ok = True
             except Exception as _e:
                 _status.update(label="오류 발생", state="error", expanded=True)
-                st.error(f"**{type(_e).__name__}**: {_e}")
+                # 모델 탓인 실패(temperature 미지원, 없는 ID)는 사용자 말로 바꾼다
+                st.error(explain_model_error(_e) or f"**{type(_e).__name__}**: {_e}")
         if _ok:
             _status_slot.empty()
 
@@ -425,10 +466,14 @@ def render() -> None:
     bt_df = load_backtest_results(fw_cond, fw_model)
 
     if bt_df is None:
-        # 4모델 × 5조건 전부 완료돼 정상 경로에서는 도달하지 않는다. 결과 파일이 없거나
-        # 깨졌을 때 화면이 비는 대신 이유를 알리는 방어 분기.
-        # 시연 중 관객에게 보일 화면이라 CLI 실행 명령은 넣지 않는다
-        st.info(f"**{fw_model}**의 {fw_cond} 백테스트 결과 파일을 읽을 수 없어 과거 성과를 표시할 수 없습니다.")
+        # 설정 파일로 추가한 모델은 백테스트를 거치지 않았으므로 여기로 온다. 누락이 아니라
+        # 설계라는 것을 밝힌다. 연구 검증 4모델은 5조건 전부 완료돼 정상 경로에서는 오지 않고,
+        # 결과 파일이 없거나 깨졌을 때만 온다(방어 분기)
+        _fw_meta_model = {m["id"]: m for m in load_ui_models()[0]}.get(fw_model, {})
+        if not _fw_meta_model.get("verified"):
+            st.caption("백테스트를 거치지 않은 모델이라 과거 성과가 없습니다.")
+        else:
+            st.info(f"**{fw_model}**의 {fw_cond} 백테스트 결과 파일을 읽을 수 없어 과거 성과를 표시할 수 없습니다.")
         return
 
     ticker_df = get_ticker_backtest(bt_df, fw["ticker"])

@@ -1,0 +1,60 @@
+# 개별 종목 분석 탭(①)의 모델 선택 목록.
+#
+# [[model]] 항목을 하나 추가하면 코드 수정 없이 화면 목록에 뜬다. 첫 항목이 기본 선택이다.
+# 앱을 다시 띄울 필요도 없다 — 탭을 그릴 때마다 이 파일을 읽는다.
+#
+#   id        API에 그대로 넘기는 모델 ID (필수)
+#   label     화면 표시 이름. 생략하면 id
+#   note      모델을 골랐을 때 버튼 아래에 뜨는 안내 한 줄. 생략 가능
+#   verified  4모델 × 5조건 백테스트를 거친 연구 검증 모델이면 true.
+#             false면 과거 성과를 붙일 수 없고, 연구 결과와 직접 비교할 수 없다고 화면에 알린다
+#   enabled   false면 목록에서 숨긴다. 생략하면 true
+#
+# ── 알려진 경계 ──────────────────────────────────────────────────────────
+# 실제 호출은 src/experiment/llm_experiment.py가 한다. src/는 실험 재현성 때문에 동결이라
+# 아래 두 가지는 이 파일로 풀 수 없다.
+#
+# 1. 회사는 모델 ID의 접두어로만 갈린다(_provider).
+#      gemini*, gemma* → Google   gpt* → OpenAI   claude* → Anthropic
+#    같은 회사의 새 모델은 한 줄로 추가되지만, 새 회사의 모델이나 접두어가 다른 모델
+#    (o3, o4-mini 등)은 넣을 수 없다. 그런 항목은 앱이 목록에서 걸러 내고 이유를 보여 준다.
+#    목록에 없는 모델은 화면의 "직접 입력"으로 ID를 쳐서 쓰거나, 다른 회사 모델이면
+#    ② 분석 프롬프트 생성 탭에서 프롬프트를 복사해 쓰면 된다.
+#
+# 2. 호출은 temperature=0.0 고정이다(_raw_text). 이 값을 거부하는 모델(일부 reasoning
+#    모델)은 목록에 떠도 호출에서 실패한다. 추가하기 전에 한 번 실제로 불러 볼 것.
+#
+# 해당 회사의 API 키가 .env에 있어야 한다(GEMINI_API_KEY / OPENAI_API_KEY / ANTHROPIC_API_KEY).
+
+# ── 연구 검증 모델 (백테스트·forward 실험에 쓴 4모델) ──────────────────────
+
+[[model]]
+id = "gemini-2.5-flash-lite"
+verified = true
+
+[[model]]
+id = "gemma-4-31b-it"
+note = "gemma는 응답이 최대 3분 걸릴 수 있습니다."
+verified = true
+
+[[model]]
+id = "gpt-5.4-mini"
+note = "유료 API라 호출마다 비용이 듭니다."
+verified = true
+
+[[model]]
+id = "claude-haiku-4-5"
+note = "유료 API라 호출마다 비용이 듭니다."
+verified = true
+
+# ── 추가 모델 (백테스트 없음) ────────────────────────────────────────────
+# 넣기 전 호출 확인 기록(삼성전자 cond4 프롬프트 1회, 결과 파일 없이).
+#   gemini-3.8-flash  2026-09-26 확인 불가 — 402 "prepayment credits are depleted"(프로젝트 크레딧 소진).
+#                     모델 문제가 아니라 결제 문제라 크레딧을 채운 뒤 다시 확인할 것
+#   gpt-5.6-luna      2026-09-26 불가 — temperature=0 거부("Only the default (1) value is supported")
+
+[[model]]
+id = "claude-sonnet-5"
+note = "유료 API라 호출마다 비용이 듭니다."
+# 2026-09-26 호출 확인을 하지 않고 넣었다(사용자 결정). 첫 호출에서 실패하면 enabled = false로
+verified = false
