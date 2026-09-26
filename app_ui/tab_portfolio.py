@@ -75,10 +75,7 @@ def summarize(ret: pd.Series, held: pd.Series) -> dict:
 def render() -> None:
     models = list_matrix_models()
     if not models:
-        st.info(
-            "백테스트 결과가 없습니다. "
-            "`python src/experiment/llm_experiment.py --cond <조건> --model <모델명>` 실행 후 확인하세요."
-        )
+        st.info("백테스트 결과가 없습니다.")
         return
 
     # vertical_alignment="bottom" — 라벨 없는 체크박스를 옆 셀렉트박스에 맞춘다.
@@ -101,10 +98,10 @@ def render() -> None:
     months = sorted(sig_df["signal_date"].astype(str).unique())
     sig_df = sig_df.assign(signal_date=sig_df["signal_date"].astype(str))
 
+    # 곡선을 읽는 데 필요한 운용 규칙만 한 줄로. 롱온리 이유 등은 아래 주의점 expander에 있다
     st.caption(
-        f"매월 첫 거래일에 **Buy 신호 종목을 동일가중 매수**하고 20거래일 뒤 전량 청산하는 것을 "
-        f"{len(months)}개월 반복했을 때의 누적 성과입니다. Buy가 없는 달은 현금이며, "
-        "공매도는 개인투자자가 사실상 할 수 없으므로 **Sell은 사용하지 않습니다(롱온리)**."
+        f"매월 Buy 신호 종목을 동일가중으로 사서 20거래일 보유, {len(months)}개월 반복. "
+        "Buy가 없는 달은 현금이고 Sell은 쓰지 않습니다."
     )
 
     # ── 곡선·지표 계산 ─────────────────────────────────────
@@ -139,7 +136,7 @@ def render() -> None:
     # 유일한 자리인 데다 포스터·발표 영상에 들어갈 그림이라 %Y-%m으로 고정한다.
     # 범례 순서도 curves 삽입 순서(벤치마크 → 조건)로 못박는다 — 기본은 알파벳순이라
     # 아래 요약표의 행 순서와 어긋난다.
-    st.markdown("**누적 수익률 곡선**")
+    # 제목을 따로 달지 않는다. y축 제목이 "누적 수익률 (%)"이다
     chart_df = pd.DataFrame(curves)
     chart_df.index = pd.to_datetime(chart_df.index, errors="coerce")
     # 필드명은 ASCII로 둔다 — Vega 필드 참조에서 안전하고, 화면 문구는 title로 준다
@@ -160,35 +157,31 @@ def render() -> None:
     st.altair_chart(curve_chart, width="stretch", height=380)
 
     # ── 성과·리스크 요약 ───────────────────────────────────
-    st.markdown("**성과 · 리스크 요약**")
+    # 지표 정의는 표 아래 캡션 대신 열 머리의 툴팁(help)에 둔다. 모르는 사람만 짚어 보면 된다
     summary = pd.DataFrame(rows).set_index("전략")
     summary.columns = [
         "총 수익률(%)", "연환산(%)", "MDD(%)", "연환산 변동성(%)", "Sharpe",
         "월평균 보유종목", "현금 보유 개월",
     ]
+    _nc = st.column_config.NumberColumn
     st.dataframe(
-        summary.style.format(
-            {
-                "총 수익률(%)": "{:+.1f}", "연환산(%)": "{:+.1f}", "MDD(%)": "{:.1f}",
-                "연환산 변동성(%)": "{:.1f}", "Sharpe": "{:.2f}",
-                "월평균 보유종목": "{:.1f}", "현금 보유 개월": "{:.0f}",
-            },
-            na_rep="-",
-        ),
+        summary,
         width="stretch",
+        column_config={
+            "총 수익률(%)":     _nc(format="%+.1f"),
+            "연환산(%)":        _nc(format="%+.1f", help=f"{len(months)}개월 기하평균을 연 단위로 환산"),
+            "MDD(%)":          _nc(format="%.1f", help="누적 곡선의 고점 대비 최대 낙폭"),
+            "연환산 변동성(%)": _nc(format="%.1f", help="월 수익률 표준편차 × √12"),
+            "Sharpe":          _nc(format="%.2f", help="무위험수익률 0 가정, 월 수익률의 단순 연환산(×√12)"),
+            "월평균 보유종목":   _nc(format="%.1f"),
+            "현금 보유 개월":    _nc(format="%d"),
+        },
     )
 
     if thin:
         st.caption(
-            f"⚠️ {', '.join(thin)} — 보유 종목이 너무 적어 분산이 되지 않습니다. "
-            "포트폴리오 성과라기보다 소수 종목의 등락에 가까우므로 곡선을 성능으로 읽지 마십시오."
+            f"⚠️ {', '.join(thin)}. 보유 종목이 적어 분산이 안 된 곡선이라 성능으로 읽기 어렵습니다."
         )
-
-    st.caption(
-        f"**MDD**는 누적 곡선의 고점 대비 최대 낙폭입니다. 탭3의 수익률·Hit·Sharpe에는 없는 "
-        f"리스크 축이라 함께 봐야 합니다. **연환산**은 {len(months)}개월 기하평균, "
-        "**Sharpe**는 무위험수익률 0을 가정한 월 수익률의 단순 연환산(×√12)입니다."
-    )
 
     with st.expander("이 곡선을 읽을 때 주의할 점"):
         st.markdown(

@@ -6,13 +6,13 @@
 
 import glob
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pandas as pd
 import streamlit as st
 
 from app_ui import ROOT_DIR
-from utils import TICKERS, EXPERIMENT_DIR, FORWARD_DIR, ANALYSIS_DIR, REPORTS_DIR, PRICE_DIR
+from utils import TICKERS, KOSDAQ_TICKERS, EXPERIMENT_DIR, FORWARD_DIR, ANALYSIS_DIR, REPORTS_DIR, PRICE_DIR
 from compare import COND_LABELS, DEFAULT_MODEL
 
 __all__ = [
@@ -22,7 +22,7 @@ __all__ = [
     "SIGNAL_STYLE", "FORWARD_DEMO_DIR",
     "load_backtest_results", "list_backtest_models", "fmt_metric",
     "list_matrix_models", "load_signal_matrix",
-    "load_krx_stocks", "ensure_reports", "check_dart_cache",
+    "load_krx_stocks", "register_ticker", "fetch_recent_reports", "check_dart_cache",
     "check_trading_halt", "HALT_MIN_DAYS",
 ]
 
@@ -132,7 +132,7 @@ def load_signal_matrix(model: str) -> pd.DataFrame:
     return out
 
 
-# ── 실시간 수집 공용 (개별 분석 · 종목 데이터 조회) ───────
+# ── 실시간 수집 공용 (개별 분석 · 분석 프롬프트 생성) ─────
 @st.cache_resource
 def check_dart_cache() -> str:
     """DART corp_codes pkl 캐시 유효성 점검.
@@ -183,6 +183,15 @@ def check_dart_cache() -> str:
 
 
 @st.cache_data(ttl=3600, show_spinner=False)  # 상장 목록은 하루 단위로만 바뀐다
+def _krx_listing() -> pd.DataFrame | None:
+    """KRX 상장 목록 원본. 종목 목록과 코스닥 판별이 한 번의 조회를 나눠 쓴다."""
+    try:
+        import FinanceDataReader as fdr
+        return fdr.StockListing("KRX").dropna(subset=["Code", "Name"])
+    except Exception:
+        return None
+
+
 def load_krx_stocks() -> list[tuple[str, str]]:
     """KRX 상장 종목 (표시 라벨, 티커) 목록. 시가총액 내림차순.
 
@@ -200,63 +209,122 @@ def load_krx_stocks() -> list[tuple[str, str]]:
 
     조회 실패 시 백테스트 20종목으로 폴백한다 — 네트워크가 없어도 시연은 되어야 한다.
     """
-    try:
-        import FinanceDataReader as fdr
-        df = fdr.StockListing("KRX").dropna(subset=["Code", "Name"])
+    df = _krx_listing()
+    if df is not None:
         df = df[df["Code"].str[-1] == "0"]
         if "Marcap" in df.columns:
             df = df.sort_values("Marcap", ascending=False, na_position="last")
         out = [(f"{n} ({c})", c) for c, n in zip(df["Code"], df["Name"])]
         if out:
             return out
-    except Exception:
-        pass
     return [(f"{n} ({t})", t) for n, t in TICKERS.items()]
 
 
-def ensure_reports(ticker: str) -> None:
-    """20종목 밖 종목의 리포트 캐시를 당일 기준으로 확보한다.
+def register_ticker(ticker: str, name: str) -> None:
+    """20종목 밖 종목을 src/의 레지스트리에 주입해 프롬프트가 올바르게 만들어지게 한다.
 
-    get_today_context가 data/reports/{ticker}.csv를 직접 읽으므로, 파일이 없으면
-    리포트가 빈 채로 돌아간다. 30일치만 받는 이유는 그 창만 쓰기 때문이다
-    (백테스트용 전체 이력은 crawl.py 담당).
+    src/는 코드 동결이라 호출 전에 모듈 전역을 채우는 방식으로 푼다.
 
-    **파일이 있어도 오늘 받은 것이 아니면 다시 받는다.** 예전에 받아둔 파일은 그때의
-    30일 창이라, 시간이 지나면 get_today_context가 보는 창(오늘 기준 30일)과 겹치지
-    않아 리포트가 있는 종목이 "리포트 없음"으로 나온다. 제출·시연이 수집일보다 몇 달
-    뒤라 실제로 발생하는 경로다. 판정은 파일 수정시각으로 하며(마지막 리포트 날짜로
-    하면 원래 리포트가 뜸한 종목을 매번 다시 받게 된다) 하루 1회로 제한된다.
+    - 종목명: get_today_context는 TICKERS에서 이름을 역조회하고 못 찾으면 티커 코드를
+      이름으로 쓴다. 그 이름이 프롬프트에 들어가므로(cond1은 종목명이 입력의 전부다)
+      "005490"을 회사명으로 받게 된다.
+    - 상장 시장: build_prompt는 KOSDAQ_TICKERS(20종목 안의 두 개)만 보고 시장을 적어,
+      20종목 밖 코스닥 종목이 전부 "상장 시장: KOSPI"로 나갔다. KRX 목록의 Market으로
+      판별해 채운다. KOSDAQ GLOBAL도 코스닥이라 접두어로 본다.
 
-    백테스트 20종목은 건드리지 않는다. 그 CSV는 실험 입력이고 crawl.py가 전체 이력을
-    관리하는 파일이라, 앱이 30일치로 덮어쓰면 실험 데이터를 훼손한다.
-
-    실패해도 예외를 올리지 않는다 — 리포트는 없으면 없는 대로 성립하고,
-    화면에서 "리포트 없음"으로 안내된다.
+    백테스트 20종목은 건드리지 않는다. 실험 때와 같은 프롬프트가 나와야 하기 때문이다.
+    같은 set 객체를 llm_experiment가 import해 쓰므로 여기서 add하면 그쪽에도 보인다.
     """
-    # TICKERS가 아니라 BACKTEST_TICKERS로 판정한다. 분석 시 종목명을 TICKERS에
-    # 주입하므로, TICKERS로 보면 한 번 조회한 종목이 20종목으로 취급돼 이후 영영
-    # 리포트를 받지 않는다
     if ticker in BACKTEST_TICKERS:
         return
-
-    path = os.path.join(REPORTS_DIR, f"{ticker}.csv")
-    today = datetime.today().date()
-    if os.path.exists(path) and datetime.fromtimestamp(os.path.getmtime(path)).date() == today:
+    TICKERS.setdefault(name, ticker)
+    df = _krx_listing()
+    if df is None or "Market" not in df.columns:
         return
+    market = df.loc[df["Code"] == ticker, "Market"]
+    if not market.empty and str(market.iloc[0]).startswith("KOSDAQ"):
+        KOSDAQ_TICKERS.add(ticker)
 
+
+# 네이버 금융 리서치의 JSON API. 2026년 하반기 네이버가 리서치 페이지를 finance.naver.com에서
+# stock.naver.com으로 옮기면서 옛 목록 페이지가 새 주소로 넘어가게 됐고, crawl.py가 찾던
+# table.type_1이 사라져 전 종목이 0건으로 나왔다(삼성전자 포함). 새 페이지는 화면을 스크립트로
+# 그리며 이 API에서 데이터를 받는다. 목표주가와 투자의견이 목록에 같이 있어 상세 페이지를
+# 따로 부를 필요가 없다. size는 최대 10이다(초과 시 400) — 프롬프트는 5건만 쓴다.
+_NAVER_RESEARCH_API = "https://stock.naver.com/api/stockSecurity/researches/v2/company/by-items"
+_REPORT_WINDOW_DAYS = 30   # context_builders.WINDOW_DAYS와 같은 값
+_REPORT_MAX = 5            # get_today_context의 head(5)와 같은 값
+
+
+def fetch_recent_reports(ticker: str, today: str | None = None) -> list[dict] | None:
+    """오늘 기준 30일 이내 리포트 최대 5건. get_today_context의 recent_reports와 같은 형식.
+
+    None은 조회 실패, []는 30일 안에 리포트가 없다는 뜻이다. 호출측은 None일 때 기존 값을
+    그대로 둔다.
+    """
+    import requests
     try:
-        from crawl import fetch_reports
-        since = (datetime.today() - timedelta(days=30)).strftime("%Y-%m-%d")
-        recs = fetch_reports(ticker, since_date=since, max_pages=3)
-        if recs:
-            os.makedirs(REPORTS_DIR, exist_ok=True)
-            pd.DataFrame(recs).to_csv(path, index=False, encoding="utf-8-sig")
-        elif os.path.exists(path):
-            # 30일 내 리포트가 없는데 옛 파일이 남아 있으면 그 옛 행이 계속 읽힌다.
-            # 빈 CSV를 쓰면 get_today_context의 read_csv가 터지므로 파일을 지운다
-            os.remove(path)
+        resp = requests.get(
+            _NAVER_RESEARCH_API,
+            params={"itemCodes": ticker, "size": 10},
+            headers={"User-Agent": "Mozilla/5.0", "Referer": "https://stock.naver.com/"},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        items = resp.json().get(ticker, [])
     except Exception:
-        pass
+        return None
+
+    end = pd.Timestamp(today or datetime.today().date())
+    start = end - pd.Timedelta(days=_REPORT_WINDOW_DAYS)
+    out = []
+    for it in items:
+        d = pd.to_datetime(it.get("writeDate"), errors="coerce")
+        if pd.isna(d) or not (start <= d <= end):
+            continue
+        try:
+            tp = int(float(it["goalPrice"])) if it.get("goalPrice") else None
+        except (TypeError, ValueError):
+            tp = None
+        out.append({"date": str(d.date()), "title": str(it.get("title", "")).strip(), "target_price": tp})
+    out.sort(key=lambda r: r["date"], reverse=True)
+    return out[:_REPORT_MAX]
+
+
+def _install_report_source() -> None:
+    """get_today_context의 리포트를 CSV 대신 네이버 API에서 채우도록 감싼다.
+
+    src/는 코드 동결이라 crawl.py를 고칠 수 없고, get_today_context는 data/reports/{ticker}.csv를
+    직접 읽는다. 호출 후 ctx["recent_reports"]만 바꿔 끼운다. 모듈 속성을 바꾸므로 함수 안에서
+    `from update import get_today_context`를 하는 forward_test·tab_data 양쪽에 다 적용된다.
+
+    **파일은 하나도 쓰지 않는다.** 예전 방식(ensure_reports)은 20종목 밖 CSV를 앱이 받아 썼고,
+    20종목은 실험 입력이라 손대지 못해 crawl.py가 마지막으로 돈 시점(2026-07-31)의 리포트가
+    남았다. 오늘 기준 30일 창에 안 걸려 삼성전자도 "리포트 없음"이었다. 파일을 거치지 않으니
+    20종목도 실험 데이터를 건드리지 않고 최신 리포트를 받는다.
+
+    앱 프로세스 안에서만 바뀐다. 주간 배치(forward_run_all 등)는 별도 프로세스라 영향이 없다.
+    API가 실패하면 원래 값(CSV 기준)을 그대로 둔다.
+    """
+    import functools
+    import update
+    if getattr(update.get_today_context, "_app_report_source", False):
+        return
+    original = update.get_today_context
+
+    @functools.wraps(original)
+    def get_today_context(ticker: str) -> dict:
+        ctx = original(ticker)
+        recs = fetch_recent_reports(ticker, ctx.get("date"))
+        if recs is not None:
+            ctx["recent_reports"] = recs
+        return ctx
+
+    get_today_context._app_report_source = True
+    update.get_today_context = get_today_context
+
+
+_install_report_source()
 
 
 # 거래정지·상장폐지 판정에 쓰는 최소 연속일수. 유동성이 낮은 종목은 하루 이틀쯤

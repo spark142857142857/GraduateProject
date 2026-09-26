@@ -23,9 +23,9 @@ import pandas as pd
 import streamlit as st
 
 from app_ui.shared import (
-    BACKTEST_TICKERS, COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR,
-    SIGNAL_STYLE, TICKERS, UI_CONDS, UI_MODELS,
-    check_dart_cache, check_trading_halt, ensure_reports,
+    COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR,
+    SIGNAL_STYLE, UI_CONDS, UI_MODELS,
+    check_dart_cache, check_trading_halt, register_ticker,
     load_backtest_results, load_krx_stocks,
 )
 
@@ -143,24 +143,12 @@ def render() -> None:
 
     analyze_btn = col_b.button("🔍 분석하기", width="stretch", type="primary")
 
-    # provider 판별은 llm_experiment._provider와 동일하게 접두어 기준 — 모델 개명/추가에 안전
+    # 사용자가 알아야 할 것만 적는다 — 기다리는 시간과 비용. 기본 모델은 둘 다 해당이
+    # 없어 비워 둔다. provider 판별은 llm_experiment._provider와 같은 접두어 기준
     if selected_model.startswith("gemma"):
-        st.caption("gemma는 rate-limit으로 응답이 지연될 수 있습니다 (재시도 대기 포함 최대 3분).")
+        st.caption("gemma는 응답이 최대 3분 걸릴 수 있습니다.")
     elif selected_model.startswith(("gpt", "claude")):
-        st.caption("이 모델은 해당 provider의 API 키(.env)와 소액의 호출 비용이 필요합니다.")
-    else:
-        st.caption("분석 시 최신 데이터 자동 갱신 후 선택한 모델의 API를 호출합니다.")
-
-    # 20종목은 백테스트로 검증된 구간, 그 밖은 같은 파이프라인을 처음 적용하는 종목이다.
-    # 고르기 전에 알려야 결과를 같은 무게로 읽지 않는다
-    if selected_ticker not in BACKTEST_TICKERS:
-        # 종목명 뒤에 조사를 붙이지 않는다 — 2,700종목이면 받침 유무가 제각각이라
-        # "클래시스은"처럼 틀린 문장이 화면에 그대로 나온다
-        st.caption(
-            f"ℹ️ **{selected_name}** — 백테스트 검증 대상 20종목 밖입니다. 신호 생성은 동일한 "
-            "파이프라인으로 이뤄지지만 과거 성과 이력은 표시되지 않으며, 애널리스트 리포트가 "
-            "적거나 없을 수 있습니다."
-        )
+        st.caption("유료 API라 호출마다 비용이 듭니다.")
 
     # 거래정지 종목은 시세가 마지막 종가에 고정돼 모멘텀·거래량 변화율이 전부 0이 된다.
     # 그 상태로 분석하면 LLM은 0을 "변동성이 없다"는 관측으로 읽고 그럴듯한 근거까지
@@ -171,13 +159,9 @@ def render() -> None:
     _halt = check_trading_halt(selected_ticker)
     if _halt:
         _hp = f"{int(_halt['price']):,}원" if _halt["price"] is not None else "직전 종가"
-        _hl = f" 마지막 거래일은 {_halt['last_traded']}이고," if _halt["last_traded"] else ""
         st.warning(
-            f"⛔ **{selected_name}** — 최근 {_halt['days']}거래일 연속 거래량이 0입니다. "
-            f"거래정지나 상장폐지로 시세가 멈춘 종목으로 보입니다.{_hl} "
-            f"현재가는 {_hp}에 고정돼 있습니다. 이 상태로 분석하면 모멘텀과 거래량 "
-            "변화율이 0으로 들어가고 모델은 그 0을 실제 관측으로 읽으므로, 신호를 "
-            "종목 판단에 쓰지 마십시오."
+            f"⛔ {_halt['days']}거래일째 거래량이 0입니다. 거래정지 종목으로 보이며 시세가 "
+            f"{_hp}에 멈춰 있어, 이 상태로 나온 신호는 판단에 쓸 수 없습니다."
         )
 
     # ── 분석 실행 ──────────────────────────────────────────
@@ -201,32 +185,31 @@ def render() -> None:
         _was_cached  = os.path.exists(_batch_path)
         _demo_cached = (not _was_cached) and os.path.exists(_demo_path)
 
-        with st.status("분석 중...", expanded=True) as _status:
+        # 진행 단계는 기다리는 동안에만 보여준다. 끝난 뒤 "분석 완료" 상자가 결과 위에
+        # 남아 있으면 자리만 차지하므로 성공하면 비운다(실패는 남겨 원인을 읽게 한다)
+        _status_slot = st.empty()
+        _ok = False
+        with _status_slot.status("분석 중...", expanded=True) as _status:
             try:
                 result = None
 
                 if _demo_cached:
                     # 시연 캐시는 run_forward가 못 찾는 경로에 있어 직접 읽는다(재호출 방지)
-                    _status.write(f"**{selected_name}** 시연 캐시 사용 — LLM 재호출 없이 반환합니다.")
+                    _status.write("오늘 분석한 결과를 불러옵니다.")
                     with open(_demo_path, encoding="utf-8") as _f:
                         result = json.load(_f)
                 elif _was_cached:
                     # 정식 배치 캐시는 직접 읽는다. run_forward를 거치지 않아 워커 생성도 없다.
-                    _status.write(f"**{selected_name}** 당일 정식 배치 캐시 확인 — LLM 재호출 없이 반환합니다.")
+                    _status.write("오늘 분석한 결과를 불러옵니다.")
                     with open(_batch_path, encoding="utf-8") as _f:
                         result = json.load(_f)
                 else:
-                    # get_today_context는 TICKERS에서 종목명을 찾고, 못 찾으면 티커 코드를
-                    # 그대로 이름으로 쓴다. 그 이름이 LLM 프롬프트에 들어가므로(cond1은
-                    # 종목명이 입력의 전부다) 20종목 밖은 "005490"을 회사명으로 받게 된다.
-                    # src/는 코드 동결이라 레지스트리에 이름을 주입해 해결한다.
-                    # 20종목은 이미 있는 항목이라 주입해도 값이 바뀌지 않는다.
-                    TICKERS.setdefault(selected_name, selected_ticker)
+                    # 20종목 밖 종목의 이름·상장 시장을 src/ 레지스트리에 주입한다.
+                    # 안 하면 프롬프트에 티커 코드가 회사명으로, 코스닥이 KOSPI로 들어간다
+                    register_ticker(selected_ticker, selected_name)
 
-                    # 리포트 CSV가 없으면 cond3·cond4가 리포트 없이 돌아간다. 먼저 채운다
-                    if selected_cond in REPORT_CONDS_UI:
-                        _status.write(f"**{selected_name}** 애널리스트 리포트 확인 중...")
-                        ensure_reports(selected_ticker)
+                    # 리포트는 get_today_context 안에서 네이버 API로 채워진다
+                    # (shared._install_report_source). 여기서 따로 받을 것이 없다
 
                     # DART 법인코드 점검은 실제로 수집이 필요한 경우에만
                     # (캐시 반환 경로는 DART를 쓰지 않는다 — 함수 docstring 참고)
@@ -258,30 +241,28 @@ def render() -> None:
                             _already_running = True
 
                     if _already_running:
-                        _status.write(f"**{selected_name}** 동일 분석이 이미 진행 중 — 기존 작업을 기다립니다.")
+                        _status.write("같은 분석이 이미 진행 중이라 그 결과를 기다립니다.")
                     else:
-                        _status.write(f"**{selected_name}** 실시간 데이터 수집 중 (FDR / DART)...")
+                        _status.write("데이터를 수집하고 모델에 묻는 중입니다.")
 
                     try:
                         result = _future.result(timeout=180)   # 최대 3분
                     except concurrent.futures.TimeoutError:
                         _status.update(label="시간 초과", state="error", expanded=True)
+                        # 워커는 계속 돌고 끝나면 시연 캐시로 격리된다. 다시 누르면 그 결과를 읽는다
                         st.error(
-                            "분석 시간이 초과되었습니다 (3분). "
-                            "FDR/DART API 미응답 또는 모델 rate-limit 재시도 대기일 수 있습니다. "
-                            "백그라운드 작업은 계속되며 완료 즉시 시연 캐시로 격리됩니다. "
-                            "잠시 후 다시 시도하면 기존 작업 또는 캐시 결과를 사용합니다."
+                            "3분 안에 응답이 오지 않았습니다. 분석은 뒤에서 계속되니 "
+                            "잠시 후 다시 누르면 결과를 바로 불러옵니다."
                         )
 
                 if result is not None:
-                    _status.write("LLM 신호 분석 완료!")
 
                     # 신규 결과는 워커가 반환하기 전에 이미 시연 폴더로 격리되어 있다.
                     _source = "batch" if _was_cached else ("demo" if _demo_cached else "new")
 
                     # 입력 검증(forward_verify) — get_price 호출이 있어 렌더링마다 돌면
                     # 위젯 조작 때마다 느려진다. 분석 시점에 1회만 수행해 결과를 저장
-                    _status.write("입력 정보 검증 중 (현재가·정합성·리포트·DART)...")
+                    _status.write("입력값을 확인하는 중입니다.")
                     try:
                         _vsummary, _vflags = verify_ticker(result)
                         _verr = None
@@ -300,14 +281,15 @@ def render() -> None:
                         "flags":      _vflags,
                         "verify_err": _verr,
                     }
-                    _status.update(label="분석 완료", state="complete", expanded=False)
+                    _ok = True
             except Exception as _e:
                 _status.update(label="오류 발생", state="error", expanded=True)
                 st.error(f"**{type(_e).__name__}**: {_e}")
+        if _ok:
+            _status_slot.empty()
 
     fw = st.session_state.get("fw_result")
     if fw is None:
-        st.info("종목·분석 조건·모델을 선택한 뒤 **🔍 분석하기** 버튼을 눌러주세요.")
         return
 
     # 렌더링 분기는 셀렉트박스가 아닌 마지막 분석 결과(fw) 기준 — 위젯 변경 후 불일치 방지
@@ -327,53 +309,25 @@ def render() -> None:
     col_p.metric("현재가", f"{int(fw['price']):,}원")
     col_d.metric("분석 날짜", fw["date"])
 
-    # ── 1-b. 설정 · 생성 출처 · 입력 검증 ──────────────
-    # 캐시 재사용과 신규 호출이 화면상 동일해 "지금 호출한 결과인가"를
-    # 구분할 수 없던 문제 보완. 검증은 forward_verify와 동일 기준.
-    # 조건은 원본 코드(cond4)가 아니라 COND_LABELS 이름으로 낸다 — 다른 화면이 전부
-    # 그렇게 쓰는데 여기만 raw였다. 캡션이라 라벨 전체를 줄바꿈 걱정 없이 쓸 수 있다.
-    _setting_txt = f"⚙️ {COND_LABELS.get(fw_cond, fw_cond)}  ·  {fw_model}"
+    # ── 1-b. 설정 · 생성 시각 · 입력 검증 ──────────────
+    # 셀렉트박스를 바꾸고 재분석하지 않은 상태에서 어떤 설정의 결과인지 밝힌다.
+    # 저장된 결과를 다시 읽은 경우도 알린다 — 지금 호출한 결과처럼 보이면 안 된다.
+    # 캐시 종류(정식 배치/시연)나 forward_demo 격리는 내부 사정이라 화면에 내지 않는다.
+    _parts = [COND_LABELS.get(fw_cond, fw_cond), fw_model]
+    _meta = st.session_state.get("fw_meta") or {}
+    if _meta.get("gen_time"):
+        _parts.append(f"오늘 {_meta['gen_time']} 생성")
+    if _meta.get("source") in ("batch", "demo"):
+        _parts.append("저장된 결과")
+    st.caption("  ·  ".join(_parts))
 
-    _meta = st.session_state.get("fw_meta")
-    if _meta:
-        _gt = _meta.get("gen_time")
-        _src_txt = {
-            "batch": "♻️ 당일 정식 배치 캐시",
-            "demo":  "♻️ 당일 시연 캐시",
-            "new":   "🆕 신규 LLM 호출",
-        }.get(_meta.get("source"), "생성 출처 불명")
-        if _gt:
-            _src_txt += f" (오늘 {_gt} 생성)"
-        if _meta.get("source") == "new":
-            _src_txt += " · 평가 표본 제외(forward_demo)"
-
-        _flags = _meta.get("flags")
-        if _meta.get("verify_err"):
-            _vf_txt = f"❔ 입력 검증 실패 ({_meta['verify_err']})"
-        elif _flags is None:
-            _vf_txt = "❔ 입력 검증 정보 없음"
-        elif _flags:
-            _vf_txt = f"⚠️ 입력 검증 플래그 {len(_flags)}건"
-        else:
-            _vs = _meta.get("summary") or {}
-            _vf_txt = (
-                f"✅ 입력 검증 통과 (현재가·ROE 정합성·52주 · "
-                f"리포트 {_vs.get('reports', 0)}건 · DART {_vs.get('dart', '-')})"
-            )
-
-        st.caption(f"{_setting_txt}  |  {_src_txt}  |  {_vf_txt}")
-
-        # 캡션은 플래그 "건수"만 알린다. 무엇이 걸렸는지는 여기서만 볼 수 있으므로
-        # 반드시 _meta가 있는 이 분기 안에 둔다(_flags는 위에서만 정의된다).
-        if _flags:
-            with st.expander(f"입력 검증 플래그 상세 ({len(_flags)}건)"):
-                for _fl in _flags:
-                    st.markdown(f"- {_fl}")
-    else:
-        # fw_meta 없이 fw_result만 남은 경우에도 설정은 반드시 보여야 한다
-        st.caption(_setting_txt)
-
-    st.divider()
+    # 입력 검증(forward_verify)은 걸린 것이 있을 때만 드러낸다. 통과 내역을 늘어놓으면
+    # 검증 체크리스트가 화면에 새어 나온다
+    _flags = _meta.get("flags")
+    if _flags:
+        with st.expander(f"⚠️ 입력값 확인 필요 ({len(_flags)}건)"):
+            for _fl in _flags:
+                st.markdown(f"- {_fl}")
 
     # ── 2. 신호와 근거 ─────────────────────────────────
     # 나란히 둔다. 세로로 쌓으면 배지와 근거가 502px 떨어져(실측) "왜 이 신호인가"가
@@ -384,12 +338,9 @@ def render() -> None:
         st.markdown(signal_badge(fw["signal"]), unsafe_allow_html=True)
         st.markdown(f"**신뢰도**: {fw['confidence']}%")
         st.progress(fw["confidence"] / 100)
-        # 재현성을 위해 temperature=0으로 고정한 결과 신뢰도가 좁은 대역에 몰린다.
-        # 여러 종목을 눌러도 같은 값이 나오는 이유를 화면에서 먼저 밝혀 오해를 막는다.
-        st.caption(
-            "temperature=0은 재현성을 위한 설정이며, 신뢰도는 모델별로 일부 값에 집중되는 경향이 있습니다. "
-            "모델 간 직접 비교나 주요 성과 판단에는 사용하지 않고 보조 정보로만 확인합니다."
-        )
+        # temperature=0 고정이라 신뢰도가 좁은 대역에 몰린다. 여러 종목을 눌러도 같은
+        # 값이 나오는 이유를 한 줄로 막는다. 설정 이름(temperature)은 화면에 내지 않는다
+        st.caption("모델이 스스로 매긴 값이라 비슷한 값이 자주 나옵니다. 보조 정보로만 보세요.")
 
     with col_rsn:
         st.subheader("📋 투자 근거")
@@ -400,7 +351,6 @@ def render() -> None:
         else:
             st.caption("근거 없음")
 
-    st.divider()
 
     # ── 4. 재무지표 (cond2 이상) ───────────────────────
     if fw_cond in ("cond2", "cond3", "cond4"):
@@ -420,13 +370,8 @@ def render() -> None:
         # PER·PBR·ROE가 통째로 비면 모델도 그 값 없이 판단한 것이다. 리포트 0건일 때와
         # 같은 이유로 밝힌다 — N/A만 늘어놓으면 수집 실패인지 원래 없는 값인지 모른다
         if all(ctx.get(k) is None for k in ("per", "pbr", "roe")):
-            st.warning(
-                "**가치지표(PER·PBR·ROE)가 비어 있습니다.** 적자라 PER이 정의되지 않거나 "
-                "산출에 필요한 재무 항목이 없는 경우이며, 모델도 이 값들 없이 판단했습니다. "
-                "위 52주 위치·모멘텀·거래량은 정상 수집된 값입니다."
-            )
+            st.warning("PER·PBR·ROE를 수집하지 못해 모델도 이 값들 없이 판단했습니다.")
 
-        st.divider()
 
     # ── 5. 최근 리포트 (cond3 이상) ────────────────────
     if fw_cond in ("cond3", "cond4"):
@@ -442,14 +387,8 @@ def render() -> None:
         else:
             # 조건은 리포트를 요구하는데 실제로는 빈 섹션이 들어갔다. 조용히 두면
             # 화면상 cond4인데 입력은 cond2에 가까운 상태가 드러나지 않는다
-            st.warning(
-                "최근 30일 이내 애널리스트 리포트가 없어 이 섹션이 비어 있습니다. "
-                f"**{COND_LABELS[fw_cond]}**는 리포트를 입력에 포함하지만 이 종목은 해당 정보 없이 "
-                "판단했으므로, 실질적으로는 재무 정보 기반 판단에 가깝습니다. "
-                "커버리지가 낮은 종목에서 나타납니다."
-            )
+            st.warning("최근 30일 안에 나온 리포트가 없어, 모델은 리포트 없이 판단했습니다.")
 
-        st.divider()
 
     # ── 6. DART 실적 (cond4만) ─────────────────────────
     if fw_cond == "cond4":
@@ -465,28 +404,20 @@ def render() -> None:
         op_margin  = ctx.get("operating_margin")
         debt       = ctx.get("debt_ratio")
 
-        col_a.metric(
-            "매출 성장률 (YoY)",
-            fmt_val(rev_growth, suffix="%"),
-            delta=f"{rev_growth:+.1f}%" if (rev_growth is not None and not pd.isna(rev_growth)) else None,
-        )
+        # delta를 달지 않는다. 값 자체가 증감률이라 같은 숫자가 두 번 찍혔다
+        col_a.metric("매출 성장률 (YoY)", fmt_val(rev_growth, suffix="%"))
         col_b2.metric("영업이익률",  fmt_val(op_margin, suffix="%"))
         col_c2.metric("부채비율",   fmt_val(debt, suffix="%"))
 
         # 보고서 기간·종류는 찾았는데 수치만 비는 경우가 있다(실측: 시총 하위 종목).
         # 그러면 위 제목에 "2026 2분기 실적"만 뜨고 값은 전부 N/A라 고장처럼 보인다
         if all(x is None for x in (rev_growth, op_margin, debt)):
-            st.warning(
-                "**DART 실적 수치를 읽지 못했습니다.** 정기보고서는 확인됐으나 값이 비어 있어 "
-                f"**{COND_LABELS[fw_cond]}**의 실적 항목이 입력에서 빠졌습니다. "
-                "모델은 이 값들 없이 판단했으며, 값이 0이라는 뜻이 아닙니다."
-            )
+            st.warning("DART 실적 수치를 읽지 못해 모델은 실적 없이 판단했습니다.")
 
         # 배당수익률은 표시하지 않는다. 사업연도말 기준가 산출이라 증권사 값과 평균 42% 벌어지고
         # (prove.md 각도 1), 애초에 LLM 컨텍스트에 넣지 않는 필드다. 화면에 두면 모델이 본 값으로
         # 오인되고, 값 자체가 이상해 설명 부담만 생긴다.
 
-        st.divider()
 
     # ── 7. 백테스팅 성과 ───────────────────────────────
     st.subheader("📉 백테스팅 성과")
@@ -504,11 +435,7 @@ def render() -> None:
 
     if ticker_df.empty:
         # 20종목 밖을 고르면 여기로 온다. 누락이 아니라 설계라는 것을 밝힌다
-        st.info(
-            f"**{fw['name']}** — 백테스트 검증 대상 20종목에 포함되지 않아 과거 성과 이력이 없습니다. "
-            "백테스트는 2023-01~2025-12 대형주 20종목으로 방법을 검증하는 통제 실험이고, "
-            "신호 생성은 같은 파이프라인으로 전 종목에 적용됩니다."
-        )
+        st.caption("백테스트 대상 20종목 밖이라 과거 성과가 없습니다.")
         return
 
     total   = len(ticker_df)
@@ -528,7 +455,8 @@ def render() -> None:
     buy_hr   = hit_rate(buy_df, "Buy")
     sell_hr  = hit_rate(sell_df, "Sell")
 
-    st.caption(f"조건: **{COND_LABELS[fw_cond]}** | 모델: **{fw_model}** | 총 **{total}**개월 백테스트 이력")
+    # 조건·모델은 위 설정 캡션에 이미 있다
+    st.caption(f"2023-01 ~ 2025-12, {total}개월")
 
     # 신호 성능 지표만 둔다. Buy/Sell/Neutral을 섞은 전체 평균은 종목의 기간 등락에 가까워
     # 옆 두 칸과 나란히 두면 세 번째 성능 지표로 읽힌다 — 아래 상세 통계에서 신호별로 본다
@@ -613,4 +541,3 @@ def render() -> None:
             )
         )
         st.altair_chart(scatter, width="stretch", height=280)
-        st.caption("점 하나가 신호 한 건입니다. 색은 신호 종류, 세로축은 그 신호 이후 20거래일 수익률입니다.")
