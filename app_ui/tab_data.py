@@ -31,7 +31,7 @@ import streamlit as st
 
 from app_ui.shared import (
     COND_LABELS, UI_CONDS,
-    check_dart_cache, check_trading_halt, load_krx_stocks,
+    check_trading_halt, dart_unavailable_reason, load_krx_stocks,
     register_ticker,
 )
 
@@ -280,10 +280,14 @@ def render() -> None:
         st.session_state.pop("dl_ctx", None)
         try:
             with st.spinner(f"{name} 데이터 수집 중..."):
-                warn = check_dart_cache()
-                if warn:
-                    st.warning(f"DART 초기화 경고: {warn}")
-                st.session_state["dl_ctx"] = fetch_context(ticker, name)
+                # DART가 안 되면 수집하지 않는다. 한 번 수집한 값으로 cond1~4 프롬프트를 모두
+                # 그리므로 조건과 무관하게 막는다. 예전에는 경고만 띄우고 진행해, 빈 PER이
+                # "해당없음(적자)"로 들어간 프롬프트가 나왔다(실측 2026-10-10, DART 점검 중)
+                dart_err = dart_unavailable_reason()
+                if dart_err:
+                    st.error(dart_err)
+                else:
+                    st.session_state["dl_ctx"] = fetch_context(ticker, name)
         except Exception as e:
             st.error(f"수집 실패 — **{type(e).__name__}**: {e}")
 
@@ -301,11 +305,13 @@ def render() -> None:
 
     # 거래정지 종목은 시세가 마지막 종가에 고정된다. 결측과 달리 겉보기에 멀쩡하고,
     # 모델도 그 0을 관측으로 읽는다(app_scope.md). 프롬프트보다 먼저 알린다.
-    _halt = check_trading_halt(ctx["ticker"])
+    # 이 탭은 시세 캐시를 만들지 않으므로(get_today_context는 파일에 쓰지 않는다) 캐시가 없으면
+    # 최근 시세를 받아 와서 판정한다. 캐시만 보던 때는 처음 조회한 거래정지 종목에서 경고가 빠졌다
+    _halt = check_trading_halt(ctx["ticker"], fetch_if_missing=True)
     if _halt:
         _hp = f"{int(_halt['price']):,}원" if _halt["price"] is not None else "직전 종가"
         st.warning(
-            f"⛔ {_halt['days']}거래일째 거래량이 0입니다. 거래정지 종목으로 보이며, "
+            f"⛔ {_halt['days']}거래일{' 넘게' if _halt.get('at_least') else '째'} 거래량이 0입니다. 거래정지 종목으로 보이며, "
             f"시세 관련 값은 모두 {_hp}에 멈춘 값에서 나왔습니다."
         )
 

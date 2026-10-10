@@ -25,7 +25,7 @@ __all__ = [
     "load_backtest_results", "list_backtest_models", "fmt_metric",
     "list_matrix_models", "load_signal_matrix",
     "load_krx_stocks", "register_ticker", "fetch_recent_reports", "check_dart_cache",
-    "check_trading_halt", "HALT_MIN_DAYS",
+    "dart_unavailable_reason", "check_trading_halt", "HALT_MIN_DAYS",
 ]
 
 
@@ -290,6 +290,81 @@ def check_dart_cache() -> str:
         return f"DART 캐시 재생성 실패: {e}"
 
 
+# DART 상태 확인에 쓰는 종목. 어느 회사든 되지만 상장 폐지될 일이 없는 삼성전자로 둔다
+_DART_PING_CORP = "00126380"
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def _dart_ping(api_key: str) -> tuple[str, str]:
+    """DART 기업개황 API를 한 번 불러 (status, message)를 돌려준다. 연결 실패는 ("", 사유).
+
+    점검 중이면 "800"이 온다(실측 2026-10-10 토요일 오후). 1분만 캐시해 점검이 끝나면 곧 풀린다.
+    """
+    import requests
+    try:
+        resp = requests.get(
+            "https://opendart.fss.or.kr/api/company.json",
+            params={"crtfc_key": api_key, "corp_code": _DART_PING_CORP},
+            timeout=10,
+        )
+        data = resp.json()
+        return str(data.get("status", "")), str(data.get("message", ""))
+    except Exception as e:
+        return "", f"{type(e).__name__}"
+
+
+def _revive_dart_readers(api_key: str) -> None:
+    """src/collect의 모듈 전역 DART 리더가 비어 있으면 다시 만든다.
+
+    collect_financials와 collect_dart_fundamentals는 import 시점에 `dart = OpenDartReader(...)`를
+    한 번 만들고, 실패하면 None으로 둔 채 이후 조회를 전부 NaN으로 넘긴다. 앱은 시작할 때
+    (shared가 update를 import할 때) 이 모듈들을 불러오므로, DART 점검 중에 앱을 띄우면 점검이
+    끝나도 프로세스가 살아 있는 동안 재무 값이 계속 비었다. src/는 동결이라 모듈 속성을 바꿔 푼다.
+    """
+    import collect_dart_fundamentals as _cdf
+    import collect_financials as _cf
+    from opendartreader import OpenDartReader as _odr
+    for mod in (_cf, _cdf):
+        if getattr(mod, "dart", None) is None:
+            mod.dart = _odr(api_key=api_key)
+
+
+def dart_unavailable_reason() -> str | None:
+    """재무 데이터를 지금 받을 수 있으면 None, 아니면 화면에 낼 이유.
+
+    DART가 안 되는 채로 수집하면 값이 전부 비는데, 프롬프트 빌더(src/, 동결)는 빈 PER을
+    "해당없음(적자)"로 적는다. 실측(2026-10-10, DART 점검 중): 삼성전자 프롬프트에 PER이
+    적자로 들어갔고 PBR·ROE·실적은 전부 N/A였다. 모델에 사실과 다른 입력을 주게 되므로
+    수집 전에 막는다. 소형주처럼 원래 값이 없는 종목과는 구별되지 않으므로 DART 자체의
+    상태로 판정한다.
+    """
+    key = os.environ.get("DARTS_API_KEY", "")
+    if not key:
+        return "DART API 키(DARTS_API_KEY)가 없어 재무 데이터를 받을 수 없습니다. .env를 확인해 주세요."
+
+    status, message = _dart_ping(key)
+    if status != "000":
+        why = f"DART 안내: {message.rstrip('.')}" if status else "DART에 연결하지 못했습니다"
+        return (f"지금은 전자공시(DART)에서 재무 데이터를 받을 수 없어 진행하지 않습니다({why}). "
+                "재무 값이 빈 채로 만들면 PER이 '적자'로 잘못 들어갑니다. 잠시 후 다시 시도해 주세요.")
+
+    cache_err = check_dart_cache()
+    try:
+        _revive_dart_readers(key)
+    except Exception:
+        cache_err = cache_err or "리더 초기화 실패"
+    if cache_err:
+        check_dart_cache.clear()   # 실패를 캐시해 두면 DART가 살아나도 프로세스가 끝날 때까지 막힌다
+        # 점검이 API마다 따로 풀린다. 실측(2026-10-10): 기업개황은 정상인데 기업 목록
+        # 내려받기만 800 점검 중이었다. 그래서 위 핑을 통과해도 여기서 다시 걸린다
+        import re
+        m = re.search(r"'message':\s*'([^']+)'", cache_err)
+        why = f"(DART 안내: {' '.join(m.group(1).split()).rstrip('.')})" if m else ""
+        return (f"전자공시(DART) 기업 목록을 받지 못해 진행하지 않습니다{why}. "
+                "잠시 후 다시 시도해 주세요.")
+    return None
+
+
 @st.cache_data(ttl=3600, show_spinner=False)  # 상장 목록은 하루 단위로만 바뀐다
 def _krx_listing() -> pd.DataFrame | None:
     """KRX 상장 목록 원본. 종목 목록과 코스닥 판별이 한 번의 조회를 나눠 쓴다."""
@@ -441,8 +516,30 @@ _install_report_source()
 HALT_MIN_DAYS = 5
 
 
-def check_trading_halt(ticker: str, min_days: int = HALT_MIN_DAYS) -> dict | None:
+@st.cache_data(ttl=3600, show_spinner=False)
+def _recent_prices(ticker: str) -> pd.DataFrame | None:
+    """캐시가 없는 종목의 최근 시세. 파일로 남기지 않는다(20종목 캐시는 git 추적 대상이다)."""
+    try:
+        import FinanceDataReader as fdr
+        # 정지 기간을 세려면 마지막 거래일까지 거슬러 가야 한다. 400일로 받으면 DH오토넥스
+        # (2024-02 이후 정지)가 264거래일로 잘려 나왔다. 그보다 길면 "이상"으로 표기한다
+        start = (pd.Timestamp.today() - pd.Timedelta(days=1100)).strftime("%Y-%m-%d")
+        df = fdr.DataReader(ticker, start)
+    except Exception:
+        return None
+    if df is None or df.empty:
+        return None
+    return df.reset_index().rename(columns={df.index.name or "index": "Date"})
+
+
+def check_trading_halt(ticker: str, min_days: int = HALT_MIN_DAYS,
+                       fetch_if_missing: bool = False) -> dict | None:
     """시세 캐시 끝에서 거래량 0이 연속되는지 확인한다.
+
+    fetch_if_missing=True면 캐시가 없을 때 최근 시세를 받아 와서 판정한다. 결과 화면을
+    그린 뒤에 쓴다. 예전에는 캐시만 봐서, 처음 분석하는 거래정지 종목은 첫 결과 화면에
+    경고가 빠지고 다음 렌더부터 떴다(실측 2026-10-10, DH오토넥스). 분석 버튼을 누르기
+    전 판정은 그대로 캐시만 본다 — 종목을 고를 때마다 시세를 받으면 셀렉트박스가 느려진다.
 
     거래정지·상장폐지 종목은 FDR이 마지막 종가를 그대로 반복해서 돌려준다.
     이노벡스(279060)가 2026-01-26부터 종가 115원·거래량 0으로 142거래일 고정된
@@ -456,17 +553,23 @@ def check_trading_halt(ticker: str, min_days: int = HALT_MIN_DAYS) -> dict | Non
     Returns:
         None: 캐시 없음 / 읽기 실패 / 정상 거래 중
         dict: {"days": 연속 거래량 0 일수,
+               "at_least": 받은 구간 전체가 0이라 실제로는 더 길 수 있으면 True,
                "last_traded": 마지막으로 거래가 있었던 날짜(str) 또는 None,
                "price": 고정된 종가(float) 또는 None}
     """
     path = os.path.join(PRICE_DIR, f"{ticker}.csv")
-    if not os.path.exists(path):
+    if os.path.exists(path):
+        try:
+            df = pd.read_csv(path, usecols=["Date", "Close", "Volume"])
+        except Exception:
+            return None  # 형식이 다르거나 깨진 캐시는 판정하지 않는다
+    elif fetch_if_missing:
+        df = _recent_prices(ticker)
+        if df is None or not {"Date", "Close", "Volume"} <= set(df.columns):
+            return None
+        df = df[["Date", "Close", "Volume"]]
+    else:
         return None
-
-    try:
-        df = pd.read_csv(path, usecols=["Date", "Close", "Volume"])
-    except Exception:
-        return None  # 형식이 다르거나 깨진 캐시는 판정하지 않는다
     if df.empty:
         return None
 
@@ -484,6 +587,8 @@ def check_trading_halt(ticker: str, min_days: int = HALT_MIN_DAYS) -> dict | Non
     last_close = pd.to_numeric(df["Close"], errors="coerce").iloc[-1]
     return {
         "days": zero_tail,
+        # 받은 구간 전체가 거래량 0이면 실제 정지 기간은 그보다 길다
+        "at_least": traded.empty,
         "last_traded": str(traded["Date"].iloc[-1]) if not traded.empty else None,
         "price": None if pd.isna(last_close) else float(last_close),
     }

@@ -25,7 +25,7 @@ import streamlit as st
 from app_ui.shared import (
     COND_LABELS, FORWARD_DEMO_DIR, FORWARD_DIR,
     SIGNAL_STYLE, UI_CONDS,
-    check_dart_cache, check_trading_halt, register_ticker,
+    check_trading_halt, dart_unavailable_reason, register_ticker,
     check_model_id, explain_model_error,
     load_backtest_results, load_krx_stocks, load_ui_models,
 )
@@ -35,6 +35,10 @@ _CUSTOM_MODEL = "__custom__"
 
 # 리포트를 입력에 포함하는 조건 — 리포트 0건이면 실질 입력이 줄어든다는 안내가 필요하다
 REPORT_CONDS_UI = ("cond3", "cond4")
+
+
+class _DartUnavailable(RuntimeError):
+    """DART를 쓸 수 없어 분석을 시작하지 않은 경우. 일반 오류와 문구를 다르게 낸다."""
 
 
 # ── 헬퍼 ──────────────────────────────────────────────────
@@ -63,6 +67,36 @@ def fmt_market_cap(mc_jo) -> str:
     if mc_jo >= 1:
         return f"{mc_jo:,.1f}조원"   # 1350.5조원 → 1,350.5조원 (② 탭과 같은 쉼표 표기)
     return f"{mc_jo * 1e4:,.0f}억원"
+
+
+def humanize_flag(flag: str) -> str | None:
+    """forward_verify.verify_ticker의 플래그(개발용 문구)를 화면 문구로. None이면 내지 않는다.
+
+    verify_ticker는 src/(동결)에 있고 배치 점검용이라 "JSON=", "인메모리 조회" 같은 내부 용어로
+    적는다. 모르는 형식은 원문 그대로 둔다(새 검사 항목이 생겨도 사라지지는 않게).
+    """
+    import re
+    if flag.startswith("DART 값 없음"):
+        # cond4에서는 아래 DART 실적 칸이 같은 내용을 경고하고, cond1~3은 DART를 쓰지 않는다
+        return None
+    if flag == "FDR 가격 없음":
+        return "시세를 다시 받지 못해 현재가를 대조하지 못했습니다."
+    m = re.match(r"현재가 불일치 JSON=(.+) vs FDR=(.+)", flag)
+    if m:
+        return f"분석에 쓴 현재가({m.group(1)})가 같은 날 종가({m.group(2)})와 다릅니다."
+    m = re.match(r"ROE 불일치 저장=(.+) 기대\(PBR/PER\)=(.+)", flag)
+    if m:
+        return f"ROE({m.group(1)}%)가 PBR÷PER로 계산한 값({m.group(2)}%)과 다릅니다."
+    m = re.match(r"52주 위치 범위밖 (.+)", flag)
+    if m:
+        return f"52주 내 위치({m.group(1)}%)가 0~100% 범위를 벗어났습니다."
+    m = re.match(r"리포트 날짜 범위밖 (\S+)", flag)
+    if m:
+        return f"{m.group(1)} 리포트가 최근 30일 범위 밖입니다."
+    m = re.match(r"리포트 날짜 파싱 실패 (.+)", flag)
+    if m:
+        return f"리포트 날짜({m.group(1)})를 읽지 못했습니다."
+    return flag
 
 
 def signal_badge(signal: str) -> str:
@@ -230,13 +264,20 @@ def render() -> None:
     # 두 시점을 덮기 때문이다 — 누르기 전에는 헛호출을 막고, 누른 뒤에는 결과 화면
     # 위에 남아 수치가 왜 평평한지 설명한다. 캐시가 없어 판정 못 한 종목도 분석을
     # 한 번 거치면 캐시가 생겨 다음 렌더에서 잡힌다.
-    _halt = check_trading_halt(selected_ticker)
-    if _halt:
-        _hp = f"{int(_halt['price']):,}원" if _halt["price"] is not None else "직전 종가"
-        st.warning(
-            f"⛔ {_halt['days']}거래일째 거래량이 0입니다. 거래정지 종목으로 보이며 시세가 "
+    # 자리만 여기 잡고 실제 판정은 분석이 끝난 뒤에 한 번 더 한다. 처음 분석하는 종목은
+    # 누르기 전에는 캐시가 없어 판정을 못 하므로, 결과를 그린 뒤 시세를 받아 와서 채운다.
+    _halt_slot = st.empty()
+
+    def _show_halt(halt: dict | None) -> None:
+        if not halt:
+            return
+        _hp = f"{int(halt['price']):,}원" if halt["price"] is not None else "직전 종가"
+        _halt_slot.warning(
+            f"⛔ {halt['days']}거래일{' 넘게' if halt.get('at_least') else '째'} 거래량이 0입니다. 거래정지 종목으로 보이며 시세가 "
             f"{_hp}에 멈춰 있어, 이 상태로 나온 신호는 판단에 쓸 수 없습니다."
         )
+
+    _show_halt(check_trading_halt(selected_ticker))
 
     # ── 분석 실행 ──────────────────────────────────────────
     if analyze_btn and _custom_err:
@@ -289,11 +330,14 @@ def render() -> None:
                     # 리포트는 get_today_context 안에서 네이버 API로 채워진다
                     # (shared._install_report_source). 여기서 따로 받을 것이 없다
 
-                    # DART 법인코드 점검은 실제로 수집이 필요한 경우에만
-                    # (캐시 반환 경로는 DART를 쓰지 않는다 — 함수 docstring 참고)
-                    _dart_warn = check_dart_cache()
-                    if _dart_warn:
-                        st.warning(f"DART 초기화 경고: {_dart_warn}")
+                    # DART 점검은 실제로 수집이 필요한 경우에만(캐시 반환 경로는 DART를 쓰지 않는다).
+                    # DART가 안 되면 경고만 띄우고 진행하던 것을 막는다. 빈 PER이 프롬프트에
+                    # "해당없음(적자)"로 들어가 모델이 사실과 다른 입력을 받는다(shared 참고).
+                    # cond1은 종목명과 현재가만 쓰므로 DART와 무관하게 진행한다
+                    if selected_cond != "cond1":
+                        _dart_err = dart_unavailable_reason()
+                        if _dart_err:
+                            raise _DartUnavailable(_dart_err)
 
                     _executor, _jobs, _jobs_lock = forward_job_runtime()
                     _job_key = (_today_str, selected_ticker, selected_cond, selected_model)
@@ -360,6 +404,9 @@ def render() -> None:
                         "verify_err": _verr,
                     }
                     _ok = True
+            except _DartUnavailable as _e:
+                _status.update(label="진행하지 않음", state="error", expanded=True)
+                st.error(f"{_e} 종목명만 쓰는 cond1은 지금도 분석할 수 있습니다.")
             except Exception as _e:
                 _status.update(label="오류 발생", state="error", expanded=True)
                 # 모델 탓인 실패(temperature 미지원, 없는 ID)는 사용자 말로 바꾼다
@@ -370,6 +417,15 @@ def render() -> None:
     fw = st.session_state.get("fw_result")
     if fw is None:
         return
+
+    # 셀렉트박스를 바꾸고 아직 분석하지 않았으면 이전 결과를 숨긴다. 남겨 두면 위의 선택과
+    # 아래 결과가 서로 다른 종목을 가리킨다(② 프롬프트 탭과 같은 처리, 2026-10-10)
+    if (fw.get("ticker"), fw.get("cond"), fw.get("model")) != (selected_ticker, selected_cond, selected_model):
+        return
+
+    # 처음 분석한 종목은 누르기 전에 시세 캐시가 없어 거래정지를 판정하지 못했다. 결과가 나온
+    # 지금 다시 본다(캐시가 없으면 최근 시세를 받아 온다, 파일은 남기지 않는다)
+    _show_halt(check_trading_halt(selected_ticker, fetch_if_missing=True))
 
     # 렌더링 분기는 셀렉트박스가 아닌 마지막 분석 결과(fw) 기준 — 위젯 변경 후 불일치 방지
     fw_cond  = fw["cond"]
@@ -402,7 +458,7 @@ def render() -> None:
 
     # 입력 검증(forward_verify)은 걸린 것이 있을 때만 드러낸다. 통과 내역을 늘어놓으면
     # 검증 체크리스트가 화면에 새어 나온다
-    _flags = _meta.get("flags")
+    _flags = [f for f in (humanize_flag(x) for x in (_meta.get("flags") or [])) if f]
     if _flags:
         with st.expander(f"⚠️ 입력값 확인 필요 ({len(_flags)}건)"):
             for _fl in _flags:
@@ -436,15 +492,17 @@ def render() -> None:
         st.subheader("📊 재무지표")
 
         col1, col2, col3, col4 = st.columns(4)
+        # 자릿수는 프롬프트(context_builders)와 맞춘다. 모델은 프롬프트의 값을 근거에 그대로
+        # 인용하는데 화면이 더 거칠게 반올림하면 "PBR 0.47"이라는 근거 옆에 0.5가 찍혔다(실측)
         col1.metric("PER",    fmt_val(ctx.get("per")))
-        col2.metric("PBR",    fmt_val(ctx.get("pbr")))
+        col2.metric("PBR",    fmt_val(ctx.get("pbr"), decimals=2))
         col3.metric("ROE",    fmt_val(ctx.get("roe"), suffix="%"))
         col4.metric("시가총액", fmt_market_cap(ctx.get("market_cap")))
 
         col5, col6, col7 = st.columns(3)
         col5.metric("52주 위치",      fmt_val(ctx.get("price_position_52w"), suffix="%"))
-        col6.metric("1개월 수익률",   fmt_val(ctx.get("momentum_1m"), suffix="%"))
-        col7.metric("거래량 변화율",  fmt_val(ctx.get("volume_change"), suffix="%"))
+        col6.metric("1개월 수익률",   fmt_val(ctx.get("momentum_1m"), suffix="%", decimals=2))
+        col7.metric("거래량 변화율",  fmt_val(ctx.get("volume_change"), suffix="%", decimals=2))
 
         # PER·PBR·ROE가 통째로 비면 모델도 그 값 없이 판단한 것이다. 리포트 0건일 때와
         # 같은 이유로 밝힌다 — N/A만 늘어놓으면 수집 실패인지 원래 없는 값인지 모른다
@@ -557,18 +615,22 @@ def render() -> None:
 
     # 신호별 상세 테이블
     with st.expander("신호별 상세 통계"):
-        stats = (
-            ticker_df.groupby("signal")["return_20d"]
-            .agg(건수="count", 평균수익률="mean")
-            .round(2)
-        )
-        stats["방향 적중률(%)"] = pd.NA
-        for sig, g in ticker_df.groupby("signal")["return_20d"]:
+        # 문자열로 만들어 넣는다. 숫자 열에 결측을 두면 Neutral의 적중률 칸에 "None"이 찍히고,
+        # 인덱스 이름(signal)이 영어로 남는다(실측 2026-10-10)
+        rows = []
+        for sig in ("Buy", "Neutral", "Sell"):
+            g = ticker_df.loc[ticker_df["signal"] == sig, "return_20d"]
+            if g.empty:
+                continue
             if sig == "Buy":
-                stats.loc[sig, "방향 적중률(%)"] = round((g > 0).mean() * 100, 2)
+                hit = f"{(g > 0).mean() * 100:.1f}%"
             elif sig == "Sell":
-                stats.loc[sig, "방향 적중률(%)"] = round((g < 0).mean() * 100, 2)
-        st.dataframe(stats)
+                hit = f"{(g < 0).mean() * 100:.1f}%"
+            else:
+                hit = "-"   # 방향이 없는 신호라 적중을 따지지 않는다
+            rows.append({"신호": sig, "건수": len(g), "평균 20일 수익률": f"{g.mean():+.2f}%",
+                         "방향 적중률": hit})
+        st.dataframe(pd.DataFrame(rows).set_index("신호"), width="stretch")
 
     # 시계열 차트 — signal로 색을 나눠야 "언제 무슨 신호였는지"가 보인다.
     # 선 하나로 그리면 수익률 곡선일 뿐 신호 정보가 사라진다
